@@ -18,13 +18,16 @@ public class OrderController {
 
 
     @PostMapping("makeBuyOrder")
-    public void makeBuyOrder(@RequestBody OrderModel order) {
-        orderService.makeBuyOrder(order);
+    public String makeBuyOrder(@RequestBody OrderModel order) {
+        String orderId = orderService.makeBuyOrder(order);
+        return orderId;
+
     }
 
     @PostMapping("makeSellOrder")
-    public void makeSellOrder(@RequestBody OrderModel order) {
-        orderService.makeSellOrder(order);
+    public String makeSellOrder(@RequestBody OrderModel order) {
+        String orderId = orderService.makeSellOrder(order);
+        return orderId;
     }
 
 }

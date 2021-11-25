@@ -3,6 +3,9 @@ package com.clientService.order.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,54 +26,52 @@ public class OrderModel {
             strategy = GenerationType.SEQUENCE,
             generator = "order_sequence"
     )
-    @Column(
-            updatable = false
-    )
+    @Column(updatable = false)
     private Long id;
 
+//Todo: add the models and include these two fields as foreign keys
 
+//---
 
-    @Column(
-            nullable = false,
-            unique = true,
-            updatable = false
-    )
-    private String user_id;
-
-    @Column(
-            nullable = false,
-            unique = true,
-            updatable = false
-    )
-    private String product_id;
-
-
-//
 //    @Column(
 //            nullable = false,
-//            length = 50
+//            unique = true,
+//            updatable = false
 //    )
-//    private String lastName;
-//
-//    @Column(
-//            nullable = false
-//    )
-//    private LocalDate dateOfBirth;
-//
+//    private String user_id;
+
 //    @Column(
 //            nullable = false,
-//            unique = true
+//            unique = true,
+//            updatable = false
 //    )
-//    private String email;
-//
-//    @Column(
-//            nullable = false
-//    )
-//    private String password;
-//
-//    @Column(
-//            nullable = false,
-//            length = 10
-//    )
-//    private String contact;
+//    private String product_id;
+
+//---
+
+    @Column(nullable = false, updatable = false)
+    private String product;
+
+    @Column(nullable = false)
+    private int ord_quantity;
+
+    @Column(nullable = false)
+    private double ord_price;
+
+    @Column(nullable = false, updatable = false)
+    private String ord_side;
+
+    @Column(nullable = false)
+    private boolean ord_status;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false, updatable = false)
+    private Date ord_timeStamp;
+
+    @PrePersist
+    public void onCreate() {
+        ord_timeStamp = new Date();
+    }
+
+
 }
