@@ -2,6 +2,8 @@ package com.clientService.clientService.client.controller;
 
 import com.clientService.clientService.client.service.ClientService;
 import com.clientService.clientService.client.model.Client;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
