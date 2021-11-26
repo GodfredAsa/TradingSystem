@@ -2,32 +2,40 @@ package com.clientService.client.controller;
 
 import com.clientService.client.service.ClientService;
 import com.clientService.client.model.Client;
+import com.clientService.order.model.OrderModel;
+
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/client")
+@RequestMapping("/api/client/")
 @AllArgsConstructor
 public class ClientController {
 
     private final ClientService clientService;
 
-    @PostMapping("/signup")
-    public String clientSignUp(@RequestBody Client client){
-        return this.clientService.addClient(client);
+    @PostMapping("signup")
+    public ResponseEntity<?> clientSignUp(@RequestBody Client client){
+
+        return new ResponseEntity<>(this.clientService.addClient(client), HttpStatus.CREATED);
     }
 
-    @GetMapping("/getClientById/{id}")
-    public String getClient(@PathVariable Long id){
+    @GetMapping("getClientById/{id}")
+    public ResponseEntity<?> getClient(@PathVariable Long id){
         Optional<Client> client = this.clientService.getClient(id);
         if(client.isPresent()){
-            return "client: " + client;
+            return new ResponseEntity<>("client: " + client, HttpStatus.OK);
         }
-        return "client with id "+ id + " does not exist";
+        return new ResponseEntity<>("client with id "+ id + " does not exist", HttpStatus.NOT_FOUND);
     }
 
-//    @GetMapping
-//    public Optional<Client> clientSignIn(@RequestBody )
+    @PostMapping("makeBuyOrder")
+    public String makeBuyOrder(@RequestBody OrderModel order){
+        return this.clientService.makeBuyOrder(order);
+    }
+
 }

@@ -31,24 +31,6 @@ public class OrderModel {
 
 //Todo: add the models and include these two fields as foreign keys
 
-//---
-
-//    @Column(
-//            nullable = false,
-//            unique = true,
-//            updatable = false
-//    )
-//    private String user_id;
-
-//    @Column(
-//            nullable = false,
-//            unique = true,
-//            updatable = false
-//    )
-//    private String product_id;
-
-//---
-
     @Column(nullable = false, updatable = false)
     private String product;
 

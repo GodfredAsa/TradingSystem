@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(path = "/api/order")
+@RequestMapping(path = "/api/order/")
 public class OrderController {
 
     private final OrderService orderService;
@@ -19,15 +19,12 @@ public class OrderController {
 
     @PostMapping("makeBuyOrder")
     public String makeBuyOrder(@RequestBody OrderModel order) {
-        String orderId = orderService.makeBuyOrder(order);
-        return orderId;
-
+        return orderService.makeBuyOrder(order);
     }
 
     @PostMapping("makeSellOrder")
     public String makeSellOrder(@RequestBody OrderModel order) {
-        String orderId = orderService.makeSellOrder(order);
-        return orderId;
+       return orderService.makeSellOrder(order);
     }
 
 }

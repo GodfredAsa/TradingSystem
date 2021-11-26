@@ -1,11 +1,13 @@
 package com.clientService.client.service;
 
-import com.clientService.client.loggerPack.ClientLogger;
+import com.clientService.loggerPack.Logger;
 import com.clientService.client.model.Client;
 import com.clientService.client.repository.ClientRepository;
+import com.clientService.order.model.OrderModel;
 import lombok.AllArgsConstructor;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
 
@@ -13,26 +15,36 @@ import java.util.Optional;
 @Service
 public class ClientService {
     private ClientRepository clientRepository;
-    private ClientLogger clientLogger;
-//    private SecurityConfiguration securityConfig;
+    private RestTemplate restTemplate;
 
     public String addClient(Client client) {
         try {
-//            String encodedPassword = securityConfig.passwordEncoder().encode(client.getPassword());
-//            client.setPassword(encodedPassword);
                 clientRepository.save(client);
-                clientLogger.LOGGER.info("Client with id: " + client.getId() + " created successfully");
+                Logger.LOGGER.info("Client with id: " + client.getId() + " created successfully");
+                restTemplate.getForObject("http://172.30.5.51:8080//clientSignInStatus/Success", String.class);
                 return "Client added successfully";
 
         } catch (Exception e) {
-            clientLogger.LOGGER.error(e.getMessage());
+            Logger.LOGGER.error(e.getMessage());
+            restTemplate.getForObject("http://172.30.5.51:8080//clientSignInStatus/Failure", String.class);
             return "Client could not be added, try again";
         }
-
     }
 
     public Optional<Client> getClient(Long id){
-        clientLogger.LOGGER.info("Client with id:" +id + " accessed from the database");
+        Logger.LOGGER.info("Client with id:" +id + " accessed from the database");
         return clientRepository.findById(id);
+    }
+
+    public String makeBuyOrder(OrderModel order){
+
+            String response = restTemplate.postForObject("http://172.19.128.1:8080/api/order/makeBuyOrder", order, String.class);
+            if (response != null){
+                Logger.LOGGER.info("order successful");
+                return response;
+            }else{
+                Logger.LOGGER.error("There was an issue placing your order");
+                return "There was an issue placing your order, please try again later";
+            }
     }
 }
