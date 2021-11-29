@@ -1,6 +1,6 @@
 package com.clientService.order.service;
 
-import com.clientService.loggerPack.Logger;
+import com.clientService.loggerPack.LoggerConfig;
 import com.clientService.order.model.OrderModel;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -12,8 +12,11 @@ import java.util.Map;
 @Service
 public class OrderService {
 
-    @Value("abb2f34c-286e-4260-b438-a7755a421423")
-    private String exchangeAPIOrderUrl;
+    @Value("${api.key}")
+    private String apiKey;
+
+    @Value("${exchange.url1}")
+    private String exchangeUrl1;
 
 
     public String makeBuyOrder(OrderModel order) {
@@ -30,12 +33,12 @@ public class OrderService {
             put("price", order.getOrd_price());
             put("side", "BUY");
         }};
-        String response = restTemplate.postForObject("https://exchange.matraining.com/" + exchangeAPIOrderUrl+ "/order", orderRequestBody, String.class);
+        String response = restTemplate.postForObject(exchangeUrl1 + apiKey+ "/order", orderRequestBody, String.class);
         if (response != null){
-            Logger.LOGGER.info("order successful");
+            LoggerConfig.LOGGER.info("order successful");
             return response;
         }else{
-            Logger.LOGGER.error("There was an issue placing your order");
+            LoggerConfig.LOGGER.error("There was an issue placing your order");
             return "There was an issue placing your order, please try again later";
         }
     }
@@ -56,12 +59,12 @@ public class OrderService {
             put("side", "SELL");
         }};
 
-        String response = restTemplate.postForObject("https://exchange.matraining.com/" + exchangeAPIOrderUrl+ "/order", orderRequestBody, String.class);
+        String response = restTemplate.postForObject(exchangeUrl1 + apiKey+ "/order", orderRequestBody, String.class);
         if (response != null){
-            Logger.LOGGER.info("order successful");
+            LoggerConfig.LOGGER.info("order successful");
             return response;
         }else{
-            Logger.LOGGER.error("There was an issue placing your order");
+            LoggerConfig.LOGGER.error("There was an issue placing your order");
             return "There was an issue placing your order, please try again later";
         }
     }

@@ -1,10 +1,12 @@
-package com.clientService.client.model;
+package com.clientService.user.model;
 
+import com.clientService.enums.UserRole;
 import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 
 @AllArgsConstructor
@@ -16,7 +18,12 @@ import java.util.Objects;
 @Table(
         name = "client"
 )
-public class Client {
+public class User {
+
+    /**
+     * User Model with AllArgsConstructor and constructor without id
+     */
+
     @Id
     @SequenceGenerator(
             name = "client_sequence",
@@ -27,60 +34,50 @@ public class Client {
             strategy = GenerationType.SEQUENCE,
             generator = "client_sequence"
     )
-    @Column(
-            updatable = false
-    )
+    @Column(updatable = false)
     private Long id;
 
-    @Column(
-            nullable = false,
-            length = 50
-    )
+    @Column(nullable = false, columnDefinition = "varchar(100)")
     private String firstName;
 
-    @Column(
-            nullable = false,
-            length = 50
-    )
+    @Column(nullable = false, columnDefinition = "varchar(100)")
     private String lastName;
 
-    @Column(
-            nullable = false
-    )
+    @Column(nullable = false)
     private LocalDate dateOfBirth;
 
-    @Column(
-            nullable = false,
-            unique = true
-    )
+    @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(
-            nullable = false
-    )
+    @Column(nullable = false)
     private String password;
 
-    @Column(
-            nullable = false,
-            length = 10
-    )
+    @Column(nullable = false, columnDefinition = "varchar(10)")
     private String contact;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private UserRole userRole;
 
-    public Client(String firstName, String lastName, LocalDate dateOfBirth, String email, String password, String contact) {
+    @OneToMany(mappedBy = "user")
+    private List<Portfolio> portfolios;
+
+
+    public User(String firstName, String lastName, LocalDate dateOfBirth, String email, String password, String contact, UserRole userRole) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.dateOfBirth = dateOfBirth;
         this.email = email;
         this.password = password;
         this.contact = contact;
+        this.userRole = userRole;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Client client = (Client) o;
+        User client = (User) o;
         return id != null && Objects.equals(id, client.id);
     }
 
