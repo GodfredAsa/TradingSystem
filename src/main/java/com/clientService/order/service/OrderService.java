@@ -19,9 +19,9 @@ public class OrderService {
     private String exchangeUrl1;
 
 
-    public String makeBuyOrder(OrderModel order) {
+    public String makeOrder(OrderModel order) {
 
-//        Todo: validate if user has enough fund to make the purchase
+//        Todo: validate if user has enough fund to make the purchase or owns the stocks they intend to sell
         RestTemplate restTemplate = new RestTemplate();
 
 //        Todo: validate that the request body is not empty
@@ -31,11 +31,17 @@ public class OrderService {
             put("product", order.getProduct());
             put("quantity", order.getOrd_quantity());
             put("price", order.getOrd_price());
-            put("side", "BUY");
         }};
-        String response = restTemplate.postForObject(exchangeUrl1 + apiKey+ "/order", orderRequestBody, String.class);
+
+        if (order.getOrd_side().equals("BUY")) {
+            orderRequestBody.put("side", "BUY");
+        } else {
+            orderRequestBody.put("side", "SELL");
+        }
+
+        String response = restTemplate.postForObject(exchangeUrl1 + apiKey + "/order", orderRequestBody, String.class);
         if (response != null){
-            LoggerConfig.LOGGER.info("order successful");
+            LoggerConfig.LOGGER.info("order placed successfully");
             return response;
         }else{
             LoggerConfig.LOGGER.error("There was an issue placing your order");
@@ -43,29 +49,4 @@ public class OrderService {
         }
     }
 
-
-    public String makeSellOrder(OrderModel order) {
-//        Todo: validate if user owns the stocks they intend to sell
-
-        RestTemplate restTemplate = new RestTemplate();
-
-//        Todo: validate that the request body is not empty
-//        Todo: get the product name using the product id
-
-        Map<String, Object> orderRequestBody = new HashMap<>() {{
-            put("product", order.getProduct());
-            put("quantity", order.getOrd_quantity());
-            put("price", order.getOrd_price());
-            put("side", "SELL");
-        }};
-
-        String response = restTemplate.postForObject(exchangeUrl1 + apiKey+ "/order", orderRequestBody, String.class);
-        if (response != null){
-            LoggerConfig.LOGGER.info("order successful");
-            return response;
-        }else{
-            LoggerConfig.LOGGER.error("There was an issue placing your order");
-            return "There was an issue placing your order, please try again later";
-        }
-    }
 }
