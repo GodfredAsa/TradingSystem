@@ -1,9 +1,11 @@
 package com.clientService.order.model;
 
+import com.clientService.orderExecution.model.OrderExecutionModule;
 import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -11,7 +13,7 @@ import java.util.Date;
 @Getter
 @Setter
 @Entity
-@Table
+@Table(name = "order")
 public class OrderModel {
 
     @Id
@@ -24,30 +26,44 @@ public class OrderModel {
             strategy = GenerationType.SEQUENCE,
             generator = "order_sequence"
     )
-    @Column(updatable = false)
+    @Column(
+            updatable = false,
+            name = "order_id"
+    )
     private Long id;
 
     @OneToOne(cascade = CascadeType.ALL, optional = false)
-    @JoinColumn(name = "product_id")
+    @JoinColumn(
+            name = "product_id"
+    )
     private long product_id;
 
-    @Column(nullable = false, updatable = false)
-    private String product;
-
-    @Column(nullable = false)
+    @Column(
+            nullable = false
+    )
     private int ord_quantity;
 
-    @Column(nullable = false)
+    @Column(
+            nullable = false
+    )
     private double ord_price;
 
-    @Column(nullable = false, updatable = false)
+    @Column(
+            nullable = false,
+            updatable = false
+    )
     private String ord_side;
 
-    @Column(nullable = false)
+    @Column(
+            nullable = false
+    )
     private boolean ord_status;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(nullable = false, updatable = false)
+    @Column(
+            nullable = false,
+            updatable = false
+    )
     private Date ord_timeStamp;
 
     @PrePersist
@@ -58,9 +74,18 @@ public class OrderModel {
     @ManyToOne(name = "product_id")
     private Product product;
 
-    @OneToOne(cascade = CascadeType.ALL, optional = false)
-    @JoinColumn(name = "user_id")
-    private long user_id;
+    @OneToMany(
+            mappedBy = "order"
+    )
+    private List<OrderExecutionModule> order_executions;
 
+    @OneToOne(
+            cascade = CascadeType.ALL,
+            optional = false
+    )
+    @JoinColumn(
+            name = "user_id"
+    )
+    private long user_id;
 
 }
