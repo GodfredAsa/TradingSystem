@@ -1,5 +1,6 @@
 package com.clientService.user.service;
 
+import com.clientService.account.model.AccountModel;
 import com.clientService.loggerPack.LoggerConfig;
 import com.clientService.enums.UserRole;
 import com.clientService.user.model.User;
@@ -9,7 +10,6 @@ import com.clientService.order.model.OrderModel;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.jaas.JaasGrantedAuthority;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -83,13 +83,21 @@ public class UserService implements UserDetailsService {
                 appUserRole =UserRole.REGULATOR;
             }
 
+
                 User user = clientRepository.save(
                         new User(
-                                userSignUp.getFirstName(), userSignUp.getLastName(),
-                                userSignUp.getDateOfBirth(), userSignUp.getEmail(),
-                                userSignUp.getPassword(), userSignUp.getContact(), appUserRole
+                                userSignUp.getFirstName(),
+                                userSignUp.getLastName(),
+                                userSignUp.getDateOfBirth(),
+                                userSignUp.getEmail(),
+                                userSignUp.getPassword(),
+                                userSignUp.getContact(),
+                                appUserRole,
+
                         )
                 );
+
+
                 LoggerConfig.LOGGER.info("Client with id: " + user.getId() + " created successfully");
                 restTemplate.getForObject(reportUrl+"/Success", String.class);
                 return "Client added successfully";

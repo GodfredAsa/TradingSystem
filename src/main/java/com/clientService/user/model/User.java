@@ -1,5 +1,6 @@
 package com.clientService.user.model;
 
+import com.clientService.account.model.AccountModel;
 import com.clientService.enums.UserRole;
 import lombok.*;
 import org.hibernate.Hibernate;
@@ -34,8 +35,12 @@ public class User {
             strategy = GenerationType.SEQUENCE,
             generator = "client_sequence"
     )
-    @Column(updatable = false)
+    @Column(updatable = false, name = "user_id")
     private Long id;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_account")
+    private AccountModel account;
 
     @Column(nullable = false, columnDefinition = "varchar(100)")
     private String firstName;
@@ -63,7 +68,7 @@ public class User {
     private List<Portfolio> portfolios;
 
 
-    public User(String firstName, String lastName, LocalDate dateOfBirth, String email, String password, String contact, UserRole userRole) {
+    public User(String firstName, String lastName, LocalDate dateOfBirth, String email, String password, String contact, UserRole userRole, AccountModel account) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.dateOfBirth = dateOfBirth;
@@ -71,6 +76,7 @@ public class User {
         this.password = password;
         this.contact = contact;
         this.userRole = userRole;
+        this.account = account;
     }
 
     @Override

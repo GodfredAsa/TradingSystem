@@ -1,5 +1,6 @@
 package com.clientService.user.model;
 
+import com.clientService.account.model.AccountModel;
 import com.clientService.enums.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Data;
