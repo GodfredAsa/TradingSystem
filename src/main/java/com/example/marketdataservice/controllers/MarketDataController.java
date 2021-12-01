@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+
+import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -25,11 +28,11 @@ public class MarketDataController {
 
     @ApiOperation("Get Market Data from Exchange 1")
     @GetMapping("/getMarketDataFromExchange1")
-    public ResponseEntity<List<Product>> getMarketDataFromExchange1(){
+    public ResponseEntity<List<Product>> getMarketDataFromExchange1() throws UnknownHostException {
         return new ResponseEntity<>(marketDataService.getMarketDataFromExchange1(), HttpStatus.OK);
     }
 
-    @ApiOperation("Get Market Data from Exchange 2")
+        @ApiOperation("Get Market Data from Exchange 2")
     @GetMapping("/getMarketDataFromExchange2")
     public ResponseEntity<List<Product>> getMarketDataFromExchange2(){
         return new ResponseEntity<>(marketDataService.getMarketDataFromExchange2(), HttpStatus.OK);
