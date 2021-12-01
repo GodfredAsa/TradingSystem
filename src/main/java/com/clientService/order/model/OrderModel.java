@@ -3,8 +3,6 @@ package com.clientService.order.model;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @NoArgsConstructor
@@ -29,7 +27,9 @@ public class OrderModel {
     @Column(updatable = false)
     private Long id;
 
-//Todo: add the models and include these two fields as foreign keys
+    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    @JoinColumn(name = "product_id")
+    private long product_id;
 
     @Column(nullable = false, updatable = false)
     private String product;
@@ -54,6 +54,13 @@ public class OrderModel {
     public void onCreate() {
         ord_timeStamp = new Date();
     }
+
+    @ManyToOne(name = "product_id")
+    private Product product;
+
+    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    @JoinColumn(name = "user_id")
+    private long user_id;
 
 
 }

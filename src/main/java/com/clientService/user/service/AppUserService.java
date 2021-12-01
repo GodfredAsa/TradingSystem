@@ -1,6 +1,7 @@
 package com.clientService.user.service;
 
 import com.clientService.enums.PortfolioStatus;
+import com.clientService.account.model.AccountModel;
 import com.clientService.loggerPack.LoggerConfig;
 import com.clientService.enums.UserRole;
 import com.clientService.user.model.AppUser;
@@ -95,6 +96,8 @@ public class AppUserService implements UserDetailsService {
                                 userSignUp.getPassword(), userSignUp.getContact(), appUserRole
                         )
                 );
+
+
                 LoggerConfig.LOGGER.info("Client with id: " + user.getId() + " created successfully");
                 restTemplate.getForObject(reportUrl+"/Success", String.class);
                 return "Client added successfully";

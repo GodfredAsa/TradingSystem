@@ -16,15 +16,9 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-
-    @PostMapping("makeBuyOrder")
-    public String makeBuyOrder(@RequestBody OrderModel order) {
-        return orderService.makeBuyOrder(order);
-    }
-
-    @PostMapping("makeSellOrder")
-    public String makeSellOrder(@RequestBody OrderModel order) {
-       return orderService.makeSellOrder(order);
+    @PostMapping("makeOrder")
+    public String makeOrder(@RequestBody OrderModel order) {
+        return orderService.makeOrder(order);
     }
 
 }
