@@ -1,10 +1,8 @@
 package com.clientService.order.service;
 
+import com.clientService.loggerPack.LoggerConfig;
 import com.clientService.order.model.OrderModel;
-import com.clientService.order.repository.OrderRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -14,25 +12,17 @@ import java.util.Map;
 @Service
 public class OrderService {
 
-    private final OrderRepository orderRepository;
-
     @Value("${api.key}")
-    private String exchangeAPIOrderUrl;
+    private String apiKey;
 
-    @Autowired
-    private RestTemplate restTemplate;
+    @Value("${exchange.url1}")
+    private String exchangeUrl1;
 
-    @Autowired
-    public OrderService(OrderRepository orderRepository) {
-        this.orderRepository = orderRepository;
-    }
 
     public String makeBuyOrder(OrderModel order) {
 
 //        Todo: validate if user has enough fund to make the purchase
         RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set("Content-Type", "application/json");
 
 //        Todo: validate that the request body is not empty
 //        Todo: get the product name using the product id
@@ -43,11 +33,14 @@ public class OrderService {
             put("price", order.getOrd_price());
             put("side", "BUY");
         }};
-        String response = restTemplate.postForObject(this.exchangeAPIOrderUrl, orderRequestBody, String.class);
-        if (response != null)
+        String response = restTemplate.postForObject(exchangeUrl1 + apiKey+ "/order", orderRequestBody, String.class);
+        if (response != null){
+            LoggerConfig.LOGGER.info("order successful");
             return response;
-
-        throw new IllegalStateException("There was an issue placing your order, please try again later");
+        }else{
+            LoggerConfig.LOGGER.error("There was an issue placing your order");
+            return "There was an issue placing your order, please try again later";
+        }
     }
 
 
@@ -55,8 +48,6 @@ public class OrderService {
 //        Todo: validate if user owns the stocks they intend to sell
 
         RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set("Content-Type", "application/json");
 
 //        Todo: validate that the request body is not empty
 //        Todo: get the product name using the product id
@@ -68,10 +59,13 @@ public class OrderService {
             put("side", "SELL");
         }};
 
-        String response = restTemplate.postForObject(this.exchangeAPIOrderUrl, orderRequestBody, String.class);
-        if (response != null)
+        String response = restTemplate.postForObject(exchangeUrl1 + apiKey+ "/order", orderRequestBody, String.class);
+        if (response != null){
+            LoggerConfig.LOGGER.info("order successful");
             return response;
-
-        throw new IllegalStateException("There was an issue placing your order, please try again later");
+        }else{
+            LoggerConfig.LOGGER.error("There was an issue placing your order");
+            return "There was an issue placing your order, please try again later";
+        }
     }
 }
