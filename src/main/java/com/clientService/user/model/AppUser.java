@@ -15,10 +15,8 @@ import java.util.Objects;
 @Getter
 @Setter
 @Entity
-@Table(
-        name = "client"
-)
-public class User {
+@Table(name = "client")
+public class AppUser {
 
     /**
      * User Model with AllArgsConstructor and constructor without id
@@ -26,13 +24,13 @@ public class User {
 
     @Id
     @SequenceGenerator(
-            name = "client_sequence",
-            sequenceName = "client_sequence",
+            name = "user_sequence",
+            initialValue = 1,
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "client_sequence"
+            generator = "user_sequence"
     )
     @Column(updatable = false)
     private Long id;
@@ -60,10 +58,11 @@ public class User {
     private UserRole userRole;
 
     @OneToMany(mappedBy = "user")
+    @ToString.Exclude
     private List<Portfolio> portfolios;
 
 
-    public User(String firstName, String lastName, LocalDate dateOfBirth, String email, String password, String contact, UserRole userRole) {
+    public AppUser(String firstName, String lastName, LocalDate dateOfBirth, String email, String password, String contact, UserRole userRole) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.dateOfBirth = dateOfBirth;
@@ -77,7 +76,7 @@ public class User {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        User client = (User) o;
+        AppUser client = (AppUser) o;
         return id != null && Objects.equals(id, client.id);
     }
 

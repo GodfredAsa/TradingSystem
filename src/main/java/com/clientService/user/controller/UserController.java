@@ -1,10 +1,7 @@
 package com.clientService.user.controller;
 
-import com.clientService.user.model.JwtRequest;
-import com.clientService.user.model.JwtResponse;
-import com.clientService.user.model.UserSignUp;
-import com.clientService.user.service.UserService;
-import com.clientService.user.model.User;
+import com.clientService.user.model.*;
+import com.clientService.user.service.AppUserService;
 import com.clientService.order.model.OrderModel;
 
 import com.clientService.securityConfig.JWTUtility;
@@ -24,7 +21,7 @@ import java.util.Optional;
 @RequestMapping("/api/client/")
 public class UserController {
 
-    private final UserService clientService;
+    private final AppUserService clientService;
     private JWTUtility jwtUtility;
     private AuthenticationManager authenticationManager;
 
@@ -74,7 +71,7 @@ public class UserController {
      */
     @GetMapping("getClientById/{id}")
     public ResponseEntity<?> getClient(@PathVariable Long id){
-        Optional<User> client = this.clientService.getClient(id);
+        Optional<AppUser> client = this.clientService.getClient(id);
         if(client.isPresent()){
             return new ResponseEntity<>("client: " + client, HttpStatus.OK);
         }
@@ -89,6 +86,11 @@ public class UserController {
     @PostMapping("makeBuyOrder")
     public String makeBuyOrder(@RequestBody OrderModel order){
         return this.clientService.makeBuyOrder(order);
+    }
+
+    @PostMapping("createPortfolio")
+    public String createPortfolio(@RequestBody CreatePortfolio createPortfolio){
+        return clientService.createPortfolio(createPortfolio);
     }
 
 }
