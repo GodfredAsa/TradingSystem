@@ -27,12 +27,6 @@ public class OrderModel {
     @Column(updatable = false)
     private Long id;
 
-//Todo: add the models and include these two fields as foreign keys
-
-    @OneToOne(cascade = CascadeType.ALL, optional = false)
-    @JoinColumn(name = "user_id")
-    private long user_id;
-
     @OneToOne(cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "product_id")
     private long product_id;
@@ -60,6 +54,13 @@ public class OrderModel {
     public void onCreate() {
         ord_timeStamp = new Date();
     }
+
+    @ManyToOne(name = "product_id")
+    private Product product;
+
+    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    @JoinColumn(name = "user_id")
+    private long user_id;
 
 
 }

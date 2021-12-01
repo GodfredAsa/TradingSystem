@@ -97,7 +97,6 @@ public class UserService implements UserDetailsService {
                         )
                 );
 
-            AccountModel account = new AccountModel(user,0.0 );
 
                 LoggerConfig.LOGGER.info("Client with id: " + user.getId() + " created successfully");
                 restTemplate.getForObject(reportUrl+"/Success", String.class);
