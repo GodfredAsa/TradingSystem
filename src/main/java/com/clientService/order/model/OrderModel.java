@@ -29,6 +29,14 @@ public class OrderModel {
 
 //Todo: add the models and include these two fields as foreign keys
 
+    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    @JoinColumn(name = "user_id")
+    private long user_id;
+
+    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    @JoinColumn(name = "product_id")
+    private long product_id;
+
     @Column(nullable = false, updatable = false)
     private String product;
 

@@ -1,5 +1,6 @@
 package com.clientService.user.service;
 
+import com.clientService.account.model.AccountModel;
 import com.clientService.loggerPack.LoggerConfig;
 import com.clientService.enums.UserRole;
 import com.clientService.user.model.User;
@@ -82,13 +83,22 @@ public class UserService implements UserDetailsService {
                 appUserRole =UserRole.REGULATOR;
             }
 
+
                 User user = clientRepository.save(
                         new User(
-                                userSignUp.getFirstName(), userSignUp.getLastName(),
-                                userSignUp.getDateOfBirth(), userSignUp.getEmail(),
-                                userSignUp.getPassword(), userSignUp.getContact(), appUserRole
+                                userSignUp.getFirstName(),
+                                userSignUp.getLastName(),
+                                userSignUp.getDateOfBirth(),
+                                userSignUp.getEmail(),
+                                userSignUp.getPassword(),
+                                userSignUp.getContact(),
+                                appUserRole,
+
                         )
                 );
+
+            AccountModel account = new AccountModel(user,0.0 );
+
                 LoggerConfig.LOGGER.info("Client with id: " + user.getId() + " created successfully");
                 restTemplate.getForObject(reportUrl+"/Success", String.class);
                 return "Client added successfully";
