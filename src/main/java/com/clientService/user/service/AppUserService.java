@@ -1,5 +1,7 @@
 package com.clientService.user.service;
 
+
+import com.clientService.account.model.AccountModel;
 import com.clientService.enums.PortfolioStatus;
 import com.clientService.account.model.AccountModel;
 import com.clientService.loggerPack.LoggerConfig;
@@ -88,6 +90,7 @@ public class AppUserService implements UserDetailsService {
             }else{
                 appUserRole =UserRole.REGULATOR;
             }
+
 
                 AppUser user = clientRepository.save(
                         new AppUser(
