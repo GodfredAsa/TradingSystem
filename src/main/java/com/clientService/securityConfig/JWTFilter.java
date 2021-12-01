@@ -1,6 +1,6 @@
 package com.clientService.securityConfig;
 
-import com.clientService.user.service.UserService;
+import com.clientService.user.service.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,11 +18,12 @@ import java.io.IOException;
 @Component
 public class JWTFilter extends OncePerRequestFilter {
 
+
     @Autowired
     private JWTUtility jwtUtility;
 
     @Autowired
-    private UserService clientService;
+    private AppUserService appClientService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
@@ -37,7 +38,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
         if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails
-                    = clientService.loadUserByUsername(userEmail);
+                    = appClientService.loadUserByUsername(userEmail);
 
             if(jwtUtility.validateToken(token,userDetails)) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken

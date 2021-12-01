@@ -1,10 +1,15 @@
 package com.clientService.user.service;
 
+
 import com.clientService.account.model.AccountModel;
+import com.clientService.enums.PortfolioStatus;
 import com.clientService.loggerPack.LoggerConfig;
 import com.clientService.enums.UserRole;
-import com.clientService.user.model.User;
+import com.clientService.user.model.AppUser;
+import com.clientService.user.model.CreatePortfolio;
+import com.clientService.user.model.Portfolio;
 import com.clientService.user.model.UserSignUp;
+import com.clientService.user.repository.PortfolioRepository;
 import com.clientService.user.repository.UserRepository;
 import com.clientService.order.model.OrderModel;
 
@@ -23,9 +28,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserService implements UserDetailsService {
+public class AppUserService implements UserDetailsService {
     private final UserRepository clientRepository;
     private final RestTemplate restTemplate;
+    private final PortfolioRepository portfolioRepository;
 
     @Value("${report.url}")
     private String reportUrl;
@@ -39,9 +45,10 @@ public class UserService implements UserDetailsService {
      * @param restTemplate;
      */
     @Autowired
-    UserService(UserRepository clientRepository, RestTemplate restTemplate){
+    AppUserService(UserRepository clientRepository, RestTemplate restTemplate, PortfolioRepository portfolioRepository){
         this.clientRepository = clientRepository;
         this.restTemplate = restTemplate;
+        this.portfolioRepository = portfolioRepository;
     }
 
 
@@ -52,7 +59,7 @@ public class UserService implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User client = clientRepository.getUserByEmail(email);
+        AppUser client = clientRepository.getUserByEmail(email);
         if(client == null){
             LoggerConfig.LOGGER.error("Client does not exist");
             throw new UsernameNotFoundException("Client does not exist");
@@ -84,16 +91,11 @@ public class UserService implements UserDetailsService {
             }
 
 
-                User user = clientRepository.save(
-                        new User(
-                                userSignUp.getFirstName(),
-                                userSignUp.getLastName(),
-                                userSignUp.getDateOfBirth(),
-                                userSignUp.getEmail(),
-                                userSignUp.getPassword(),
-                                userSignUp.getContact(),
-                                appUserRole,
-
+                AppUser user = clientRepository.save(
+                        new AppUser(
+                                userSignUp.getFirstName(), userSignUp.getLastName(),
+                                userSignUp.getDateOfBirth(), userSignUp.getEmail(),
+                                userSignUp.getPassword(), userSignUp.getContact(), appUserRole
                         )
                 );
 
@@ -114,8 +116,8 @@ public class UserService implements UserDetailsService {
      * @param id -User id
      * @return Optional</User>
      */
-    public Optional<User> getClient(Long id){
-        Optional<User> user = clientRepository.findById(id);
+    public Optional<AppUser> getClient(Long id){
+        Optional<AppUser> user = clientRepository.findById(id);
         if(user.isPresent()){
             LoggerConfig.LOGGER.info("Client with id:" +id + " accessed from the database");
         }else{
@@ -138,5 +140,13 @@ public class UserService implements UserDetailsService {
                 LoggerConfig.LOGGER.error("There was an issue placing your order");
                 return "There was an issue placing your order, please try again later";
             }
+    }
+
+    public String createPortfolio(CreatePortfolio createPortfolio) {
+        AppUser appUser = clientRepository.findById(createPortfolio.getId()).get();
+        portfolioRepository.save(new Portfolio(
+              appUser, PortfolioStatus.OPENED
+        ));
+        return "porfolio created";
     }
 }
