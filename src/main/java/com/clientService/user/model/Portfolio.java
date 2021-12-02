@@ -1,10 +1,13 @@
 package com.clientService.user.model;
 
 import com.clientService.enums.PortfolioStatus;
+import com.clientService.order.model.Product;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @AllArgsConstructor
@@ -27,16 +30,22 @@ public class Portfolio {
     @Column(updatable = false)
     private Long id;
 
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "appUser_id")
+    @JsonIgnore
+    @ToString.Exclude
     @ManyToOne(cascade = CascadeType.ALL)
-    private AppUser user;
+    private AppUser userPortfolio;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private PortfolioStatus status;
 
+    @ManyToMany(mappedBy = "portfolios")
+    @ToString.Exclude
+    private List<Product> products;
+
     public Portfolio(AppUser appUser, PortfolioStatus status) {
-        this.user = appUser;
+        this.userPortfolio = appUser;
         this.status = status;
     }
 

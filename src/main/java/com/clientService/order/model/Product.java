@@ -1,6 +1,7 @@
-package com.clientService.user.model;
+package com.clientService.order.model;
 
-import com.clientService.order.model.OrderModel;
+import com.clientService.user.model.Portfolio;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -28,9 +29,10 @@ public class Product {
     private List<OrderModel> orderModels;
 
     @ManyToMany(cascade = CascadeType.ALL)
+    @JsonIgnore
     @JoinTable(name = "product_portfolio",
-    joinColumns = @JoinColumn(name = "portfolio_id", referencedColumnName = "id"),
-    inverseJoinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"))
+    joinColumns = @JoinColumn(name = "portfolio_ticker"),
+    inverseJoinColumns = @JoinColumn(name = "product_id"))
     @ToString.Exclude
     private List<Portfolio> portfolios;
 

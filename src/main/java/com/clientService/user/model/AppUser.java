@@ -1,7 +1,7 @@
 package com.clientService.user.model;
 
-import com.clientService.account.model.AccountModel;
 import com.clientService.enums.UserRole;
+import com.clientService.order.model.OrderModel;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -16,7 +16,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @Entity
-@Table(name = "client")
+@Table(name = "appUser")
 public class AppUser {
 
     /**
@@ -33,12 +33,8 @@ public class AppUser {
             strategy = GenerationType.SEQUENCE,
             generator = "user_sequence"
     )
-    @Column(updatable = false, name = "user_id")
+    @Column(updatable = false, name = "appUser_id")
     private Long id;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_account")
-    private AccountModel account;
 
     @Column(nullable = false, columnDefinition = "varchar(100)")
     private String firstName;
@@ -46,36 +42,34 @@ public class AppUser {
     @Column(nullable = false, columnDefinition = "varchar(100)")
     private String lastName;
 
-    @Column(nullable = false)
-    private LocalDate dateOfBirth;
-
     @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false, columnDefinition = "varchar(10)")
-    private String contact;
-
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
-    @OneToMany(mappedBy = "user")
+    @OneToOne(mappedBy = "userAccount")
+    @ToString.Exclude
+    private Account account;
+
+    @OneToMany(mappedBy = "userPortfolio")
     @ToString.Exclude
     private List<Portfolio> portfolios;
 
-    public AppUser(String firstName, String lastName, LocalDate dateOfBirth, String email, String password, String contact, UserRole userRole) {
+    @OneToMany(mappedBy = "userOrder")
+    @ToString.Exclude
+    private List<OrderModel> orderModels;
 
+    public AppUser(String firstName, String lastName, String email, String password, UserRole userRole) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.dateOfBirth = dateOfBirth;
         this.email = email;
         this.password = password;
-        this.contact = contact;
         this.userRole = userRole;
-        this.account = account;
     }
 
     @Override

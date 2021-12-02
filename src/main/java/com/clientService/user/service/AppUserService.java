@@ -1,21 +1,20 @@
 package com.clientService.user.service;
 
-
-import com.clientService.account.model.AccountModel;
+import com.clientService.enums.AuthStatus;
 import com.clientService.enums.PortfolioStatus;
-import com.clientService.account.model.AccountModel;
 import com.clientService.loggerPack.LoggerConfig;
 import com.clientService.enums.UserRole;
-import com.clientService.user.model.AppUser;
-import com.clientService.user.model.CreatePortfolio;
-import com.clientService.user.model.Portfolio;
-import com.clientService.user.model.UserSignUp;
+import com.clientService.securityConfig.SendLoggerRequest;
+import com.clientService.user.model.*;
+import com.clientService.user.repository.AccountRepository;
 import com.clientService.user.repository.PortfolioRepository;
-import com.clientService.user.repository.UserRepository;
+import com.clientService.user.repository.AppUserRepository;
 import com.clientService.order.model.OrderModel;
 
-import org.springframework.beans.factory.annotation.Autowired;
+
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,13 +23,15 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class AppUserService implements UserDetailsService {
-    private final UserRepository clientRepository;
+    private final AppUserRepository appUserRepository;
+    private final AccountRepository accountRepository;
     private final RestTemplate restTemplate;
     private final PortfolioRepository portfolioRepository;
 
@@ -42,16 +43,18 @@ public class AppUserService implements UserDetailsService {
 
 
     /**
-     * @param clientRepository ;
-     * @param restTemplate;
+     * @param appUserRepository - application user repository
+     * @param accountRepository - account repository
+     * @param restTemplate - restTemplate
+     * @param portfolioRepository - portfolio repository
      */
-    @Autowired
-    AppUserService(UserRepository clientRepository, RestTemplate restTemplate, PortfolioRepository portfolioRepository){
-        this.clientRepository = clientRepository;
+    AppUserService(AppUserRepository appUserRepository, AccountRepository accountRepository,
+                   RestTemplate restTemplate, PortfolioRepository portfolioRepository){
+        this.appUserRepository = appUserRepository;
+        this.accountRepository = accountRepository;
         this.restTemplate = restTemplate;
         this.portfolioRepository = portfolioRepository;
     }
-
 
     /**
      * @param email - takes user email to validate user
@@ -60,8 +63,8 @@ public class AppUserService implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        AppUser client = clientRepository.getUserByEmail(email);
-        if(client == null){
+        AppUser appUser = appUserRepository.getAppUserByEmail(email);
+        if(appUser == null){
             LoggerConfig.LOGGER.error("Client does not exist");
             throw new UsernameNotFoundException("Client does not exist");
         }else{
@@ -69,8 +72,8 @@ public class AppUserService implements UserDetailsService {
         }
 
         List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(client.getUserRole().name()));
-        return new org.springframework.security.core.userdetails.User(client.getEmail(), client.getPassword(), authorities);
+        authorities.add(new SimpleGrantedAuthority(appUser.getUserRole().name()));
+        return new org.springframework.security.core.userdetails.User(appUser.getEmail(), appUser.getPassword(), authorities);
     }
 
 
@@ -92,22 +95,30 @@ public class AppUserService implements UserDetailsService {
             }
 
 
-                AppUser user = clientRepository.save(
-                        new AppUser(
-                                userSignUp.getFirstName(), userSignUp.getLastName(),
-                                userSignUp.getDateOfBirth(), userSignUp.getEmail(),
-                                userSignUp.getPassword(), userSignUp.getContact(), appUserRole
-                        )
-                );
+            AppUser user = appUserRepository.save(
+                    new AppUser(
+                            userSignUp.getFirstName(), userSignUp.getLastName(),
+                            userSignUp.getEmail(), userSignUp.getPassword(),
+                            appUserRole
+                    )
+            );
 
+            accountRepository.save(new Account(100000.0, user));
 
-                LoggerConfig.LOGGER.info("Client with id: " + user.getId() + " created successfully");
-                restTemplate.getForObject(reportUrl+"/Success", String.class);
-                return "Client added successfully";
+            LoggerConfig.LOGGER.info("Client with id: " + user.getId() + " created successfully");
+
+            JSONObject log = new JSONObject();
+            log.put("userID", user.getId());
+            log.put("authStatus", AuthStatus.REGISTER);
+            log.put("role", user.getUserRole());
+            log.put("localDateTime", LocalDateTime.now());
+
+            HttpEntity<String> request = SendLoggerRequest.sendLoggerRequest(log);
+            restTemplate.postForObject(reportUrl+"userAuthentication", request ,String.class);
+            return "Client added successfully";
 
         } catch (Exception e) {
             LoggerConfig.LOGGER.error(e.getMessage());
-            restTemplate.getForObject(reportUrl+"/Failure", String.class);
             return "Client could not be added, try again";
         }
     }
@@ -118,7 +129,7 @@ public class AppUserService implements UserDetailsService {
      * @return Optional</User>
      */
     public Optional<AppUser> getClient(Long id){
-        Optional<AppUser> user = clientRepository.findById(id);
+        Optional<AppUser> user = appUserRepository.findById(id);
         if(user.isPresent()){
             LoggerConfig.LOGGER.info("Client with id:" +id + " accessed from the database");
         }else{
@@ -144,10 +155,11 @@ public class AppUserService implements UserDetailsService {
     }
 
     public String createPortfolio(CreatePortfolio createPortfolio) {
-        AppUser appUser = clientRepository.findById(createPortfolio.getId()).get();
+        AppUser appUser = appUserRepository.findById(createPortfolio.getId()).get();
         portfolioRepository.save(new Portfolio(
               appUser, PortfolioStatus.OPENED
         ));
-        return "porfolio created";
+        return "portfolio created";
     }
+
 }
