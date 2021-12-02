@@ -2,6 +2,8 @@ package com.example.marketdataservice.configs;
 
 //import com.example.marketdataservice.controllers.Subscriber;
 import com.example.marketdataservice.models.Product;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
@@ -15,308 +17,36 @@ import org.springframework.data.redis.serializer.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@NoArgsConstructor
 @Configuration
 public class RedisConfiguration {
+    @Value("${redis.hostname}")
+    private String redisHostname;
+
+    @Value("${redis.port}")
+    private int redisPort;
+
+    @Value("${redis.marketdatachannel}")
+    private String redisMarketDataChannel;
+
     @Bean
     public JedisConnectionFactory jedisConnectionFactory() {
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
-        redisStandaloneConfiguration.setHostName("localhost");
-        redisStandaloneConfiguration.setPort(9090);
+        redisStandaloneConfiguration.setHostName(redisHostname);
+        redisStandaloneConfiguration.setPort(redisPort);
         return new JedisConnectionFactory(redisStandaloneConfiguration);
     }
 
     @Bean
     public ChannelTopic channelTopic() {
-        return new ChannelTopic("MarketDataChannel");
+        return new ChannelTopic(redisMarketDataChannel);
     }
 
     @Bean
     public RedisTemplate<String, Product> redisTemplate() {
         RedisTemplate<String, Product> template = new RedisTemplate<>();
         template.setConnectionFactory(jedisConnectionFactory());
-//        template.setEnableDefaultSerializer(true);
         template.setDefaultSerializer(new Jackson2JsonRedisSerializer<Product>(Product.class));
         return template;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//    @Bean
-//    public MessageListenerAdapter messageListenerAdapter() {
-//        return new MessageListenerAdapter(new Subscriber());
-//    }
-
-//    @Bean
-//    public RedisMessageListenerContainer redisMessageListenerContainer() {
-//        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
-//        container.setConnectionFactory(jedisConnectionFactory());
-//        container.addMessageListener(messageListenerAdapter(), channelTopic());
-//        return container;
-//    }
 }

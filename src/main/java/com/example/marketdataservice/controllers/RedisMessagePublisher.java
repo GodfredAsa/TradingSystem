@@ -32,10 +32,6 @@ public class RedisMessagePublisher {
         redisTemplate.convertAndSend(channelTopic.getTopic(), message);
         return "Message Published";
     }
-//    public String publish(@RequestBody Product message) {
-//        redisTemplate.convertAndSend(channelTopic.getTopic(), message);
-//        return "Message Published";
-//    }
 }
 
 
