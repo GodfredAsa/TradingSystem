@@ -1,4 +1,4 @@
-package com.example.demo.entity;
+package com.example.demo.entities;
 
 import com.example.demo.enums.Status;
 import com.example.demo.enums.TradeSide;
@@ -11,10 +11,7 @@ import java.util.Objects;
 
 
 @AllArgsConstructor
-@Getter
-@Setter
-@ToString
-//@RequiredArgsConstructor
+@Data
 @NoArgsConstructor
 @Entity
 @Table(name = "OrderLog")
