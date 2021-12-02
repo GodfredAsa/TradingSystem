@@ -1,13 +1,10 @@
 package com.clientService.user.model;
 
-import com.clientService.enums.PortfolioStatus;
-import com.clientService.order.model.Product;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.Objects;
 
 @AllArgsConstructor
@@ -16,11 +13,11 @@ import java.util.Objects;
 @Setter
 @ToString
 @Entity
-@Table(name = "portfolio")
-public class Portfolio {
+@Table(name = "account")
+public class Account {
     @Id
     @SequenceGenerator(
-            name = "portfolio_sequence",
+            name = "account_sequence",
             initialValue = 1,
             allocationSize = 1
     )
@@ -30,31 +27,26 @@ public class Portfolio {
     @Column(updatable = false)
     private Long id;
 
+    @Column(name = "balance", nullable = false)
+    private Double balance;
+
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "appUser_id")
     @JsonIgnore
     @ToString.Exclude
-    @ManyToOne(cascade = CascadeType.ALL)
-    private AppUser userPortfolio;
+    private AppUser userAccount;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private PortfolioStatus status;
-
-    @ManyToMany(mappedBy = "portfolios")
-    @ToString.Exclude
-    private List<Product> products;
-
-    public Portfolio(AppUser appUser, PortfolioStatus status) {
-        this.userPortfolio = appUser;
-        this.status = status;
+    public Account(double balance, AppUser user) {
+        this.balance = balance;
+        this.userAccount = user;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Portfolio portfolio = (Portfolio) o;
-        return id != null && Objects.equals(id, portfolio.id);
+        Account account = (Account) o;
+        return id != null && Objects.equals(id, account.id);
     }
 
     @Override

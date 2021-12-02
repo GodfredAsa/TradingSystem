@@ -1,5 +1,7 @@
 package com.clientService.order.model;
 
+import com.clientService.user.model.AppUser;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -27,13 +29,6 @@ public class OrderModel {
     @Column(updatable = false)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL, optional = false)
-    @JoinColumn(name = "product_id")
-    private long product_id;
-
-    @Column(nullable = false, updatable = false)
-    private String product;
-
     @Column(nullable = false)
     private int ord_quantity;
 
@@ -55,12 +50,17 @@ public class OrderModel {
         ord_timeStamp = new Date();
     }
 
-    @ManyToOne(name = "product_id")
+    @JoinColumn(name = "product_id")
+    @ManyToOne(cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @JsonIgnore
     private Product product;
 
-    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
-    private long user_id;
+    @ToString.Exclude
+    @JsonIgnore
+    private AppUser userOrder;
 
 
 }
