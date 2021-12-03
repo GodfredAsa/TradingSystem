@@ -23,6 +23,7 @@ api:
 marketData:
   url1: http://*****/
   url2: http://*****/
+  both: http://*****/
 
 exchange:
   url1: https://exchange.matraining.com/

@@ -1,12 +1,11 @@
 package com.clientService.order.service;
 
+import com.clientService.enums.OrderStatus;
 import com.clientService.exceptions.NotEnoughFundsException;
 import com.clientService.exceptions.NotFoundException;
-import com.clientService.loggerPack.LoggerConfig;
-import com.clientService.order.model.Order;
-import com.clientService.order.model.OrderRequest;
-import com.clientService.order.model.Product;
+import com.clientService.order.model.*;
 import com.clientService.order.repository.OrderRepository;
+import com.clientService.orderExecution.model.OrderExecution;
 import com.clientService.user.model.AppUser;
 import com.clientService.user.model.MarketProduct;
 import com.clientService.user.model.MarketProductList;
@@ -18,10 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class OrderService {
@@ -47,6 +43,9 @@ public class OrderService {
     @Value(("${marketData.url2}"))
     private String marketDataUrl2;
 
+    @Value(("${marketData.both}"))
+    private String bothMarketData;
+
     //Gets logged-in user for the current session
     UserDetails userDetails = (UserDetails) SecurityContextHolder
             .getContext()
@@ -67,7 +66,7 @@ public class OrderService {
     }
 
 
-    public String makeOrder(OrderRequest orderRequest) {
+    public ArrayList<String> makeOrder(OrderRequest orderRequest) {
 
         //provides product if validated successfully by product service,
         //custom exception and error handles catch any error and returns
@@ -94,37 +93,65 @@ public class OrderService {
             put("product", orderRequest.getProduct());
             put("quantity", orderRequest.getQuantity());
             put("price", orderRequest.getPrice());
-            put("side",orderRequest.getSide());
+            put("side", orderRequest.getSide());
         }};
 
 //        Todo: Check the two exchanges for the best deal, buy all if quantity is >= then buy all else buy the rest from other exchange
         int currentOrderQuantity = orderRequest.getQuantity();
         Map<Integer, String> bestDeal = getBestBidAndQuantity(orderRequest);
-        if (bestDeal.keySet().stream().findFirst().get() >= currentOrderQuantity){
 
-            String newOrderId = restTemplate.postForObject(bestDeal.values().stream().findFirst().get(),orderRequestBody,  String.class);
-        }
-//        Todo: Indication for partial purchase
+        if (bestDeal.keySet().stream().findFirst().get() < currentOrderQuantity) {
 
-        //Sell validation
-//        Todo: Best deal (but orders more than the the specified price first)
-//        Todo: Indication for partial purchase
+//            Todo: Indication for partial purchase
+            String newOrderId1 = restTemplate.postForObject(bestDeal.values().stream().findFirst().get(), orderRequestBody, String.class);
+            String getOtherUrl = bestDeal.values().stream().findFirst().get().equals(exchangeUrl1) ? exchangeUrl2 : exchangeUrl1;
+            String newOrderId2 = restTemplate.postForObject(getOtherUrl, orderRequestBody, String.class);
 
+            Order order1 = new Order(
+                    newOrderId1,
+                    currentOrderQuantity,
+                    orderRequest.getPrice(),
+                    orderRequest.getSide(),
+                    OrderStatus.PENDING,
+                    orderProduct,
+                    user.get(),
+                    new ArrayList<OrderExecution>());
 
-        String response = restTemplate.postForObject(exchangeUrl1 + apiKey + "/order", orderRequestBody, String.class);
-        if (response != null) {
+            Order order2 = new Order(
+                    newOrderId2,
+                    currentOrderQuantity,
+                    orderRequest.getPrice(),
+                    orderRequest.getSide(),
+                    OrderStatus.PENDING,
+                    orderProduct,
+                    user.get(),
+                    new ArrayList<OrderExecution>());
 
-//            Order order = new Order(response, orderRequest.getQuantity(), orderRequest.getPrice(), orderRequest.getSide(),
-//                    OrderStatus.PENDING, orderProduct, )
-            LoggerConfig.LOGGER.info("order placed successfully");
-            return response;
+            orderRepository.save(order1);
+            orderRepository.save(order2);
+
+            return new ArrayList<>(List.of(newOrderId1, newOrderId2));
         } else {
-            LoggerConfig.LOGGER.error("There was an issue placing your order");
-            return "There was an issue placing your order, please try again later";
+
+            String newOrderId = restTemplate.postForObject(bestDeal.values().stream().findFirst().get(), orderRequestBody, String.class);
+            Order order = new Order(
+                    newOrderId,
+                    currentOrderQuantity,
+                    orderRequest.getPrice(),
+                    orderRequest.getSide(),
+                    OrderStatus.PENDING,
+                    orderProduct,
+                    user.get(),
+                    new ArrayList<OrderExecution>());
+
+            orderRepository.save(order);
+            return new ArrayList<>(List.of(newOrderId));
+
         }
+
     }
 
-    public Order getOrderById(String orderId) {
+    public Order checkOrderStatus(String orderId) {
 
         Order response = restTemplate.getForObject(exchangeUrl1 + apiKey + "/order/" + orderId, Order.class);
 
@@ -237,6 +264,53 @@ public class OrderService {
                 put((orderRequest.getQuantity() / 2), exchangeUrl1);
             }};
         }
+    }
+
+//    public String saveOrder(
+//            String newOrderId,
+//            int currentOrderQuantity,
+//            double price,
+//            String side,
+//            OrderStatus orderStatus,
+//            String orderProduct,
+//            AppUser user,
+//            List<OrderExecution> list
+//    ) {
+//
+//
+//            Order order = new Order(
+//                    newOrderId,
+//                    currentOrderQuantity,
+//                    orderRequest.getPrice(),
+//                    orderRequest.getSide(),
+//                    OrderStatus.PENDING,
+//                    orderProduct,
+//                    user.get(),
+//                    new ArrayList<OrderExecution>());
+//            LoggerConfig.LOGGER.info("order placed successfully");
+//            return response;
+//
+////         else {
+////            LoggerConfig.LOGGER.error("There was an issue placing your order");
+////            return "There was an issue placing your order, please try again later";
+//
+//
+//        return "";
+//
+//    }
+
+    public ArrayList<FullOrderBook> getOrderBook() {
+
+        OrderBook orderBook = restTemplate.getForObject(bothMarketData + "/orderbook", OrderBook.class);
+        ArrayList<FullOrderBook> fullFullOrderBooks = orderBook.getFullOrderBooks();
+        return fullFullOrderBooks;
+    }
+
+    public ArrayList<FullOrderBook> getOrderBookOf(String product, String option) {
+
+        OrderBook orderBook = restTemplate.getForObject(bothMarketData + "/orderbook/" + product + "/" + option, OrderBook.class);
+        ArrayList<FullOrderBook> fullFullOrderBooks = orderBook.getFullOrderBooks();
+        return fullFullOrderBooks;
     }
 
 }
