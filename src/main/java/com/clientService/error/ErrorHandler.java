@@ -20,6 +20,14 @@ public class ErrorHandler implements ErrorController {
     private ErrorAttributes errorAttributes;
 
 
+    /**
+     * Misty's Custom Validation Errors and Exception handler
+     * for a more presentable and uniform response to
+     * the frontend team :)
+     *
+     * @param webRequest
+     * @return
+     */
     @RequestMapping("/error")
     public ApiError handleError(WebRequest webRequest) {
 

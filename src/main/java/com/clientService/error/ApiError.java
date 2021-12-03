@@ -14,15 +14,17 @@ import java.util.Map;
 public class ApiError {
 
     int status;
-
     String message;
-
     long timestamp;
-
     String path;
-
     Map<String, String> validationErrors;
 
+    /**
+     *  model to hold a single error instance
+     * @param status
+     * @param message
+     * @param path
+     */
     public ApiError(int status, String message, String path) {
         this.status = status;
         this.message = message;
