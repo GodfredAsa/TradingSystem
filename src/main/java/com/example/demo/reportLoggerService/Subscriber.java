@@ -28,5 +28,6 @@ public class Subscriber implements MessageListener {
 
         Product[] msg = objectMapper.readValue(body, Product[].class);
         logger.info("Consumed Message {}", Arrays.asList(msg));
+
     }
 }
