@@ -23,3 +23,8 @@ api:
 exchange:
   url1: https://exchange.matraining.com/
   url2: https://exchange1.matraining.com/
+
+redis:
+  hostname: 167.99.202.174
+  port: 6379
+  marketdatachannel: MarketDataChannel

@@ -1,12 +1,10 @@
 package com.clientService.user.model;
 
 import com.clientService.enums.UserRole;
-import com.clientService.order.model.OrderModel;
 import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -51,7 +49,6 @@ public class AppUser {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
-
     @OneToOne(mappedBy = "userAccount")
     @ToString.Exclude
     private Account account;
@@ -59,10 +56,6 @@ public class AppUser {
     @OneToMany(mappedBy = "userPortfolio")
     @ToString.Exclude
     private List<Portfolio> portfolios;
-
-    @OneToMany(mappedBy = "userOrder")
-    @ToString.Exclude
-    private List<OrderModel> orderModels;
 
     public AppUser(String firstName, String lastName, String email, String password, UserRole userRole) {
         this.firstName = firstName;
