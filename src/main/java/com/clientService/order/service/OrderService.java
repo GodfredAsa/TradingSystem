@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -57,12 +58,17 @@ public class OrderService {
 
         //Buy validation
 //        Todo: Check the quantity by(X) the price should be less than the total account balance
+
+
+//        List<Product> exchange1Products = restTemplate.getForObject(exchangeUrl1 + apiKey + "/orderbook/"+orderRequest.getProduct()+"/buy", orderRequestBody, String.class);
+//        If ()
 //        Todo: Check the two exchanges for the best deal, buy all if quantity is >= then buy all else buy the rest from other exchange
 //        Todo: Indication for partial purchase
 
         //Sell validation
 //        Todo: Best deal (but orders more than the the specified price first)
 //        Todo: Indication for partial purchase
+
 
 
         Map<String, Object> orderRequestBody = new HashMap<>() {{
@@ -97,7 +103,7 @@ public class OrderService {
         Order response = restTemplate.getForObject(exchangeUrl1 + apiKey + "/order/" + orderid, Order.class);
 
         if (response.getStatus().equals(HttpStatus.NOT_FOUND)) {
-//            orderRepository.findById(orderid)
+//            orderRepository.findById(orderid);
         }
 
         if (response == null) {
