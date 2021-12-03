@@ -5,7 +5,7 @@ import com.clientService.securityConfig.SendLoggerRequest;
 import com.clientService.user.model.*;
 import com.clientService.user.repository.AppUserRepository;
 import com.clientService.user.service.AppUserService;
-import com.clientService.order.model.OrderModel;
+import com.clientService.order.model.Order;
 
 import com.clientService.securityConfig.JWTUtility;
 import org.json.JSONObject;
@@ -111,7 +111,7 @@ public class UserController {
      * @return String
      */
     @PostMapping("makeBuyOrder")
-    public String makeBuyOrder(@RequestBody OrderModel order){
+    public String makeBuyOrder(@RequestBody Order order){
         return this.appUserService.makeBuyOrder(order);
     }
 

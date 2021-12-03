@@ -1,8 +1,7 @@
 package com.clientService.orderExecution.model;
 
 import com.clientService.enums.Exchange;
-import com.clientService.enums.UserRole;
-import com.clientService.order.model.OrderModel;
+import com.clientService.order.model.Order;
 import lombok.*;
 
 import javax.persistence.*;
@@ -15,7 +14,7 @@ import java.util.Date;
 @Setter
 @Entity
 @Table(name = "order_execution")
-public class OrderExecutionModule {
+public class OrderExecution {
     @Id
     @SequenceGenerator(
             name = "ExcExe_sequence",
@@ -38,7 +37,7 @@ public class OrderExecutionModule {
     @ManyToOne(
             cascade = CascadeType.ALL
     )
-    private OrderModel order;
+    private Order order;
 
     @Column(
             nullable = false
@@ -53,16 +52,12 @@ public class OrderExecutionModule {
     )
     private Exchange exchange;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(
             nullable = false,
             updatable = false
     )
-    private Date timeStamp;
+    private String timeStamp;
 
-    @PrePersist
-    public void onCreate() {
-        timeStamp = new Date();
-    }
+    private int cumulativeQuantity;
 
 }

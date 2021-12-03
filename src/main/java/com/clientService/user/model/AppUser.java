@@ -1,12 +1,11 @@
 package com.clientService.user.model;
 
 import com.clientService.enums.UserRole;
-import com.clientService.order.model.OrderModel;
+import com.clientService.order.model.Order;
 import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -62,7 +61,7 @@ public class AppUser {
 
     @OneToMany(mappedBy = "userOrder")
     @ToString.Exclude
-    private List<OrderModel> orderModels;
+    private List<Order> orders;
 
     public AppUser(String firstName, String lastName, String email, String password, UserRole userRole) {
         this.firstName = firstName;

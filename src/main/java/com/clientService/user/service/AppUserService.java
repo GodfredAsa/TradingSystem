@@ -9,7 +9,7 @@ import com.clientService.user.model.*;
 import com.clientService.user.repository.AccountRepository;
 import com.clientService.user.repository.PortfolioRepository;
 import com.clientService.user.repository.AppUserRepository;
-import com.clientService.order.model.OrderModel;
+import com.clientService.order.model.Order;
 
 
 import org.json.JSONObject;
@@ -142,7 +142,7 @@ public class AppUserService implements UserDetailsService {
      * @param order - OrderModel Type
      * @return String
      */
-    public String makeBuyOrder(OrderModel order){
+    public String makeBuyOrder(Order order){
 
             String response = restTemplate.postForObject(orderUrl+"/makeBuyOrder", order, String.class);
             if (response != null){

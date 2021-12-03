@@ -1,12 +1,11 @@
 package com.clientService.account.model;
 
-import com.clientService.user.model.User;
+import com.clientService.user.model.AppUser;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -15,7 +14,7 @@ import java.util.UUID;
 @Table(
         name = "account"
 )
-public class AccountModel {
+public class Account {
 
     @Id
     @GeneratedValue(
@@ -27,12 +26,12 @@ public class AccountModel {
     private Integer id;
 
     @OneToOne(mappedBy = "account")
-    private User user;
+    private AppUser user;
 
     @Column(nullable = false, unique = true)
     private double balance;
 
-    public AccountModel(User user, double balance) {
+    public Account(AppUser user, double balance) {
         this.user = user;
         this.balance = balance;
     }
