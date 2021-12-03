@@ -1,6 +1,6 @@
 package com.clientService.account.model;
 
-import com.clientService.user.model.AppUser;
+import com.clientService.user.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,12 +27,12 @@ public class AccountModel {
     private Integer id;
 
     @OneToOne(mappedBy = "account")
-    private AppUser user;
+    private User user;
 
     @Column(nullable = false, unique = true)
     private double balance;
 
-    public AccountModel(AppUser user, double balance) {
+    public AccountModel(User user, double balance) {
         this.user = user;
         this.balance = balance;
     }

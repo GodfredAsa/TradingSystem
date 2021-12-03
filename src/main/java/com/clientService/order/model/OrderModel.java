@@ -1,7 +1,5 @@
 package com.clientService.order.model;
 
-import com.clientService.enums.OrderStatus;
-import com.clientService.orderExecution.model.OrderExecutionModule;
 import lombok.*;
 
 import javax.persistence.*;
@@ -35,21 +33,14 @@ public class OrderModel {
     )
     private Long id;
 
-    @OneToOne(
-            cascade = CascadeType.ALL,
-            optional = false
-    )
-    @JoinColumn(
-            name = "product_id"
-    )
+    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    @JoinColumn(name = "product_id")
     private long product_id;
 
-    @Column(
-            nullable = false
-    )
-    @NotEmpty
-    @Positive
-    @Min(0)
+    @Column(nullable = false, updatable = false)
+    private String product;
+
+    @Column(nullable = false)
     private int ord_quantity;
 
     @Column(
@@ -90,21 +81,17 @@ public class OrderModel {
         ord_timeStamp = new Date();
     }
 
-    @ManyToOne(name = "product_id")
+    @JoinColumn(name = "product_id")
+    @ManyToOne(cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @JsonIgnore
     private Product product;
 
-    @OneToMany(
-            mappedBy = "order"
-    )
-    private List<OrderExecutionModule> order_executions;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
+    @ToString.Exclude
+    @JsonIgnore
+    private AppUser userOrder;
 
-    @OneToOne(
-            cascade = CascadeType.ALL,
-            optional = false
-    )
-    @JoinColumn(
-            name = "user_id"
-    )
-    private long user_id;
 
 }

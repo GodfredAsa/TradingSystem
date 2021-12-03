@@ -1,5 +1,6 @@
 package com.clientService.securityConfig;
 
+import com.clientService.enums.UserRole;
 import com.clientService.user.service.AppUserService;
 import lombok.AllArgsConstructor;;
 import org.springframework.context.annotation.Bean;
@@ -37,6 +38,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/api/client/auth/**")
                 .permitAll()
+                .antMatchers("/api/client/getClientById/**").hasAuthority(UserRole.CLIENT.name())
                 .anyRequest()
                 .authenticated()
                 .and()
