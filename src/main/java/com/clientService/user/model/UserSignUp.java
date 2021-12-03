@@ -17,5 +17,4 @@ public class UserSignUp {
     private String password;
     private String email;
     private UserRole userRole;
-
 }

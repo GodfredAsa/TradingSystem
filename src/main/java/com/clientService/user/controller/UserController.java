@@ -22,6 +22,7 @@ import org.springframework.web.client.RestTemplate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/api/client/")
 public class UserController {

@@ -25,6 +25,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(appClientService);
     }
 
+
     @Override
     @Bean
     public AuthenticationManager authenticationManagerBean() throws Exception {
