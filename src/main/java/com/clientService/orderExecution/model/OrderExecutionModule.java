@@ -6,6 +6,7 @@ import com.clientService.order.model.OrderModel;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -51,5 +52,17 @@ public class OrderExecutionModule {
             EnumType.STRING
     )
     private Exchange exchange;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(
+            nullable = false,
+            updatable = false
+    )
+    private Date timeStamp;
+
+    @PrePersist
+    public void onCreate() {
+        timeStamp = new Date();
+    }
 
 }

@@ -2,6 +2,7 @@ package com.clientService.order.service;
 
 import com.clientService.loggerPack.LoggerConfig;
 import com.clientService.order.model.OrderModel;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -18,14 +19,25 @@ public class OrderService {
     @Value("${exchange.url1}")
     private String exchangeUrl1;
 
+    @Value(("${exchange.url2}"))
+    private String exchangeUrl2;
+
+    @Autowired
+    private ProductRepository productRepository;
+
 
     public String makeOrder(OrderModel order) {
         RestTemplate restTemplate = new RestTemplate();
 
 
         //Initial validation
+        try {
+
+
+        }catch (Exception e){
+
+        }
 //                Todo: Check if the product exist
-        //        Todo: validate that the request body is not empty
         //        Todo: get the product name using the product id
 
         //Buy validation
