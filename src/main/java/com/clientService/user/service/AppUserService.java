@@ -9,7 +9,6 @@ import com.clientService.user.model.*;
 import com.clientService.user.repository.AccountRepository;
 import com.clientService.user.repository.PortfolioRepository;
 import com.clientService.user.repository.AppUserRepository;
-import com.clientService.order.model.Order;
 
 
 import org.json.JSONObject;
@@ -139,20 +138,20 @@ public class AppUserService implements UserDetailsService {
     }
 
     /**
-     * @param order - OrderModel Type
+     * @param - OrderModel Type
      * @return String
      */
-    public String makeBuyOrder(Order order){
-
-            String response = restTemplate.postForObject(orderUrl+"/makeBuyOrder", order, String.class);
-            if (response != null){
-                LoggerConfig.LOGGER.info("order successful");
-                return response;
-            }else{
-                LoggerConfig.LOGGER.error("There was an issue placing your order");
-                return "There was an issue placing your order, please try again later";
-            }
-    }
+//    public String makeBuyOrder(Order order){
+//
+//            String response = restTemplate.postForObject(orderUrl+"/makeBuyOrder", order, String.class);
+//            if (response != null){
+//                LoggerConfig.LOGGER.info("order successful");
+//                return response;
+//            }else{
+//                LoggerConfig.LOGGER.error("There was an issue placing your order");
+//                return "There was an issue placing your order, please try again later";
+//            }
+//    }
 
     public String createPortfolio(CreatePortfolio createPortfolio) {
         AppUser appUser = appUserRepository.findById(createPortfolio.getId()).get();

@@ -31,8 +31,8 @@ public class Product {
     @ManyToMany(cascade = CascadeType.ALL)
     @JsonIgnore
     @JoinTable(name = "product_portfolio",
-    joinColumns = @JoinColumn(name = "portfolio_ticker"),
-    inverseJoinColumns = @JoinColumn(name = "product_id"))
+            joinColumns = @JoinColumn(name = "portfolio_ticker"),
+            inverseJoinColumns = @JoinColumn(name = "product_id"))
     @ToString.Exclude
     private List<Portfolio> portfolios;
 

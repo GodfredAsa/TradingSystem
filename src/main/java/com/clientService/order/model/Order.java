@@ -1,15 +1,11 @@
 package com.clientService.order.model;
 
-import com.clientService.enums.OrderStatus;
-import com.clientService.orderExecution.model.OrderExecution;
 import com.clientService.user.model.AppUser;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
 import java.util.Date;
-import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,45 +13,41 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "order")
+@Table
 public class Order {
-
-
     @Id
-    private String id;
-
+    @SequenceGenerator(
+            name = "order_sequence",
+            sequenceName = "order_sequence",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "order_sequence"
+    )
+    @Column(updatable = false)
+    private Long id;
 
     @Column(nullable = false)
-    private int quantity;
+    private int ord_quantity;
 
+    @Column(nullable = false)
+    private double ord_price;
 
-    @Column(
-            nullable = false
-    )
-    @NotEmpty
-    @Positive
-    @DecimalMin(value = "0.0", inclusive = false, message = "Please provide a price greater than zero")
-    private double price;
+    @Column(nullable = false, updatable = false)
+    private String ord_side;
 
+    @Column(nullable = false)
+    private boolean ord_status;
 
-    @Column(
-            nullable = false,
-            updatable = false
-    )
-    @NotEmpty
-    @NotBlank
-    private String side;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false, updatable = false)
+    private Date ord_timeStamp;
 
-
-    @Column(
-            length = 32,
-            columnDefinition = "varchar(32) default 'PENDING'"
-    )
-    @Enumerated(
-            EnumType.STRING
-    )
-    private OrderStatus status = OrderStatus.PENDING;
-
+    @PrePersist
+    public void onCreate() {
+        ord_timeStamp = new Date();
+    }
 
     @JoinColumn(name = "product_id")
     @ManyToOne(cascade = CascadeType.ALL)
@@ -69,8 +61,5 @@ public class Order {
     @JsonIgnore
     private AppUser userOrder;
 
-    @OneToMany(mappedBy = "order")
-    @ToString.Exclude
-    private List<OrderExecution> executions;
 
 }

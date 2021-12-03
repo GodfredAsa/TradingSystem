@@ -5,7 +5,6 @@ import com.clientService.securityConfig.SendLoggerRequest;
 import com.clientService.user.model.*;
 import com.clientService.user.repository.AppUserRepository;
 import com.clientService.user.service.AppUserService;
-import com.clientService.order.model.Order;
 
 import com.clientService.securityConfig.JWTUtility;
 import org.json.JSONObject;
@@ -106,18 +105,18 @@ public class UserController {
     }
 
 
-    /**
-     * @param order - User order model type
-     * @return String
-     */
-    @PostMapping("makeBuyOrder")
-    public String makeBuyOrder(@RequestBody Order order){
-        return this.appUserService.makeBuyOrder(order);
-    }
-
-    @PostMapping("createPortfolio")
-    public String createPortfolio(@RequestBody CreatePortfolio createPortfolio){
-        return appUserService.createPortfolio(createPortfolio);
-    }
+//    /**
+//     * @param order - User order model type
+//     * @return String
+//     */
+//    @PostMapping("makeBuyOrder")
+//    public String makeBuyOrder(@RequestBody OrderModel order){
+//        return this.appUserService.makeBuyOrder(order);
+//    }
+//
+//    @PostMapping("createPortfolio")
+//    public String createPortfolio(@RequestBody CreatePortfolio createPortfolio){
+//        return appUserService.createPortfolio(createPortfolio);
+//    }
 
 }
