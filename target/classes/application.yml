@@ -20,6 +20,11 @@ order:
 api:
   key: abb2f34c-286e-4260-b438-a7755a421423
 
+marketData:
+  url1: http://*****/
+  url2: http://*****/
+  both: http://*****/
+
 exchange:
   url1: https://exchange.matraining.com/
   url2: https://exchange1.matraining.com/

@@ -17,9 +17,11 @@ public class Subscriber implements MessageListener {
 
 //    Logger logger =  LoggerFactory.getLogger(Subscriber.class);
 
-    Subscriber(MarketDataRepository marketDataRepository){
+    Subscriber(MarketDataRepository marketDataRepository) {
         this.marketDataRepository = marketDataRepository;
-    };
+    }
+
+    ;
 
     @SneakyThrows
     @Override
@@ -30,8 +32,14 @@ public class Subscriber implements MessageListener {
         MarketProduct[] msg = objectMapper.readValue(body, MarketProduct[].class);
 //        logger.info("Consumed Message {}", Arrays.asList(msg));
         Arrays.stream(msg).forEach(product -> marketDataRepository.save(
-               new MarketData(Double.parseDouble(product.getLastTradedPrice()), product.getSellLimit(), product.getBidPrice(),
-                product.getAskPrice(), product.getBuyLimit(), product.getTicker(), product.getMaxPriceShift())
+                new MarketData(
+                        product.getLastTradedPrice(),
+                        product.getSellLimit(),
+                        product.getBidPrice(),
+                        product.getAskPrice(),
+                        product.getBuyLimit(),
+                        product.getTicker(),
+                        product.getMaxPriceShift())
         ));
     }
 }

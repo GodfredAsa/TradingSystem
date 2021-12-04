@@ -30,13 +30,13 @@ public class MarketData {
     private double askPrice;
 
     @Column(nullable = false)
-    private String buyLimit;
+    private int buyLimit;
 
     @Id
     private String ticker;
 
     @Column(nullable = false)
-    private int maxPriceShift;
+    private double maxPriceShift;
 
     @Override
     public boolean equals(Object o) {
