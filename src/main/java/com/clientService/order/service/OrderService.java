@@ -1,6 +1,7 @@
 package com.clientService.order.service;
 
 import com.clientService.enums.OrderStatus;
+import com.clientService.exceptions.InvalidOrderRequestException;
 import com.clientService.exceptions.NotEnoughFundsException;
 import com.clientService.exceptions.NotFoundException;
 import com.clientService.order.model.*;
@@ -10,6 +11,7 @@ import com.clientService.user.model.AppUser;
 import com.clientService.user.model.MarketProduct;
 import com.clientService.user.model.MarketProductList;
 import com.clientService.user.repository.AppUserRepository;
+import com.clientService.user.service.AppUserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,13 +20,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
 
     private final ProductService productService;
     private final OrderRepository orderRepository;
-    private final AppUserRepository appUserRepository;
+    private final AppUserService appUserService;
+
 
     private final RestTemplate restTemplate;
 
@@ -56,12 +60,12 @@ public class OrderService {
     public OrderService(RestTemplate restTemplate,
                         ProductService productService,
                         OrderRepository orderRepository,
-                        AppUserRepository appUserRepository
+                        AppUserService appUserService
     ) {
         this.restTemplate = restTemplate;
         this.productService = productService;
         this.orderRepository = orderRepository;
-        this.appUserRepository = appUserRepository;
+        this.appUserService = appUserService;
 
     }
 
@@ -75,16 +79,13 @@ public class OrderService {
 
 
         //Todo: change to to implement correct logic once spring security is implemented and handle userNotFoundExceptions
-        Optional<AppUser> user = appUserRepository
-                .findById(Long
-                        .valueOf(userDetails
-                                .getUsername()));
-        if (user.isEmpty()) {
+
+        AppUser user = appUserService.getAppUserByEmail(userDetails.getUsername());
+        if (user == null || !userDetails.isCredentialsNonExpired()) {
             throw new NotFoundException("Client not found, the client making this order does not exist in the system");
         }
 
-
-        if (!canMakePurchase(orderRequest, user.get())) {
+        if (!canMakeOrder(orderRequest, user)) {
             throw new NotEnoughFundsException("User has insufficient funds to process this order");
         }
 
@@ -114,8 +115,9 @@ public class OrderService {
                     orderRequest.getSide(),
                     OrderStatus.PENDING,
                     orderProduct,
-                    user.get(),
-                    new ArrayList<OrderExecution>());
+                    user,
+                    new ArrayList<OrderExecution>(),
+                    0);
 
             Order order2 = new Order(
                     newOrderId2,
@@ -124,8 +126,9 @@ public class OrderService {
                     orderRequest.getSide(),
                     OrderStatus.PENDING,
                     orderProduct,
-                    user.get(),
-                    new ArrayList<OrderExecution>());
+                    user,
+                    new ArrayList<OrderExecution>(),
+                    0);
 
             orderRepository.save(order1);
             orderRepository.save(order2);
@@ -141,8 +144,9 @@ public class OrderService {
                     orderRequest.getSide(),
                     OrderStatus.PENDING,
                     orderProduct,
-                    user.get(),
-                    new ArrayList<OrderExecution>());
+                    user,
+                    new ArrayList<OrderExecution>(),
+                    0);
 
             orderRepository.save(order);
             return new ArrayList<>(List.of(newOrderId));
@@ -155,24 +159,49 @@ public class OrderService {
 
         Order response = restTemplate.getForObject(exchangeUrl1 + apiKey + "/order/" + orderId, Order.class);
 
-        if (response.getStatus().equals(HttpStatus.NOT_FOUND)) {
-//            orderRepository.findById(orderId);
-        }
+//        find out whether the order has been completed by the
+//        response status code (was suggested by PM) if so, then
+//        return a local instance of the completed order
+        if (response.getStatus().equals(HttpStatus.NOT_FOUND) && orderRepository.findById(orderId).isPresent()) {
 
-        if (response == null) {
-            throw new NotFoundException("Order with the provided orderID does not exist");
+            return orderRepository.findById(orderId).get();
+
+        }
+        //check whether it was an actual invalid request
+        else if (response.getStatus().equals(HttpStatus.NOT_FOUND) && orderRepository.findById(orderId).isEmpty()) {
+
+            throw new InvalidOrderRequestException("Order with the provided order Id does not exist");
         }
 
         return response;
     }
 
-    public boolean canMakePurchase(OrderRequest orderRequest, AppUser user) {
+    public boolean canMakeOrder(OrderRequest orderRequest, AppUser user) {
         double totalOrderCost = orderRequest.getPrice() * orderRequest.getQuantity();
         double userCurrentAccountBalance = user
                 .getAccount()
                 .getBalance();
 
-        return userCurrentAccountBalance > totalOrderCost;
+        if (orderRequest.getSide().equals("BUY")) {
+
+            return userCurrentAccountBalance >= totalOrderCost;
+        } else {
+//          Todo:Create method in the repository that queries the db for the total quantity of all buy orders of that particular product make by the current order issuer
+            List<Order> usersActiveBuyOrdersOfProd = orderRepository.getAllUsersBuyOrdersOfAProduct(orderRequest.getProduct(), user.getId());
+
+            if (usersActiveBuyOrdersOfProd.isEmpty()) {
+                throw new InvalidOrderRequestException("User does not own the specified product");
+            }
+
+            int availableQuntOfProd = usersActiveBuyOrdersOfProd
+                    .stream()
+                    .map(ord -> ord.getQuantity() - ord.getCumulativeQuantity())
+                    .mapToInt((cumQuant -> Integer.valueOf(cumQuant)))
+                    .sum();
+
+            return orderRequest.getQuantity() >= availableQuntOfProd;
+        }
+
     }
 
     //Returns the exchange and quantity to buy from first before the other

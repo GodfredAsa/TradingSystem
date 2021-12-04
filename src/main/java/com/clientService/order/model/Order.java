@@ -141,7 +141,14 @@ public class Order {
     @ToString.Exclude
     private List<OrderExecution> executions;
 
-    public Order(String id, int quantity, double price, String side, Product product, AppUser userOrder) {
+    @Column(
+            nullable = false
+    )
+    @NotEmpty
+    @NotBlank
+    private int cumulativeQuantity;
+
+    public Order(String id, int quantity, double price, String side, Product product, AppUser userOrder, int cumulativeQuantity) {
         this.id = id;
         this.quantity = quantity;
         this.price = price;
@@ -149,5 +156,6 @@ public class Order {
         this.product = product;
         this.userOrder = userOrder;
         this.status = OrderStatus.PENDING;
+        this.cumulativeQuantity = cumulativeQuantity;
     }
 }
