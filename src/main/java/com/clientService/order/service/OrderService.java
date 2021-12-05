@@ -1,6 +1,7 @@
 package com.clientService.order.service;
 
 import com.clientService.enums.OrderStatus;
+import com.clientService.exceptions.InvalidOrderRequestException;
 import com.clientService.exceptions.NotEnoughFundsException;
 import com.clientService.exceptions.NotFoundException;
 import com.clientService.order.model.*;
@@ -9,14 +10,16 @@ import com.clientService.orderExecution.model.OrderExecution;
 import com.clientService.user.model.AppUser;
 import com.clientService.user.model.MarketProduct;
 import com.clientService.user.model.MarketProductList;
-import com.clientService.user.repository.AppUserRepository;
+import com.clientService.user.repository.MarketDataRepository;
+import com.clientService.user.service.AppUserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.security.Principal;
 import java.util.*;
 
 @Service
@@ -24,7 +27,9 @@ public class OrderService {
 
     private final ProductService productService;
     private final OrderRepository orderRepository;
-    private final AppUserRepository appUserRepository;
+    private final AppUserService appUserService;
+    private final MarketDataRepository marketDataRepository;
+
 
     private final RestTemplate restTemplate;
 
@@ -37,36 +42,29 @@ public class OrderService {
     @Value(("${exchange.url2}"))
     private String exchangeUrl2;
 
-    @Value(("${marketData.url1}"))
-    private String marketDataUrl1;
-
-    @Value(("${marketData.url2}"))
-    private String marketDataUrl2;
-
     @Value(("${marketData.both}"))
     private String bothMarketData;
 
     //Gets logged-in user for the current session
-    UserDetails userDetails = (UserDetails) SecurityContextHolder
-            .getContext()
-            .getAuthentication()
-            .getPrincipal();
-
+//    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
     public OrderService(RestTemplate restTemplate,
                         ProductService productService,
                         OrderRepository orderRepository,
-                        AppUserRepository appUserRepository
+                        AppUserService appUserService,
+                        MarketDataRepository marketDataRepository
     ) {
         this.restTemplate = restTemplate;
         this.productService = productService;
         this.orderRepository = orderRepository;
-        this.appUserRepository = appUserRepository;
+        this.appUserService = appUserService;
+        this.marketDataRepository = marketDataRepository;
 
     }
 
 
-    public ArrayList<String> makeOrder(OrderRequest orderRequest) {
+    public ArrayList<String> makeOrder(OrderRequest orderRequest, Authentication authentication) {
 
         //provides product if validated successfully by product service,
         //custom exception and error handles catch any error and returns
@@ -74,17 +72,13 @@ public class OrderService {
         Product orderProduct = productService.getProductByTicker(orderRequest.getProduct());
 
 
-        //Todo: change to to implement correct logic once spring security is implemented and handle userNotFoundExceptions
-        Optional<AppUser> user = appUserRepository
-                .findById(Long
-                        .valueOf(userDetails
-                                .getUsername()));
-        if (user.isEmpty()) {
+        //Get the email of the user making the request
+        AppUser user = appUserService.getAppUserByEmail(authentication.getName() /*((UserDetails) authentication.getDetails()).getUsername()*/);
+        if (authentication.isAuthenticated() || user == null) {
             throw new NotFoundException("Client not found, the client making this order does not exist in the system");
         }
 
-
-        if (!canMakePurchase(orderRequest, user.get())) {
+        if (!canMakeOrder(orderRequest, user)) {
             throw new NotEnoughFundsException("User has insufficient funds to process this order");
         }
 
@@ -96,36 +90,38 @@ public class OrderService {
             put("side", orderRequest.getSide());
         }};
 
-//        Todo: Check the two exchanges for the best deal, buy all if quantity is >= then buy all else buy the rest from other exchange
+//        Check the two exchanges for the best deal, if quantity is >= then buy all else buy the rest from other exchange
         int currentOrderQuantity = orderRequest.getQuantity();
         Map<Integer, String> bestDeal = getBestBidAndQuantity(orderRequest);
 
         if (bestDeal.keySet().stream().findFirst().get() < currentOrderQuantity) {
 
-//            Todo: Indication for partial purchase
+//            Todo: Indication for partial purchase and split exchange purchases
             String newOrderId1 = restTemplate.postForObject(bestDeal.values().stream().findFirst().get(), orderRequestBody, String.class);
             String getOtherUrl = bestDeal.values().stream().findFirst().get().equals(exchangeUrl1) ? exchangeUrl2 : exchangeUrl1;
             String newOrderId2 = restTemplate.postForObject(getOtherUrl, orderRequestBody, String.class);
 
-            Order order1 = new Order(
+            OrderModel order1 = new OrderModel(
                     newOrderId1,
                     currentOrderQuantity,
                     orderRequest.getPrice(),
                     orderRequest.getSide(),
                     OrderStatus.PENDING,
                     orderProduct,
-                    user.get(),
-                    new ArrayList<OrderExecution>());
+                    user,
+                    new ArrayList<OrderExecution>(),
+                    0);
 
-            Order order2 = new Order(
+            OrderModel order2 = new OrderModel(
                     newOrderId2,
                     currentOrderQuantity,
                     orderRequest.getPrice(),
                     orderRequest.getSide(),
                     OrderStatus.PENDING,
                     orderProduct,
-                    user.get(),
-                    new ArrayList<OrderExecution>());
+                    user,
+                    new ArrayList<OrderExecution>(),
+                    0);
 
             orderRepository.save(order1);
             orderRepository.save(order2);
@@ -134,15 +130,16 @@ public class OrderService {
         } else {
 
             String newOrderId = restTemplate.postForObject(bestDeal.values().stream().findFirst().get(), orderRequestBody, String.class);
-            Order order = new Order(
+            OrderModel order = new OrderModel(
                     newOrderId,
                     currentOrderQuantity,
                     orderRequest.getPrice(),
                     orderRequest.getSide(),
                     OrderStatus.PENDING,
                     orderProduct,
-                    user.get(),
-                    new ArrayList<OrderExecution>());
+                    user,
+                    new ArrayList<OrderExecution>(),
+                    0);
 
             orderRepository.save(order);
             return new ArrayList<>(List.of(newOrderId));
@@ -151,41 +148,74 @@ public class OrderService {
 
     }
 
-    public Order checkOrderStatus(String orderId) {
+    public OrderModel checkOrderStatus(String orderId) {
 
-        Order response = restTemplate.getForObject(exchangeUrl1 + apiKey + "/order/" + orderId, Order.class);
+        OrderModel responseFromExchange1 = restTemplate.getForObject(exchangeUrl1 + apiKey + "/order/" + orderId, OrderModel.class);
+        OrderModel responseFromExchange2 = restTemplate.getForObject(exchangeUrl2 + apiKey + "/order/" + orderId, OrderModel.class);
+//        OrderModel response = marketDataRepository.findById(orderId);
 
-        if (response.getStatus().equals(HttpStatus.NOT_FOUND)) {
-//            orderRepository.findById(orderId);
+//        find out whether the order has been completed by the
+//        response status code (was suggested by PM) if so, then
+//        return a local instance of the completed order
+//        if (responseFromExchange1.getStatus().equals(HttpStatus.NOT_FOUND) && responseFromExchange1.getStatus().equals(HttpStatus.NOT_FOUND) && orderRepository.findById(orderId).isPresent()) {
+
+        if (responseFromExchange1.getStatus().equals(HttpStatus.NOT_FOUND) && responseFromExchange2.getStatus().equals(HttpStatus.NOT_FOUND) && orderRepository.findById(orderId).isPresent()) {
+
+//            Todo: We know the order is completed, we can do some custom logic here
+            return orderRepository.findById(orderId).get();
+
+        }
+        //Entire method can be refactored to use only this check
+
+        //check whether it was an actual invalid request
+        else if (responseFromExchange1.getStatus().equals(HttpStatus.NOT_FOUND) && responseFromExchange2.getStatus().equals(HttpStatus.NOT_FOUND) && orderRepository.findById(orderId).isEmpty()) {
+
+            throw new InvalidOrderRequestException("Order with the provided order Id does not exist");
+        } else {
+            return orderRepository.findById(orderId).get();
         }
 
-        if (response == null) {
-            throw new NotFoundException("Order with the provided orderID does not exist");
-        }
-
-        return response;
     }
 
-    public boolean canMakePurchase(OrderRequest orderRequest, AppUser user) {
-        double totalOrderCost = orderRequest.getPrice() * orderRequest.getQuantity();
-        double userCurrentAccountBalance = user
-                .getAccount()
-                .getBalance();
+    public boolean canMakeOrder(OrderRequest orderRequest, AppUser user) {
 
-        return userCurrentAccountBalance > totalOrderCost;
+        if (orderRequest.getSide().equals("BUY")) {
+
+            double totalOrderCost = orderRequest.getPrice() * orderRequest.getQuantity();
+            double userCurrentAccountBalance = user
+                    .getAccount()
+                    .getBalance();
+
+            return userCurrentAccountBalance >= totalOrderCost;
+        } else {
+            List<OrderModel> usersActiveBuyOrdersOfProd = orderRepository.getAllUsersBuyOrdersOfAProduct(orderRequest.getProduct(), user.getId(), "BUY");
+
+            if (usersActiveBuyOrdersOfProd.isEmpty()) {
+                throw new InvalidOrderRequestException("User does not own the specified product");
+            }
+
+            int availableQuntOfProd = usersActiveBuyOrdersOfProd
+                    .stream()
+                    .map(ord -> ord.getQuantity() - ord.getCumulativeQuantity())
+                    .mapToInt((cumQuant -> Integer.valueOf(cumQuant)))
+                    .sum();
+
+            return orderRequest.getQuantity() >= availableQuntOfProd;
+        }
+
     }
 
     //Returns the exchange and quantity to buy from first before the other
     public Map<Integer, String> getBestBidAndQuantity(OrderRequest orderRequest) {
 
-        //      Todo: Abstract this logic into it's own method in a service
+        //      Todo: Abstract this logic into it's own method in an independent class/service
         MarketProductList marketProductList1 = restTemplate
-                .getForObject(marketDataUrl1, MarketProductList.class);
+                .getForObject(exchangeUrl1 + "md", MarketProductList.class);
         List<MarketProduct> exchange1Products = marketProductList1
                 .getMarketProducts();
 
         MarketProductList marketProductList2 = restTemplate
-                .getForObject(marketDataUrl2, MarketProductList.class);
+                .getForObject(exchangeUrl2 + "md", MarketProductList.class);
         List<MarketProduct> exchange2Products = marketProductList2
                 .getMarketProducts();
 

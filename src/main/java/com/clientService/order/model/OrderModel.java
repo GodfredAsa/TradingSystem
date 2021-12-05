@@ -73,10 +73,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Positive;
+import javax.validation.constraints.*;
 import java.util.List;
 
 @NoArgsConstructor
@@ -85,14 +82,15 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "order")
-public class Order {
+@Table(name = "order_model")
+public class OrderModel {
 
     @Id
     @Column(updatable = false)
     private String id;
 
 
+    @Min(0)
     @Column(nullable = false)
     private int quantity;
 
@@ -141,7 +139,15 @@ public class Order {
     @ToString.Exclude
     private List<OrderExecution> executions;
 
-    public Order(String id, int quantity, double price, String side, Product product, AppUser userOrder) {
+    @Column(
+            name = "cumulative_quantity",
+            nullable = false
+    )
+    @NotEmpty
+    @NotBlank
+    private int cumulativeQuantity;
+
+    public OrderModel(String id, int quantity, double price, String side, Product product, AppUser userOrder, int cumulativeQuantity) {
         this.id = id;
         this.quantity = quantity;
         this.price = price;
@@ -149,5 +155,6 @@ public class Order {
         this.product = product;
         this.userOrder = userOrder;
         this.status = OrderStatus.PENDING;
+        this.cumulativeQuantity = cumulativeQuantity;
     }
 }

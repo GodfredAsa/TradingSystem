@@ -1,11 +1,10 @@
 package com.clientService.orderExecution.model;
 
 import com.clientService.enums.Exchange;
-import com.clientService.order.model.Order;
+import com.clientService.order.model.OrderModel;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -37,7 +36,7 @@ public class OrderExecution {
     @ManyToOne(
             cascade = CascadeType.ALL
     )
-    private Order order;
+    private OrderModel order;
 
     @Column(
             nullable = false

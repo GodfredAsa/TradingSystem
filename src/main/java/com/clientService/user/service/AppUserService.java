@@ -42,13 +42,13 @@ public class AppUserService implements UserDetailsService {
 
 
     /**
-     * @param appUserRepository - application user repository
-     * @param accountRepository - account repository
-     * @param restTemplate - restTemplate
+     * @param appUserRepository   - application user repository
+     * @param accountRepository   - account repository
+     * @param restTemplate        - restTemplate
      * @param portfolioRepository - portfolio repository
      */
     AppUserService(AppUserRepository appUserRepository, AccountRepository accountRepository,
-                   RestTemplate restTemplate, PortfolioRepository portfolioRepository){
+                   RestTemplate restTemplate, PortfolioRepository portfolioRepository) {
         this.appUserRepository = appUserRepository;
         this.accountRepository = accountRepository;
         this.restTemplate = restTemplate;
@@ -63,10 +63,10 @@ public class AppUserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         AppUser appUser = appUserRepository.getAppUserByEmail(email);
-        if(appUser == null){
+        if (appUser == null) {
             LoggerConfig.LOGGER.error("Client does not exist");
             throw new UsernameNotFoundException("Client does not exist");
-        }else{
+        } else {
             LoggerConfig.LOGGER.info("Client found");
         }
 
@@ -78,19 +78,19 @@ public class AppUserService implements UserDetailsService {
 
     /**
      * @param userSignUp - UserSignUp Model
-     * @param role - UserRole
+     * @param role       - UserRole
      * @return String
      */
     public String addClient(UserSignUp userSignUp, String role) {
         try {
 
             UserRole appUserRole = null;
-            if(role.equals("client")){
+            if (role.equals("client")) {
                 appUserRole = UserRole.CLIENT;
-            }else if(role.equals("admin")){
+            } else if (role.equals("admin")) {
                 appUserRole = UserRole.ADMIN;
-            }else{
-                appUserRole =UserRole.REGULATOR;
+            } else {
+                appUserRole = UserRole.REGULATOR;
             }
 
 
@@ -113,7 +113,7 @@ public class AppUserService implements UserDetailsService {
             log.put("localDateTime", LocalDateTime.now());
 
             HttpEntity<String> request = SendLoggerRequest.sendLoggerRequest(log);
-            restTemplate.postForObject(reportUrl+"userAuthentication", request ,String.class);
+            restTemplate.postForObject(reportUrl + "userAuthentication", request, String.class);
             return "Client added successfully";
 
         } catch (Exception e) {
@@ -125,16 +125,16 @@ public class AppUserService implements UserDetailsService {
 
     /**
      * @param id -User id
-     * @return Optional</User>
+     * @return Optional</ User>
      */
-    public Optional<AppUser> getClient(Long id){
+    public Optional<AppUser> getClient(Long id) {
         Optional<AppUser> user = appUserRepository.findById(id);
-        if(user.isPresent()){
-            LoggerConfig.LOGGER.info("Client with id:" +id + " accessed from the database");
-        }else{
-            LoggerConfig.LOGGER.info("Client with id:" +id + " does not exist");
+        if (user.isPresent()) {
+            LoggerConfig.LOGGER.info("Client with id:" + id + " accessed from the database");
+        } else {
+            LoggerConfig.LOGGER.info("Client with id:" + id + " does not exist");
         }
-        return  user;
+        return user;
     }
 
     /**
@@ -152,13 +152,17 @@ public class AppUserService implements UserDetailsService {
 //                return "There was an issue placing your order, please try again later";
 //            }
 //    }
-
     public String createPortfolio(CreatePortfolio createPortfolio) {
         AppUser appUser = appUserRepository.findById(createPortfolio.getId()).get();
         portfolioRepository.save(new Portfolio(
-              appUser, PortfolioStatus.OPENED
+                appUser, PortfolioStatus.OPENED
         ));
         return "portfolio created";
+    }
+
+    public AppUser getAppUserByEmail(String email) {
+        AppUser appUser = appUserRepository.getAppUserByEmail(email);
+        return appUser;
     }
 
 }
