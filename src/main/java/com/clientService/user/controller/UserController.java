@@ -4,6 +4,8 @@ import com.clientService.enums.AuthStatus;
 import com.clientService.securityConfig.SendLoggerRequest;
 import com.clientService.user.model.*;
 import com.clientService.user.repository.AppUserRepository;
+//import com.clientService.user.service.AppUserDetails;
+import com.clientService.user.service.AppUserDetails;
 import com.clientService.user.service.AppUserService;
 
 import com.clientService.securityConfig.JWTUtility;
@@ -15,10 +17,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -55,11 +60,20 @@ public class UserController {
         return new ResponseEntity<>(this.appUserService.addClient(userSignUp, role), HttpStatus.CREATED);
     }
 
+//    @GetMapping(value = "/username")
+//    public String currentUserNameSimple(HttpServletRequest request) {
+//        Principal principal = request.getUserPrincipal();
+//        System.out.println(principal.getName());
+//        return principal.getName();
+//    }
+
     /**
      * @param jwtRequest  - Type JwtRequest to take user signIn form
      * @return JwtResponse - A token for subsequent user requests
      * @throws Exception - Throws Exception if JwtRequest not verified
+     *
      */
+
     @PostMapping("auth/signin")
     public JwtResponse authenticate(@RequestBody JwtRequest jwtRequest) throws Exception{
 
@@ -86,7 +100,7 @@ public class UserController {
         log.put("localDateTime", LocalDateTime.now());
 
         HttpEntity<String> request = SendLoggerRequest.sendLoggerRequest(log);
-        restTemplate.postForObject(reportUrl+"userAuthentication", request ,String.class);
+//        restTemplate.postForObject(reportUrl+"userAuthentication", request ,String.class);
 
         return  new JwtResponse(token);
     }
@@ -97,8 +111,8 @@ public class UserController {
      * @return ResponseEntity<?>
      */
     @GetMapping("getClientById/{id}")
-    public ResponseEntity<?> getClient(@PathVariable Long id){
-        Optional<AppUser> appUser = this.appUserService.getClient(id);
+    public ResponseEntity<?> getClient(@AuthenticationPrincipal AppUserDetails appPrincipal, @PathVariable Long id){
+        Optional<AppUser> appUser = this.appUserService.getClient(id, appPrincipal);
         if(appUser.isPresent()){
             return new ResponseEntity<>("client: " + appUser, HttpStatus.OK);
         }
@@ -106,6 +120,11 @@ public class UserController {
     }
 
 
+    @GetMapping("logout")
+    public ResponseEntity<?> logout(@AuthenticationPrincipal AppUserDetails appPrincipal){
+        // TODO implement the logout logic
+        return ResponseEntity.ok("Logout, " + appPrincipal.getUsername());
+    }
 //    /**
 //     * @param order - User order model type
 //     * @return String

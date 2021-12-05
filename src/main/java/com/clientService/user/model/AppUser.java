@@ -1,10 +1,17 @@
 package com.clientService.user.model;
 
 import com.clientService.enums.UserRole;
+import com.clientService.order.model.OrderModel;
+//import com.clientService.user.service.AppUserDetails;
 import lombok.*;
 import org.hibernate.Hibernate;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -49,9 +56,14 @@ public class AppUser {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
+
     @OneToOne(mappedBy = "userAccount")
     @ToString.Exclude
     private Account account;
+
+    @OneToMany(mappedBy = "userOrder")
+    @ToString.Exclude
+    private List<OrderModel> userOrder;
 
     @OneToMany(mappedBy = "userPortfolio")
     @ToString.Exclude
@@ -77,4 +89,5 @@ public class AppUser {
     public int hashCode() {
         return getClass().hashCode();
     }
+
 }

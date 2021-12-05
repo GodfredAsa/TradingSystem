@@ -12,11 +12,13 @@ import com.clientService.user.model.MarketProductList;
 import com.clientService.user.repository.AppUserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -47,11 +49,12 @@ public class OrderService {
     private String bothMarketData;
 
     //Gets logged-in user for the current session
-    UserDetails userDetails = (UserDetails) SecurityContextHolder
-            .getContext()
-            .getAuthentication()
-            .getPrincipal();
-
+//    UserDetails userDetails = (UserDetails) SecurityContextHolder
+//            .getContext()
+//            .getAuthentication()
+//            .getPrincipal();
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    UserDetails userDetails;
 
     public OrderService(RestTemplate restTemplate,
                         ProductService productService,
@@ -67,7 +70,8 @@ public class OrderService {
 
 
     public ArrayList<String> makeOrder(OrderRequest orderRequest) {
-
+        userDetails = (UserDetails) authentication.getPrincipal();
+        System.out.println(userDetails);
         //provides product if validated successfully by product service,
         //custom exception and error handles catch any error and returns
         //the appropriate Http response
@@ -107,25 +111,25 @@ public class OrderService {
             String getOtherUrl = bestDeal.values().stream().findFirst().get().equals(exchangeUrl1) ? exchangeUrl2 : exchangeUrl1;
             String newOrderId2 = restTemplate.postForObject(getOtherUrl, orderRequestBody, String.class);
 
-            Order order1 = new Order(
+            OrderModel order1 = new OrderModel(
                     newOrderId1,
                     currentOrderQuantity,
                     orderRequest.getPrice(),
                     orderRequest.getSide(),
                     OrderStatus.PENDING,
                     orderProduct,
-                    user.get(),
-                    new ArrayList<OrderExecution>());
+                    user.get()
+                    );
 
-            Order order2 = new Order(
+            OrderModel order2 = new OrderModel(
                     newOrderId2,
                     currentOrderQuantity,
                     orderRequest.getPrice(),
                     orderRequest.getSide(),
                     OrderStatus.PENDING,
                     orderProduct,
-                    user.get(),
-                    new ArrayList<OrderExecution>());
+                    user.get()
+                    );
 
             orderRepository.save(order1);
             orderRepository.save(order2);
@@ -134,15 +138,15 @@ public class OrderService {
         } else {
 
             String newOrderId = restTemplate.postForObject(bestDeal.values().stream().findFirst().get(), orderRequestBody, String.class);
-            Order order = new Order(
+            OrderModel order = new OrderModel(
                     newOrderId,
                     currentOrderQuantity,
                     orderRequest.getPrice(),
                     orderRequest.getSide(),
                     OrderStatus.PENDING,
                     orderProduct,
-                    user.get(),
-                    new ArrayList<OrderExecution>());
+                    user.get()
+                    );
 
             orderRepository.save(order);
             return new ArrayList<>(List.of(newOrderId));
@@ -151,9 +155,9 @@ public class OrderService {
 
     }
 
-    public Order checkOrderStatus(String orderId) {
+    public OrderModel checkOrderStatus(String orderId) {
 
-        Order response = restTemplate.getForObject(exchangeUrl1 + apiKey + "/order/" + orderId, Order.class);
+        OrderModel response = restTemplate.getForObject(exchangeUrl1 + apiKey + "/order/" + orderId, OrderModel.class);
 
         if (response.getStatus().equals(HttpStatus.NOT_FOUND)) {
 //            orderRepository.findById(orderId);

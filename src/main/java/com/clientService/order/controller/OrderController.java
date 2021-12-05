@@ -1,13 +1,15 @@
 package com.clientService.order.controller;
 
-import com.clientService.order.model.Order;
 import com.clientService.order.model.FullOrderBook;
+import com.clientService.order.model.OrderModel;
 import com.clientService.order.model.OrderRequest;
 import com.clientService.order.service.OrderService;
 import com.clientService.order.service.ProductService;
+//import com.clientService.user.service.AppUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -33,8 +35,13 @@ public class OrderController {
         return new ResponseEntity<ArrayList<String>>(orderIds, HttpStatus.CREATED);
     }
 
+//    @GetMapping("showPrincipal")
+//    public ResponseEntity<?> showPrincipal(@AuthenticationPrincipal AppUserDetails appUserDetails){
+//        return ResponseEntity.ok().body(appUserDetails.getUsername() + " " + appUserDetails.getPassword());
+//    }
+
     @GetMapping("getOrder/{orderId}")
-    public ResponseEntity<Order> checkOrderStatus(@PathVariable String orderId) {
+    public ResponseEntity<OrderModel> checkOrderStatus(@PathVariable String orderId) {
         return new ResponseEntity<>(this.orderService.checkOrderStatus(orderId), HttpStatus.OK);
     }
 

@@ -6,7 +6,7 @@ spring:
 
   jpa:
     properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
-    hibernate.ddl-auto: 'update'
+    hibernate.ddl-auto: 'create-drop'
 
 jwt:
   secret: fghdkf689dfghd56dgbhs

@@ -19,9 +19,7 @@ public class Subscriber implements MessageListener {
 
     Subscriber(MarketDataRepository marketDataRepository) {
         this.marketDataRepository = marketDataRepository;
-    }
-
-    ;
+    };
 
     @SneakyThrows
     @Override

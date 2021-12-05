@@ -1,7 +1,7 @@
 package com.clientService.orderExecution.model;
 
 import com.clientService.enums.Exchange;
-import com.clientService.order.model.Order;
+import com.clientService.order.model.OrderModel;
 import lombok.*;
 
 import javax.persistence.*;
@@ -32,12 +32,12 @@ public class OrderExecution {
     private Long execution_id;
 
     @JoinColumn(
-            name = "order_id"
+            name = "orderModel_id"
     )
     @ManyToOne(
             cascade = CascadeType.ALL
     )
-    private Order order;
+    private OrderModel orderExecutions;
 
     @Column(
             nullable = false
