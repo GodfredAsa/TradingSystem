@@ -10,6 +10,7 @@ import com.clientService.orderExecution.model.OrderExecution;
 import com.clientService.user.model.AppUser;
 import com.clientService.user.model.MarketProduct;
 import com.clientService.user.model.MarketProductList;
+import com.clientService.user.repository.MarketDataRepository;
 import com.clientService.user.service.AppUserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,7 @@ public class OrderService {
     private final ProductService productService;
     private final OrderRepository orderRepository;
     private final AppUserService appUserService;
+    private final MarketDataRepository marketDataRepository;
 
 
     private final RestTemplate restTemplate;
@@ -40,12 +42,6 @@ public class OrderService {
     @Value(("${exchange.url2}"))
     private String exchangeUrl2;
 
-    @Value(("${marketData.url1}"))
-    private String marketDataUrl1;
-
-    @Value(("${marketData.url2}"))
-    private String marketDataUrl2;
-
     @Value(("${marketData.both}"))
     private String bothMarketData;
 
@@ -56,12 +52,14 @@ public class OrderService {
     public OrderService(RestTemplate restTemplate,
                         ProductService productService,
                         OrderRepository orderRepository,
-                        AppUserService appUserService
+                        AppUserService appUserService,
+                        MarketDataRepository marketDataRepository
     ) {
         this.restTemplate = restTemplate;
         this.productService = productService;
         this.orderRepository = orderRepository;
         this.appUserService = appUserService;
+        this.marketDataRepository = marketDataRepository;
 
     }
 
@@ -73,8 +71,6 @@ public class OrderService {
         //the appropriate Http response
         Product orderProduct = productService.getProductByTicker(orderRequest.getProduct());
 
-
-        //Todo: change to to implement correct logic once spring security is implemented and handle userNotFoundExceptions
 
         //Get the email of the user making the request
         AppUser user = appUserService.getAppUserByEmail(authentication.getName() /*((UserDetails) authentication.getDetails()).getUsername()*/);
@@ -94,13 +90,13 @@ public class OrderService {
             put("side", orderRequest.getSide());
         }};
 
-//        Todo: Check the two exchanges for the best deal, buy all if quantity is >= then buy all else buy the rest from other exchange
+//        Check the two exchanges for the best deal, if quantity is >= then buy all else buy the rest from other exchange
         int currentOrderQuantity = orderRequest.getQuantity();
         Map<Integer, String> bestDeal = getBestBidAndQuantity(orderRequest);
 
         if (bestDeal.keySet().stream().findFirst().get() < currentOrderQuantity) {
 
-//            Todo: Indication for partial purchase
+//            Todo: Indication for partial purchase and split exchange purchases
             String newOrderId1 = restTemplate.postForObject(bestDeal.values().stream().findFirst().get(), orderRequestBody, String.class);
             String getOtherUrl = bestDeal.values().stream().findFirst().get().equals(exchangeUrl1) ? exchangeUrl2 : exchangeUrl1;
             String newOrderId2 = restTemplate.postForObject(getOtherUrl, orderRequestBody, String.class);
@@ -154,36 +150,44 @@ public class OrderService {
 
     public OrderModel checkOrderStatus(String orderId) {
 
-        OrderModel response = restTemplate.getForObject(exchangeUrl1 + apiKey + "/order/" + orderId, OrderModel.class);
+        OrderModel responseFromExchange1 = restTemplate.getForObject(exchangeUrl1 + apiKey + "/order/" + orderId, OrderModel.class);
+        OrderModel responseFromExchange2 = restTemplate.getForObject(exchangeUrl2 + apiKey + "/order/" + orderId, OrderModel.class);
+//        OrderModel response = marketDataRepository.findById(orderId);
 
 //        find out whether the order has been completed by the
 //        response status code (was suggested by PM) if so, then
 //        return a local instance of the completed order
-        if (response.getStatus().equals(HttpStatus.NOT_FOUND) && orderRepository.findById(orderId).isPresent()) {
+//        if (responseFromExchange1.getStatus().equals(HttpStatus.NOT_FOUND) && responseFromExchange1.getStatus().equals(HttpStatus.NOT_FOUND) && orderRepository.findById(orderId).isPresent()) {
 
+        if (responseFromExchange1.getStatus().equals(HttpStatus.NOT_FOUND) && responseFromExchange2.getStatus().equals(HttpStatus.NOT_FOUND) && orderRepository.findById(orderId).isPresent()) {
+
+//            Todo: We know the order is completed, we can do some custom logic here
             return orderRepository.findById(orderId).get();
 
         }
+        //Entire method can be refactored to use only this check
+
         //check whether it was an actual invalid request
-        else if (response.getStatus().equals(HttpStatus.NOT_FOUND) && orderRepository.findById(orderId).isEmpty()) {
+        else if (responseFromExchange1.getStatus().equals(HttpStatus.NOT_FOUND) && responseFromExchange2.getStatus().equals(HttpStatus.NOT_FOUND) && orderRepository.findById(orderId).isEmpty()) {
 
             throw new InvalidOrderRequestException("Order with the provided order Id does not exist");
+        } else {
+            return orderRepository.findById(orderId).get();
         }
 
-        return response;
     }
 
     public boolean canMakeOrder(OrderRequest orderRequest, AppUser user) {
-        double totalOrderCost = orderRequest.getPrice() * orderRequest.getQuantity();
-        double userCurrentAccountBalance = user
-                .getAccount()
-                .getBalance();
 
         if (orderRequest.getSide().equals("BUY")) {
 
+            double totalOrderCost = orderRequest.getPrice() * orderRequest.getQuantity();
+            double userCurrentAccountBalance = user
+                    .getAccount()
+                    .getBalance();
+
             return userCurrentAccountBalance >= totalOrderCost;
         } else {
-//          Todo:Create method in the repository that queries the db for the total quantity of all buy orders of that particular product make by the current order issuer
             List<OrderModel> usersActiveBuyOrdersOfProd = orderRepository.getAllUsersBuyOrdersOfAProduct(orderRequest.getProduct(), user.getId(), "BUY");
 
             if (usersActiveBuyOrdersOfProd.isEmpty()) {
@@ -204,14 +208,14 @@ public class OrderService {
     //Returns the exchange and quantity to buy from first before the other
     public Map<Integer, String> getBestBidAndQuantity(OrderRequest orderRequest) {
 
-        //      Todo: Abstract this logic into it's own method in a service
+        //      Todo: Abstract this logic into it's own method in an independent class/service
         MarketProductList marketProductList1 = restTemplate
-                .getForObject(marketDataUrl1, MarketProductList.class);
+                .getForObject(exchangeUrl1 + "md", MarketProductList.class);
         List<MarketProduct> exchange1Products = marketProductList1
                 .getMarketProducts();
 
         MarketProductList marketProductList2 = restTemplate
-                .getForObject(marketDataUrl2, MarketProductList.class);
+                .getForObject(exchangeUrl2 + "md", MarketProductList.class);
         List<MarketProduct> exchange2Products = marketProductList2
                 .getMarketProducts();
 

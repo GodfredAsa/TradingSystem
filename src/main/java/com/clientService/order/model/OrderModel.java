@@ -86,7 +86,6 @@ import java.util.List;
 public class OrderModel {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(updatable = false)
     private String id;
 
