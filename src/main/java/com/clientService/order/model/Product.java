@@ -26,7 +26,7 @@ public class Product {
 
     @OneToMany(mappedBy = "product")
     @ToString.Exclude
-    private List<Order> orders;
+    private List<OrderModel> orders;
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JsonIgnore

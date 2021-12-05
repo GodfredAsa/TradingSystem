@@ -10,17 +10,16 @@ import com.clientService.orderExecution.model.OrderExecution;
 import com.clientService.user.model.AppUser;
 import com.clientService.user.model.MarketProduct;
 import com.clientService.user.model.MarketProductList;
-import com.clientService.user.repository.AppUserRepository;
 import com.clientService.user.service.AppUserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.security.Principal;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -51,11 +50,8 @@ public class OrderService {
     private String bothMarketData;
 
     //Gets logged-in user for the current session
-    UserDetails userDetails = (UserDetails) SecurityContextHolder
-            .getContext()
-            .getAuthentication()
-            .getPrincipal();
-
+//    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
     public OrderService(RestTemplate restTemplate,
                         ProductService productService,
@@ -70,7 +66,7 @@ public class OrderService {
     }
 
 
-    public ArrayList<String> makeOrder(OrderRequest orderRequest) {
+    public ArrayList<String> makeOrder(OrderRequest orderRequest, Authentication authentication) {
 
         //provides product if validated successfully by product service,
         //custom exception and error handles catch any error and returns
@@ -80,8 +76,9 @@ public class OrderService {
 
         //Todo: change to to implement correct logic once spring security is implemented and handle userNotFoundExceptions
 
-        AppUser user = appUserService.getAppUserByEmail(userDetails.getUsername());
-        if (user == null || !userDetails.isCredentialsNonExpired()) {
+        //Get the email of the user making the request
+        AppUser user = appUserService.getAppUserByEmail(authentication.getName() /*((UserDetails) authentication.getDetails()).getUsername()*/);
+        if (authentication.isAuthenticated() || user == null) {
             throw new NotFoundException("Client not found, the client making this order does not exist in the system");
         }
 
@@ -108,7 +105,7 @@ public class OrderService {
             String getOtherUrl = bestDeal.values().stream().findFirst().get().equals(exchangeUrl1) ? exchangeUrl2 : exchangeUrl1;
             String newOrderId2 = restTemplate.postForObject(getOtherUrl, orderRequestBody, String.class);
 
-            Order order1 = new Order(
+            OrderModel order1 = new OrderModel(
                     newOrderId1,
                     currentOrderQuantity,
                     orderRequest.getPrice(),
@@ -119,7 +116,7 @@ public class OrderService {
                     new ArrayList<OrderExecution>(),
                     0);
 
-            Order order2 = new Order(
+            OrderModel order2 = new OrderModel(
                     newOrderId2,
                     currentOrderQuantity,
                     orderRequest.getPrice(),
@@ -137,7 +134,7 @@ public class OrderService {
         } else {
 
             String newOrderId = restTemplate.postForObject(bestDeal.values().stream().findFirst().get(), orderRequestBody, String.class);
-            Order order = new Order(
+            OrderModel order = new OrderModel(
                     newOrderId,
                     currentOrderQuantity,
                     orderRequest.getPrice(),
@@ -155,9 +152,9 @@ public class OrderService {
 
     }
 
-    public Order checkOrderStatus(String orderId) {
+    public OrderModel checkOrderStatus(String orderId) {
 
-        Order response = restTemplate.getForObject(exchangeUrl1 + apiKey + "/order/" + orderId, Order.class);
+        OrderModel response = restTemplate.getForObject(exchangeUrl1 + apiKey + "/order/" + orderId, OrderModel.class);
 
 //        find out whether the order has been completed by the
 //        response status code (was suggested by PM) if so, then
@@ -187,7 +184,7 @@ public class OrderService {
             return userCurrentAccountBalance >= totalOrderCost;
         } else {
 //          Todo:Create method in the repository that queries the db for the total quantity of all buy orders of that particular product make by the current order issuer
-            List<Order> usersActiveBuyOrdersOfProd = orderRepository.getAllUsersBuyOrdersOfAProduct(orderRequest.getProduct(), user.getId());
+            List<OrderModel> usersActiveBuyOrdersOfProd = orderRepository.getAllUsersBuyOrdersOfAProduct(orderRequest.getProduct(), user.getId(), "BUY");
 
             if (usersActiveBuyOrdersOfProd.isEmpty()) {
                 throw new InvalidOrderRequestException("User does not own the specified product");
