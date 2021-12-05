@@ -15,22 +15,25 @@ import java.util.List;
 
 @RestController
 public class RedisMessagePublisher {
-
-    @Autowired
-    private MarketDataService marketDataService;
-
     @Autowired
     private RedisTemplate redisTemplate;
 
     @Autowired
     private ChannelTopic channelTopic;
 
-    // TODO Configure URL with Subscription Webhook URL
-    @ApiOperation("Subscription to Exchange Data Webhook")
-    @PostMapping("/publish")
+    @ApiOperation("Subscription to Exchange1 Data")
+    @PostMapping("/publish") //TODO: Subscribe to Exchange1 with URL
     public String publish(@RequestBody List<Product> message) {
         redisTemplate.convertAndSend(channelTopic.getTopic(), message);
-        return "Message Published";
+        return "Exchange1 Data Published";
+    }
+
+
+    @ApiOperation("Subscription to Exchange2 Data")
+    @PostMapping("/publish2") //TODO: Subscribe to Exchange2 with URL
+    public String publish2(@RequestBody List<Product> message) {
+        redisTemplate.convertAndSend(channelTopic.getTopic(), message);
+        return "Exchange2 Data Published";
     }
 }
 

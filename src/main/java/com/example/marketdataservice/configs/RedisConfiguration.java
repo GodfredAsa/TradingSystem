@@ -26,8 +26,11 @@ public class RedisConfiguration {
     @Value("${redis.port}")
     private int redisPort;
 
-    @Value("${redis.marketdatachannel}")
-    private String redisMarketDataChannel;
+    @Value("${redis.exchange1channel}")
+    private String exchange1Channel;
+
+    @Value("${redis.exchange2channel}")
+    private String exchange2Channel;
 
     @Bean
     public JedisConnectionFactory jedisConnectionFactory() {
@@ -39,8 +42,12 @@ public class RedisConfiguration {
 
     @Bean
     public ChannelTopic channelTopic() {
-        return new ChannelTopic(redisMarketDataChannel);
+        return new ChannelTopic(exchange1Channel);
     }
+
+    @Bean
+    public ChannelTopic channelTopic2() {return new ChannelTopic(exchange2Channel);}
+
 
     @Bean
     public RedisTemplate<String, Product> redisTemplate() {

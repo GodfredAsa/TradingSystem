@@ -32,7 +32,7 @@ public class MarketDataController {
         return new ResponseEntity<>(marketDataService.getMarketDataFromExchange1(), HttpStatus.OK);
     }
 
-        @ApiOperation("Get Market Data from Exchange 2")
+    @ApiOperation("Get Market Data from Exchange 2")
     @GetMapping("/getMarketDataFromExchange2")
     public ResponseEntity<List<Product>> getMarketDataFromExchange2(){
         return new ResponseEntity<>(marketDataService.getMarketDataFromExchange2(), HttpStatus.OK);
