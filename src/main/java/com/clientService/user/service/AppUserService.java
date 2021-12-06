@@ -70,9 +70,7 @@ public class AppUserService implements UserDetailsService {
             LoggerConfig.LOGGER.info("Client found");
         }
 
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(appUser.getUserRole().name()));
-        return new org.springframework.security.core.userdetails.User(appUser.getEmail(), appUser.getPassword(), authorities);
+        return new AppUserDetails(appUser);
     }
 
 
