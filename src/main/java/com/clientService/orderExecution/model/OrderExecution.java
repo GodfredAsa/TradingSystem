@@ -5,7 +5,6 @@ import com.clientService.order.model.OrderModel;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -37,7 +36,11 @@ public class OrderExecution {
     @ManyToOne(
             cascade = CascadeType.ALL
     )
+<<<<<<< HEAD
     private OrderModel orderExecutions;
+=======
+    private OrderModel order;
+>>>>>>> 078426a9cc049cb8714af2ecd352ccec7903cae1
 
     @Column(
             nullable = false

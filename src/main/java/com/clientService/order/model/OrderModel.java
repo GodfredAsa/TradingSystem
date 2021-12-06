@@ -1,3 +1,69 @@
+//package com.clientService.order.model;
+//
+//import com.clientService.user.model.AppUser;
+//import com.fasterxml.jackson.annotation.JsonIgnore;
+//import lombok.*;
+//
+//import javax.persistence.*;
+//import java.util.Date;
+//
+//@NoArgsConstructor
+//@AllArgsConstructor
+//@ToString
+//@Getter
+//@Setter
+//@Entity
+//@Table
+//public class Order {
+//    @Id
+//    @SequenceGenerator(
+//            name = "order_sequence",
+//            sequenceName = "order_sequence",
+//            allocationSize = 1
+//    )
+//    @GeneratedValue(
+//            strategy = GenerationType.SEQUENCE,
+//            generator = "order_sequence"
+//    )
+//    @Column(updatable = false)
+//    private Long id;
+//
+//    @Column(nullable = false)
+//    private int ord_quantity;
+//
+//    @Column(nullable = false)
+//    private double ord_price;
+//
+//    @Column(nullable = false, updatable = false)
+//    private String ord_side;
+//
+//    @Column(nullable = false)
+//    private boolean ord_status;
+//
+//    @Temporal(TemporalType.TIMESTAMP)
+//    @Column(nullable = false, updatable = false)
+//    private Date ord_timeStamp;
+//
+//    @PrePersist
+//    public void onCreate() {
+//        ord_timeStamp = new Date();
+//    }
+//
+//    @JoinColumn(name = "product_id")
+//    @ManyToOne(cascade = CascadeType.ALL)
+//    @ToString.Exclude
+//    @JsonIgnore
+//    private Product product;
+//
+//    @ManyToOne(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "user_id")
+//    @ToString.Exclude
+//    @JsonIgnore
+//    private AppUser userOrder;
+//
+//
+//}
+
 package com.clientService.order.model;
 
 import com.clientService.enums.OrderStatus;
@@ -7,10 +73,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Positive;
+import javax.validation.constraints.*;
 import java.util.List;
 
 @NoArgsConstructor
@@ -19,15 +82,18 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "orderModel")
+@Table(name = "order_model")
 public class OrderModel {
 
     @Id
-    @Column(updatable = false, name = "orderModel_id")
+    @Column(updatable = false)
     private String id;
 
+
+    @Min(0)
     @Column(nullable = false)
     private int quantity;
+
 
     @Column(
             nullable = false
@@ -64,21 +130,31 @@ public class OrderModel {
     private Product product;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "appUser_id")
+    @JoinColumn(name = "user_id")
     @ToString.Exclude
     @JsonIgnore
     private AppUser userOrder;
 
-    @OneToMany(mappedBy = "orderExecutions")
+    @OneToMany(mappedBy = "order")
     @ToString.Exclude
     private List<OrderExecution> executions;
 
-    public OrderModel(String id, int quantity, double price, String side,OrderStatus status, Product product, AppUser userOrder) {
+    @Column(
+            name = "cumulative_quantity",
+            nullable = false
+    )
+    @NotEmpty
+    @NotBlank
+    private int cumulativeQuantity;
+
+    public OrderModel(String id, int quantity, double price, String side, Product product, AppUser userOrder, int cumulativeQuantity) {
         this.id = id;
         this.quantity = quantity;
         this.price = price;
         this.side = side;
         this.product = product;
         this.userOrder = userOrder;
+        this.status = OrderStatus.PENDING;
+        this.cumulativeQuantity = cumulativeQuantity;
     }
 }
