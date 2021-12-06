@@ -11,6 +11,8 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+
 @SpringBootApplication
 public class UserServiceApplication {
 
@@ -21,7 +23,15 @@ public class UserServiceApplication {
     @Bean
     CommandLineRunner run(ProductRepository productRepository){
         return args -> {
-            productRepository.save(new Product("IBM", "IBM"));
+            productRepository.saveAll(List.of(
+                    new Product("IBM", "IBM"),
+                    new Product("AAPL", "APPLE"),
+                    new Product("GOOGL", "GOOGLE"),
+                    new Product("MSFT", "MICROSOFT"),
+                    new Product("NFLX", "NETFLIX"),
+                    new Product("ORCL", "ORACLE"),
+                    new Product("TSLA", "TESLA"),
+                    new Product("AMZN", "AMAZON")));
         };
     }
 
