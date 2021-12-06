@@ -3,6 +3,7 @@ package com.clientService.user.model;
 import com.clientService.enums.UserRole;
 import com.clientService.order.model.OrderModel;
 //import com.clientService.user.service.AppUserDetails;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.Hibernate;
 import org.hibernate.criterion.Order;
@@ -60,18 +61,22 @@ public class AppUser {
 
     @OneToOne(mappedBy = "userAccount")
     @ToString.Exclude
+    @JsonIgnore
     private Account account;
 
     @OneToMany(mappedBy = "userOrder")
     @ToString.Exclude
+    @JsonIgnore
     private List<OrderModel> userOrder;
 
     @OneToMany(mappedBy = "userPortfolio")
     @ToString.Exclude
+    @JsonIgnore
     private List<Portfolio> portfolios;
 
     @OneToMany(mappedBy = "userOrder")
     @ToString.Exclude
+    @JsonIgnore
     private List<OrderModel> orders;
 
     public AppUser(String firstName, String lastName, String email, String password, UserRole userRole) {

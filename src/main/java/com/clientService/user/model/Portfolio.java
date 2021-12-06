@@ -41,6 +41,7 @@ public class Portfolio {
     private PortfolioStatus status;
 
     @ManyToMany(mappedBy = "portfolios")
+    @JsonIgnore
     @ToString.Exclude
     private List<Product> products;
 

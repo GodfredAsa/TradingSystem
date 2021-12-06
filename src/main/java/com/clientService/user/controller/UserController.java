@@ -25,6 +25,8 @@ import org.springframework.web.client.RestTemplate;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @CrossOrigin
@@ -75,7 +77,7 @@ public class UserController {
      */
 
     @PostMapping("auth/signin")
-    public JwtResponse authenticate(@RequestBody JwtRequest jwtRequest) throws Exception{
+    public Map<?, ?> authenticate(@RequestBody JwtRequest jwtRequest) throws Exception{
 
         try {
             authenticationManager.authenticate(
@@ -102,7 +104,13 @@ public class UserController {
         HttpEntity<String> request = SendLoggerRequest.sendLoggerRequest(log);
 //        restTemplate.postForObject(reportUrl+"userAuthentication", request ,String.class);
 
-        return  new JwtResponse(token);
+//        AppUser appUser = appUserRepository.getAppUserByEmail(appUserPrincipal.getUsername());
+
+        Map<String, Object> response =  new HashMap<>();
+        response.put("token", token);
+        response.put("user", user);
+
+        return response ;
     }
 
 
