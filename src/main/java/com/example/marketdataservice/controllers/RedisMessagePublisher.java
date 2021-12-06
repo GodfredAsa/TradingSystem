@@ -21,6 +21,9 @@ public class RedisMessagePublisher {
     @Autowired
     private ChannelTopic channelTopic;
 
+    @Autowired
+    private ChannelTopic channelTopic2;
+
     @ApiOperation("Subscription to Exchange1 Data")
     @PostMapping("/publish") //TODO: Subscribe to Exchange1 with URL
     public String publish(@RequestBody List<Product> message) {
@@ -32,7 +35,7 @@ public class RedisMessagePublisher {
     @ApiOperation("Subscription to Exchange2 Data")
     @PostMapping("/publish2") //TODO: Subscribe to Exchange2 with URL
     public String publish2(@RequestBody List<Product> message) {
-        redisTemplate.convertAndSend(channelTopic.getTopic(), message);
+        redisTemplate.convertAndSend(channelTopic2.getTopic(), message);
         return "Exchange2 Data Published";
     }
 }
