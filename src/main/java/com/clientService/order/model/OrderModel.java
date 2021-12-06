@@ -135,7 +135,7 @@ public class OrderModel {
     @JsonIgnore
     private AppUser userOrder;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "orderExecutions")
     @ToString.Exclude
     private List<OrderExecution> executions;
 

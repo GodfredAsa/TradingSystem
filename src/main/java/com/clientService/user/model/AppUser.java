@@ -5,6 +5,7 @@ import com.clientService.order.model.OrderModel;
 //import com.clientService.user.service.AppUserDetails;
 import lombok.*;
 import org.hibernate.Hibernate;
+import org.hibernate.criterion.Order;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -68,6 +69,10 @@ public class AppUser {
     @OneToMany(mappedBy = "userPortfolio")
     @ToString.Exclude
     private List<Portfolio> portfolios;
+
+    @OneToMany(mappedBy = "userOrder")
+    @ToString.Exclude
+    private List<OrderModel> orders;
 
     public AppUser(String firstName, String lastName, String email, String password, UserRole userRole) {
         this.firstName = firstName;

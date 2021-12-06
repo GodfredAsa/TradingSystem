@@ -113,7 +113,7 @@ public class AppUserService implements UserDetailsService {
             log.put("localDateTime", LocalDateTime.now());
 
             HttpEntity<String> request = SendLoggerRequest.sendLoggerRequest(log);
-            restTemplate.postForObject(reportUrl + "userAuthentication", request, String.class);
+//            restTemplate.postForObject(reportUrl + "userAuthentication", request, String.class);
             return "Client added successfully";
 
         } catch (Exception e) {

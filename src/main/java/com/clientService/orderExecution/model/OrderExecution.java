@@ -36,11 +36,8 @@ public class OrderExecution {
     @ManyToOne(
             cascade = CascadeType.ALL
     )
-<<<<<<< HEAD
     private OrderModel orderExecutions;
-=======
-    private OrderModel order;
->>>>>>> 078426a9cc049cb8714af2ecd352ccec7903cae1
+
 
     @Column(
             nullable = false

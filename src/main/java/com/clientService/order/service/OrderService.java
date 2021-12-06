@@ -11,10 +11,12 @@ import com.clientService.user.model.AppUser;
 import com.clientService.user.model.MarketProduct;
 import com.clientService.user.model.MarketProductList;
 import com.clientService.user.repository.MarketDataRepository;
+import com.clientService.user.service.AppUserDetails;
 import com.clientService.user.service.AppUserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -64,7 +66,7 @@ public class OrderService {
     }
 
 
-    public ArrayList<String> makeOrder(OrderRequest orderRequest, Authentication authentication) {
+    public ArrayList<String> makeOrder(OrderRequest orderRequest, UserDetails appPrincipal) {
 
         //provides product if validated successfully by product service,
         //custom exception and error handles catch any error and returns
@@ -73,8 +75,8 @@ public class OrderService {
 
 
         //Get the email of the user making the request
-        AppUser user = appUserService.getAppUserByEmail(authentication.getName() /*((UserDetails) authentication.getDetails()).getUsername()*/);
-        if (authentication.isAuthenticated() || user == null) {
+        AppUser user = appUserService.getAppUserByEmail(appPrincipal.getUsername() /*((UserDetails) authentication.getDetails()).getUsername()*/);
+        if (!appPrincipal.isAccountNonExpired() || user == null) {
             throw new NotFoundException("Client not found, the client making this order does not exist in the system");
         }
 

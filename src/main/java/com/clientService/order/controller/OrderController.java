@@ -5,9 +5,12 @@ import com.clientService.order.model.OrderModel;
 import com.clientService.order.model.OrderRequest;
 import com.clientService.order.service.OrderService;
 import com.clientService.order.service.ProductService;
+import com.clientService.user.service.AppUserDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -26,8 +29,8 @@ public class OrderController {
     }
 
     @PostMapping("makeOrder")
-    public ResponseEntity<ArrayList<String>> makeOrder(@Valid @RequestBody OrderRequest orderRequest, Authentication authentication) {
-        ArrayList<String> orderIds = orderService.makeOrder(orderRequest, authentication);
+    public ResponseEntity<ArrayList<String>> makeOrder(@Valid @RequestBody OrderRequest orderRequest, @AuthenticationPrincipal UserDetails appPrincipal) {
+        ArrayList<String> orderIds = orderService.makeOrder(orderRequest, appPrincipal);
 
         return new ResponseEntity<ArrayList<String>>(orderIds, HttpStatus.CREATED);
     }

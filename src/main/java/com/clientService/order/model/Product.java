@@ -36,6 +36,12 @@ public class Product {
     @ToString.Exclude
     private List<Portfolio> portfolios;
 
+    public Product(String ticker, String name) {
+        this.ticker = ticker;
+        this.name = name;
+    }
+
+
 
     @Override
     public boolean equals(Object o) {

@@ -111,8 +111,8 @@ public class UserController {
      * @return ResponseEntity<?>
      */
     @GetMapping("getClientById/{id}")
-    public ResponseEntity<?> getClient(@AuthenticationPrincipal AppUserDetails appPrincipal, @PathVariable Long id){
-        Optional<AppUser> appUser = this.appUserService.getClient(id, appPrincipal);
+    public ResponseEntity<?> getClient(@PathVariable Long id){
+        Optional<AppUser> appUser = this.appUserService.getClient(id);
         if(appUser.isPresent()){
             return new ResponseEntity<>("client: " + appUser, HttpStatus.OK);
         }
@@ -121,7 +121,7 @@ public class UserController {
 
 
     @GetMapping("logout")
-    public ResponseEntity<?> logout(@AuthenticationPrincipal AppUserDetails appPrincipal){
+    public ResponseEntity<?> logout(@AuthenticationPrincipal UserDetails appPrincipal){
         // TODO implement the logout logic
         return ResponseEntity.ok("Logout, " + appPrincipal.getUsername());
     }
