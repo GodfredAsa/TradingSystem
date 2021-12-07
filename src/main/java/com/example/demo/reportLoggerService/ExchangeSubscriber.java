@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 
@@ -33,6 +32,7 @@ public class ExchangeSubscriber implements MessageListener {
 
             Product[] msg = objectMapper.readValue(body, Product[].class);
             logger.info("Consumed Message2 {}", Arrays.asList(msg));
+
         }
     }
 }
