@@ -1,7 +1,7 @@
 package com.clientService.securityConfig;
 
 import com.clientService.enums.UserRole;
-import com.clientService.user.service.AppUserService;
+import com.clientService.user.service.AppUserAuthService;
 import lombok.AllArgsConstructor;;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    private AppUserService appClientService;
+    private AppUserAuthService appClientService;
     private JWTFilter jwtFilter;
 
     @Override

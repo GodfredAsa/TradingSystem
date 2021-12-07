@@ -12,7 +12,7 @@ spring:
 
   jpa:
     properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
-    hibernate.ddl-auto: 'create-drop'
+    hibernate.ddl-auto: 'update'
 
 jwt:
   secret: fghdkf689dfghd56dgbhs
@@ -35,9 +35,5 @@ exchange:
   url1: https://exchange.matraining.com/
   url2: https://exchange1.matraining.com/
 
-
-
-server:
-  port: 8090
 
 

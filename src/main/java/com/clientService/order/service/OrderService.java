@@ -11,17 +11,14 @@ import com.clientService.user.model.AppUser;
 import com.clientService.user.model.MarketProduct;
 import com.clientService.user.model.MarketProductList;
 import com.clientService.user.repository.MarketDataRepository;
-import com.clientService.user.service.AppUserDetails;
+import com.clientService.user.service.AppUserAuthService;
 import com.clientService.user.service.AppUserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.security.Principal;
 import java.util.*;
 
 @Service
