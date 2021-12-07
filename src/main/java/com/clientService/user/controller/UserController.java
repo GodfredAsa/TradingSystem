@@ -4,6 +4,7 @@ import com.clientService.user.model.*;
 import com.clientService.user.service.AppUserAuthService;
 
 import com.clientService.user.service.AppUserService;
+import com.clientService.user.service.AppUserSignInService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,11 +16,14 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final AppUserAuthService appUserAuthService;
     private final AppUserService appUserService;
+    private final AppUserSignInService appUserSignInService;
 
 
-    UserController(AppUserAuthService appUserAuthService, AppUserService appUserService){
+    UserController(AppUserAuthService appUserAuthService, AppUserService appUserService,
+                   AppUserSignInService appUserSignInService){
         this.appUserAuthService = appUserAuthService;
         this.appUserService = appUserService;
+        this.appUserSignInService = appUserSignInService;
     }
 
     /**
@@ -40,7 +44,7 @@ public class UserController {
 
     @PostMapping("auth/signin")
     public ResponseEntity<?> authenticate(@RequestBody JwtRequest jwtRequest){
-        return this.appUserAuthService.authenticateUser(jwtRequest);
+        return this.appUserSignInService.authenticateUser(jwtRequest);
     }
 
 

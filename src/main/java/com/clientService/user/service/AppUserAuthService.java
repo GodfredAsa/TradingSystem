@@ -32,10 +32,9 @@ import java.util.*;
 public class AppUserAuthService implements UserDetailsService {
     private final AppUserRepository appUserRepository;
     private final AccountRepository accountRepository;
-    private final AuthenticationManager authenticationManager;
-    private final JWTUtility jwtUtility;
-    private final RestTemplate restTemplate;
     private final HttpResponseBody response;
+    private final RestTemplate restTemplate;
+
 
     @Value("${report.url}")
     private String reportUrl;
@@ -47,18 +46,13 @@ public class AppUserAuthService implements UserDetailsService {
     /**
      * @param appUserRepository   - application user repository
      * @param accountRepository   - account repository
-     * @param authenticationManager - authentication Manager
-     * @param jwtUtility - jwtUtility
      * @param restTemplate        - restTemplate
      * @param response - response body type
      */
     AppUserAuthService(AppUserRepository appUserRepository, AccountRepository accountRepository,
-                       AuthenticationManager authenticationManager, JWTUtility jwtUtility,
                        RestTemplate restTemplate, HttpResponseBody response) {
         this.appUserRepository = appUserRepository;
         this.accountRepository = accountRepository;
-        this.authenticationManager = authenticationManager;
-        this.jwtUtility = jwtUtility;
         this.restTemplate = restTemplate;
         this.response = response;
     }
@@ -141,42 +135,6 @@ public class AppUserAuthService implements UserDetailsService {
         }
     }
 
-
-    public ResponseEntity<?> authenticateUser(JwtRequest jwtRequest){
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            jwtRequest.getEmail(),
-                            jwtRequest.getPassword()
-                    )
-            );
-        } catch (BadCredentialsException e) {
-            response.setMessage("Email or Password incorrect");
-            LoggerConfig.LOGGER.error(String.valueOf(e));
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        }
-
-        final UserDetails userDetails = loadUserByUsername(jwtRequest.getEmail());
-
-        final String token =
-                jwtUtility.generateToken(userDetails);
-        AppUser user = appUserRepository.getAppUserByEmail(userDetails.getUsername());
-        JSONObject log = new JSONObject();
-        log.put("userID", user.getId());
-        log.put("authStatus", AuthStatus.LOGIN);
-        log.put("role", user.getUserRole());
-        log.put("localDateTime", LocalDateTime.now());
-
-        HttpEntity<String> request = SendLoggerRequest.sendLoggerRequest(log);
-//        restTemplate.postForObject(reportUrl+"userAuthentication", request ,String.class);
-
-        Map<String, Object> responseBody =  new HashMap<>();
-        responseBody.put("token", token);
-        responseBody.put("user", user);
-
-        response.setMessage(responseBody);
-        return new ResponseEntity<>(response, HttpStatus.FOUND);
-    }
 
 
 
