@@ -89,8 +89,7 @@ public class AppUserAuthService implements UserDetailsService {
                     role.equals("admin")? UserRole.ADMIN : UserRole.REGULATOR;
 
             if(userSignUp.getEmail() == null || userSignUp.getLastName() == null ||
-               userSignUp.getFirstName() == null || userSignUp.getPassword() == null ||
-               userSignUp.getUserRole() == null){
+               userSignUp.getFirstName() == null || userSignUp.getPassword() == null){
                 response.setMessage("Check request body fields, some are empty");
                 return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
             }
