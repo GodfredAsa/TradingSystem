@@ -54,6 +54,7 @@ public class UserController {
      */
     @GetMapping("getClientById/{id}")
     public ResponseEntity<?> getClient(@PathVariable Long id){
+
         return  this.appUserService.getClient(id);
     }
 

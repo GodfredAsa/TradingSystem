@@ -9,6 +9,7 @@ import com.clientService.user.model.HttpResponseBody;
 import com.clientService.user.model.JwtRequest;
 import com.clientService.user.repository.AppUserRepository;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -29,13 +31,21 @@ public class AppUserSignInService {
     private final JWTUtility jwtUtility;
     private final HttpResponseBody response;
     private final AppUserRepository appUserRepository;
+    private  final RestTemplate restTemplate;
 
-    public AppUserSignInService(AuthenticationManager authenticationManager, AppUserAuthService appUserAuthService, JWTUtility jwtUtility, HttpResponseBody response, AppUserRepository appUserRepository) {
+    @Value("${report.url}")
+    private String reportUrl;
+
+    public AppUserSignInService(AuthenticationManager authenticationManager,
+                                AppUserAuthService appUserAuthService, JWTUtility jwtUtility,
+                                HttpResponseBody response, AppUserRepository appUserRepository,
+                                RestTemplate restTemplate) {
         this.authenticationManager = authenticationManager;
         this.appUserAuthService = appUserAuthService;
         this.jwtUtility = jwtUtility;
         this.response = response;
         this.appUserRepository = appUserRepository;
+        this.restTemplate = restTemplate;
     }
 
 
@@ -49,7 +59,7 @@ public class AppUserSignInService {
             );
         } catch (BadCredentialsException e) {
             response.setMessage("Email or Password incorrect");
-            LoggerConfig.LOGGER.error(String.valueOf(e));
+            LoggerConfig.LOGGER.error(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
@@ -68,6 +78,8 @@ public class AppUserSignInService {
 //        restTemplate.postForObject(reportUrl+"userAuthentication", request ,String.class);
 
         Map<String, Object> responseBody =  new HashMap<>();
+        user.setId(0L);
+        user.setPassword("");
         responseBody.put("token", token);
         responseBody.put("user", user);
 
