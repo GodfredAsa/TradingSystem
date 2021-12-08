@@ -4,21 +4,19 @@ import com.clientService.enums.AuthStatus;
 import com.clientService.loggerPack.LoggerConfig;
 import com.clientService.enums.UserRole;
 import com.clientService.securityConfig.EmailValidation;
-import com.clientService.securityConfig.JWTUtility;
 import com.clientService.securityConfig.SendLoggerRequest;
 import com.clientService.user.model.*;
 import com.clientService.user.repository.AccountRepository;
 import com.clientService.user.repository.AppUserRepository;
 
 
+import com.github.sonus21.rqueue.core.RqueueMessageEnqueuer;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,7 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
-import java.util.*;
 
 @Service
 public class AppUserAuthService implements UserDetailsService {
@@ -34,6 +31,7 @@ public class AppUserAuthService implements UserDetailsService {
     private final AccountRepository accountRepository;
     private final HttpResponseBody response;
     private final RestTemplate restTemplate;
+    private final RqueueMessageEnqueuer rqueueMessageEnqueuer;
 
 
     @Value("${report.url}")
@@ -48,13 +46,15 @@ public class AppUserAuthService implements UserDetailsService {
      * @param accountRepository   - account repository
      * @param restTemplate        - restTemplate
      * @param response - response body type
+     * @param rqueueMessageEnqueuer
      */
     AppUserAuthService(AppUserRepository appUserRepository, AccountRepository accountRepository,
-                       RestTemplate restTemplate, HttpResponseBody response) {
+                       RestTemplate restTemplate, HttpResponseBody response, RqueueMessageEnqueuer rqueueMessageEnqueuer) {
         this.appUserRepository = appUserRepository;
         this.accountRepository = accountRepository;
         this.restTemplate = restTemplate;
         this.response = response;
+        this.rqueueMessageEnqueuer = rqueueMessageEnqueuer;
     }
 
 
@@ -123,6 +123,7 @@ public class AppUserAuthService implements UserDetailsService {
 
             HttpEntity<String> request = SendLoggerRequest.sendLoggerRequest(log);
 //            restTemplate.postForObject(reportUrl + "userAuthentication", request, String.class);
+            rqueueMessageEnqueuer.enqueue("authentication-log-queue", new AuthenticationLog(user.getId(), AuthStatus.REGISTER, LocalDateTime.now(), user.getUserRole()));
 
             response.setMessage("User added successfully");
             return new ResponseEntity<>(response, HttpStatus.CREATED);

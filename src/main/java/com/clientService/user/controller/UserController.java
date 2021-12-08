@@ -5,6 +5,8 @@ import com.clientService.user.service.AppUserAuthService;
 
 import com.clientService.user.service.AppUserService;
 import com.clientService.user.service.AppUserSignInService;
+import com.github.sonus21.rqueue.core.RqueueMessageEnqueuer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,7 +19,6 @@ public class UserController {
     private final AppUserAuthService appUserAuthService;
     private final AppUserService appUserService;
     private final AppUserSignInService appUserSignInService;
-
 
     UserController(AppUserAuthService appUserAuthService, AppUserService appUserService,
                    AppUserSignInService appUserSignInService){
