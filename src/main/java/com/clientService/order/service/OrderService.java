@@ -223,7 +223,7 @@ public class OrderService {
         Optional<MarketProduct> bestOfExc2;
 
         //Setting Best trades per order side
-        if (orderRequest.getSide() == "BUY") {
+        if (orderRequest.getSide().equals("BUY")){
 
             bestOfExc1 = exchange1Products
                     .stream()

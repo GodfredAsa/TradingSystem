@@ -32,10 +32,13 @@ public class AppUserService {
      * @return Optional</ User>
      */
     public ResponseEntity<?> getClient(Long id) {
+
         Optional<AppUser> user = appUserRepository.findById(id);
 
         if (user.isPresent()) {
             LoggerConfig.LOGGER.info("Client with id: " + id + " accessed from the database");
+            user.get().setPassword("");
+            user.get().setId(0L);
             response.setMessage(user.get());
             return new ResponseEntity<>(response, HttpStatus.FOUND);
         }
