@@ -13,17 +13,16 @@ import java.util.List;
 @Configuration
 @EnableJms
 public class ActiveMQConfiguration {
-    private String DEFAULT_BROKER_URL = "tcp://localhost:61616";
 
     @Bean
-    public ConnectionFactory connectionFactory(){
+    public ActiveMQConnectionFactory activeMQConnectionFactory() {
         ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory();
-        activeMQConnectionFactory.setBrokerURL(DEFAULT_BROKER_URL);
-        activeMQConnectionFactory.setTrustedPackages(List.of("com.example"));
-        activeMQConnectionFactory.setUserName("admin");
-        activeMQConnectionFactory.setPassword("admin");
+        activeMQConnectionFactory.setBrokerURL("tcp://localhost:61616");
         return activeMQConnectionFactory;
     }
 
-
+    @Bean
+    public JmsTemplate template() {
+        return new JmsTemplate(activeMQConnectionFactory());
+    }
 }
