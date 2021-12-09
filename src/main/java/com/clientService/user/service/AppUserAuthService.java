@@ -12,10 +12,12 @@ import com.clientService.user.repository.AppUserRepository;
 
 import com.clientService.user.repository.PortfolioRepository;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -31,6 +33,9 @@ public class AppUserAuthService implements UserDetailsService {
     private final HttpResponseBody response;
     private final RestTemplate restTemplate;
     private final PortfolioRepository portfolioRepository;
+
+    @Autowired
+    private JmsTemplate jmsTemplate;
 
 
     @Value("${report.url}")
@@ -123,7 +128,11 @@ public class AppUserAuthService implements UserDetailsService {
             log.put("localDateTime", LocalDateTime.now());
 
             HttpEntity<String> request = SendLoggerRequest.sendLoggerRequest(log);
+            jmsTemplate.convertAndSend("authentication_log_queue", new AuthenticationLog(user.getId(), AuthStatus.REGISTER, LocalDateTime.now(), user.getUserRole()));
+//            QueuePublisher queuePublisher = new QueuePublisher();
+//            queuePublisher.publishToQueue("authentication_log_queue", new AuthenticationLog(user.getId(), AuthStatus.REGISTER, LocalDateTime.now(), user.getUserRole()));
 //            restTemplate.postForObject(reportUrl + "userAuthentication", request, String.class);
+
 
             response.setMessage("User added successfully");
             return new ResponseEntity<>(response, HttpStatus.CREATED);
