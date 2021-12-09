@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://ec2-44-198-146-224.compute-1.amazonaws.com:5432/dcjcfcq3bp2inu
-    username: uzvcspgtnwwmgz
-    password: e3c4446cf0bdb35d7ac17ad86f63c5a5e912502a905d84a083b73a26b0fe8c44
+    url: jdbc:postgresql://db.bjeqghpesboidxkvpqjw.supabase.co:5432/postgres
+    username: postgres
+    password: ftpiptf0group06
 
   redis:
     host: 167.99.202.174
@@ -10,7 +10,7 @@ spring:
 
   jpa:
     properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
-    hibernate.ddl-auto: 'create-drop'
+    hibernate.ddl-auto: 'update'
 
 jwt:
   secret: fghdkf689dfghd56dgbhs

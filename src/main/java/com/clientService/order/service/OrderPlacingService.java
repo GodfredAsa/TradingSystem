@@ -62,7 +62,6 @@ public class OrderPlacingService {
         //custom exception and error handlers catch any error and returns
         //the appropriate Http response and status
         Product orderProduct = productService.getProductByTicker(orderRequest.getProduct());
-
         Portfolio orderPortfolio = portfolioRepository.findById(orderRequest.getPortfolioId()).get();
 
 
@@ -71,6 +70,8 @@ public class OrderPlacingService {
         if (user == null || !appPrincipal.isAccountNonExpired()) {
             throw new NotFoundException("Client not found, the client making this order does not exist in the system");
         }
+
+        //TODO Return response to client instead of throwing an exception
 
         if (!canMakeOrder(orderRequest, user)) {
             throw new NotEnoughFundsException("User has insufficient funds to process this order");
@@ -166,7 +167,7 @@ public class OrderPlacingService {
         } else {
 
             // Get the available quantity of products from each exchange by checking their order books
-//            List<OrderModel> usersActiveBuyOrdersOfProd = orderRepository.getAllUsersBuyOrdersOfAProduct(orderRequest.getProduct(), user.getId(), "BUY");
+            // List<OrderModel> usersActiveBuyOrdersOfProd = orderRepository.getAllUsersBuyOrdersOfAProduct(orderRequest.getProduct(), user.getId(), "BUY");
             List<OrderModel> usersActiveBuyOrdersOfProd = user
                     .getPortfolios()
                     .stream()

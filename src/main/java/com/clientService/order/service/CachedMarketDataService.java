@@ -16,10 +16,10 @@ import java.util.List;
 
 
 public class CachedMarketDataService {
-    private static List<MarketDataProduct> cachedMarketDataProductsE1;
-    private static List<MarketDataProduct> cachedMarketDataProductsE2;
+    private static List<MarketDataProduct> cachedMarketDataProductsE1 = new ArrayList<>();
+    private static List<MarketDataProduct> cachedMarketDataProductsE2 = new ArrayList<>();
 
-    private static final RestTemplate restTemplate;
+    private static final RestTemplate restTemplate = new RestTemplate();
     private static String exchangeUrl1;
     private static String exchangeUrl2;
     private static String apiKey;
@@ -40,11 +40,11 @@ public class CachedMarketDataService {
     }
 
 
-    static {
-        cachedMarketDataProductsE1 = new ArrayList<>();
-        cachedMarketDataProductsE2 = new ArrayList<>();
-        restTemplate = new RestTemplate();
-    }
+//    static {
+//        cachedMarketDataProductsE1 = new ArrayList<>();
+//        cachedMarketDataProductsE2 = new ArrayList<>();
+//        restTemplate = new RestTemplate();
+//    }
 
     @CachePut(cacheNames = "marketData")
     public static void setMarketDataE1(List<MarketDataProduct> marketDataProducts) {
