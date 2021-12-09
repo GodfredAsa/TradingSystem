@@ -69,6 +69,7 @@ package com.clientService.order.model;
 import com.clientService.enums.OrderStatus;
 import com.clientService.orderExecution.model.OrderExecution;
 import com.clientService.user.model.AppUser;
+import com.clientService.user.model.Portfolio;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
@@ -135,6 +136,12 @@ public class OrderModel {
     @JsonIgnore
     private AppUser userOrder;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "portfolio_id")
+    @JsonIgnore
+    private Portfolio OrderPortfolio;
+
+
     @OneToMany(mappedBy = "orderExecutions")
     @ToString.Exclude
     private List<OrderExecution> executions;
@@ -147,12 +154,13 @@ public class OrderModel {
     @NotBlank
     private int cumulativeQuantity;
 
-    public OrderModel(String id, int quantity, double price, String side, Product product, AppUser userOrder, int cumulativeQuantity) {
+    public OrderModel(String id, int quantity, double price, String side, Product product, Portfolio orderPortfolio, AppUser userOrder, int cumulativeQuantity) {
         this.id = id;
         this.quantity = quantity;
         this.price = price;
         this.side = side;
         this.product = product;
+        this.OrderPortfolio = orderPortfolio;
         this.userOrder = userOrder;
         this.status = OrderStatus.PENDING;
         this.cumulativeQuantity = cumulativeQuantity;

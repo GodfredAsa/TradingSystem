@@ -4,11 +4,11 @@ import com.clientService.order.model.FullOrderBook;
 import com.clientService.order.model.OrderModel;
 import com.clientService.order.model.OrderRequest;
 import com.clientService.order.service.OrderService;
+import com.clientService.order.service.OrderServiceHelper;
+import com.clientService.order.service.OrderPlacingService;
 import com.clientService.order.service.ProductService;
-import com.clientService.user.service.AppUserDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -22,15 +22,19 @@ public class OrderController {
 
     private final OrderService orderService;
     private final ProductService productService;
+    private final OrderServiceHelper orderServiceHelper;
+    private final OrderPlacingService orderPlacingService;
 
-    public OrderController(OrderService orderService, ProductService productService) {
+    public OrderController(OrderService orderService, ProductService productService, OrderServiceHelper orderServiceHelper, OrderPlacingService orderPlacingService) {
         this.orderService = orderService;
         this.productService = productService;
+        this.orderServiceHelper = orderServiceHelper;
+        this.orderPlacingService = orderPlacingService;
     }
 
     @PostMapping("makeOrder")
     public ResponseEntity<ArrayList<String>> makeOrder(@Valid @RequestBody OrderRequest orderRequest, @AuthenticationPrincipal UserDetails appPrincipal) {
-        ArrayList<String> orderIds = orderService.makeOrder(orderRequest, appPrincipal);
+        ArrayList<String> orderIds = orderPlacingService.makeOrder(orderRequest, appPrincipal);
 
         return new ResponseEntity<ArrayList<String>>(orderIds, HttpStatus.CREATED);
     }

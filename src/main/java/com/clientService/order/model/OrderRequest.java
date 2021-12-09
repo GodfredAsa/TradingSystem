@@ -17,5 +17,6 @@ public class OrderRequest {
     private int quantity;
     private double price;
     private String side;
+    private Long portfolioId;
 
 }
