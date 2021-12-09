@@ -1,6 +1,7 @@
 package com.clientService.user.service;
 
 import com.clientService.enums.AuthStatus;
+import com.clientService.enums.PortfolioStatus;
 import com.clientService.loggerPack.LoggerConfig;
 import com.clientService.enums.UserRole;
 import com.clientService.securityConfig.EmailValidation;
@@ -9,6 +10,7 @@ import com.clientService.user.model.*;
 import com.clientService.user.repository.AccountRepository;
 import com.clientService.user.repository.AppUserRepository;
 
+import com.clientService.user.repository.PortfolioRepository;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -28,6 +30,7 @@ public class AppUserAuthService implements UserDetailsService {
     private final AccountRepository accountRepository;
     private final HttpResponseBody response;
     private final RestTemplate restTemplate;
+    private final PortfolioRepository portfolioRepository;
 
 
     @Value("${report.url}")
@@ -42,13 +45,15 @@ public class AppUserAuthService implements UserDetailsService {
      * @param accountRepository   - account repository
      * @param restTemplate        - restTemplate
      * @param response - response body type
+     * @param portfolioRepository - portfolio repository
      */
     AppUserAuthService(AppUserRepository appUserRepository, AccountRepository accountRepository,
-                       RestTemplate restTemplate, HttpResponseBody response) {
+                       RestTemplate restTemplate, HttpResponseBody response, PortfolioRepository portfolioRepository) {
         this.appUserRepository = appUserRepository;
         this.accountRepository = accountRepository;
         this.restTemplate = restTemplate;
         this.response = response;
+        this.portfolioRepository = portfolioRepository;
     }
 
 
@@ -106,6 +111,8 @@ public class AppUserAuthService implements UserDetailsService {
             );
 
             accountRepository.save(new Account(100000.0, user));
+            portfolioRepository.save(new Portfolio(user, PortfolioStatus.OPENED));
+
 
             LoggerConfig.LOGGER.info("Client with id: " + user.getId() + " created successfully");
 
