@@ -71,7 +71,7 @@ public class AppUser {
 
     @OneToMany(mappedBy = "userPortfolio")
     @ToString.Exclude
-    @JsonIgnore
+//    @JsonIgnore
     private List<Portfolio> portfolios;
 
     @OneToMany(mappedBy = "userOrder")
