@@ -3,8 +3,10 @@ package com.clientService.order.service;
 import com.clientService.exceptions.InvalidOrderRequestException;
 import com.clientService.order.model.*;
 import com.clientService.order.repository.OrderRepository;
-import com.clientService.user.repository.MarketDataRepository;
 import com.clientService.user.service.AppUserService;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -13,15 +15,21 @@ import org.springframework.web.client.RestTemplate;
 import java.util.*;
 
 @Service
+@NoArgsConstructor
+@AllArgsConstructor
 public class OrderService {
 
-    private final ProductService productService;
-    private final OrderRepository orderRepository;
-    private final AppUserService appUserService;
-    private final MarketDataRepository marketDataRepository;
+    @Autowired
+    private ProductService productService;
 
+    @Autowired
+    private OrderRepository orderRepository;
 
-    private final RestTemplate restTemplate;
+    @Autowired
+    private AppUserService appUserService;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Value("${api.key}")
     private String apiKey;
@@ -38,20 +46,6 @@ public class OrderService {
     //Gets logged-in user for the current session
 //    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 //    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-    public OrderService(RestTemplate restTemplate,
-                        ProductService productService,
-                        OrderRepository orderRepository,
-                        AppUserService appUserService,
-                        MarketDataRepository marketDataRepository
-    ) {
-        this.restTemplate = restTemplate;
-        this.productService = productService;
-        this.orderRepository = orderRepository;
-        this.appUserService = appUserService;
-        this.marketDataRepository = marketDataRepository;
-
-    }
 
 
     public OrderModel checkOrderStatus(String orderId) {

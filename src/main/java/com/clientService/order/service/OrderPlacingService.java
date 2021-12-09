@@ -14,6 +14,9 @@ import com.clientService.user.model.AppUser;
 import com.clientService.user.model.Portfolio;
 import com.clientService.user.repository.PortfolioRepository;
 import com.clientService.user.service.AppUserService;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -26,13 +29,27 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
+@NoArgsConstructor
 public class OrderPlacingService {
 
-    private final AppUserService appUserService;
-    private final ProductService productService;
-    private final RestTemplate restTemplate;
-    private final OrderRepository orderRepository;
-    private final PortfolioRepository portfolioRepository;
+    @Autowired
+    private AppUserService appUserService;
+
+    @Autowired
+    private ProductService productService;
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired
+    private PortfolioRepository portfolioRepository;
+
+    @Autowired
+    private OrderServiceHelper orderServiceHelper;
 
     @Value("${api.key}")
     private String apiKey;
@@ -43,18 +60,6 @@ public class OrderPlacingService {
     @Value(("${exchange.url2}"))
     private String exchangeUrl2;
 
-    public OrderPlacingService(AppUserService appUserService,
-                               ProductService productService,
-                               RestTemplate restTemplate,
-                               OrderRepository orderRepository,
-                               PortfolioRepository portfolioRepository
-    ) {
-        this.appUserService = appUserService;
-        this.productService = productService;
-        this.restTemplate = restTemplate;
-        this.orderRepository = orderRepository;
-        this.portfolioRepository = portfolioRepository;
-    }
 
     public ArrayList<String> makeOrder(OrderRequest orderRequest, UserDetails appPrincipal) {
 
@@ -87,7 +92,7 @@ public class OrderPlacingService {
 
 //        Get the exchange with the best deal
         int currentOrderQuantity = orderRequest.getQuantity();
-        Map<Long, String> bestDeal = OrderServiceHelper.getBestBidAndQuantity(orderRequest);
+        Map<Integer, String> bestDeal = orderServiceHelper.getBestBidAndQuantity(orderRequest);
 
 //        Place all orders on the exchange with the best deal if they
 //        hold an enough quantity of the product the user

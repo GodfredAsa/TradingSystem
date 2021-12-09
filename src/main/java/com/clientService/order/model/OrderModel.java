@@ -99,7 +99,6 @@ public class OrderModel {
     @Column(
             nullable = false
     )
-    @NotEmpty
     @Positive
     @DecimalMin(value = "0.0", inclusive = false, message = "Please provide a price greater than zero")
     private double price;
@@ -109,8 +108,6 @@ public class OrderModel {
             nullable = false,
             updatable = false
     )
-    @NotEmpty
-    @NotBlank
     private String side;
 
 
@@ -147,14 +144,14 @@ public class OrderModel {
     private List<OrderExecution> executions;
 
     @Column(
-            name = "cumulative_quantity",
-            nullable = false
+            nullable = false,
+            name = "cumulative_quantity"
+
     )
-    @NotEmpty
-    @NotBlank
+    @Min(0)
     private int cumulativeQuantity;
 
-    public OrderModel(String id, int quantity, double price, String side, Product product, Portfolio orderPortfolio, AppUser userOrder,List<OrderExecution> orderExecutions,  int cumulativeQuantity) {
+    public OrderModel(String id, int quantity, double price, String side, Product product, Portfolio orderPortfolio, AppUser userOrder, List<OrderExecution> orderExecutions, int cumulativeQuantity) {
         this.id = id;
         this.quantity = quantity;
         this.price = price;

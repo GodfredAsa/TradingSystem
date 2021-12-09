@@ -1,106 +1,115 @@
 package com.clientService.order.service;
 
-import com.clientService.order.model.MarketData;
 import com.clientService.order.model.MarketDataProduct;
-import com.clientService.order.model.OrderModel;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-
+@Service
 public class CachedMarketDataService {
-    private static List<MarketDataProduct> cachedMarketDataProductsE1 = new ArrayList<>();
-    private static List<MarketDataProduct> cachedMarketDataProductsE2 = new ArrayList<>();
+    private List<MarketDataProduct> cachedMarketDataProductsE1 = new ArrayList<>();
+    private List<MarketDataProduct> cachedMarketDataProductsE2 = new ArrayList<>();
 
-    private static final RestTemplate restTemplate = new RestTemplate();
-    private static String exchangeUrl1;
-    private static String exchangeUrl2;
-    private static String apiKey;
-
-    @Value("${api.key}")
-    public static void setApiKey(String apiKey) {
-        CachedMarketDataService.apiKey = apiKey;
-    }
+    private final RestTemplate restTemplate;
 
     @Value("${exchange.url1}")
-    public void setExchangeUrl1(String exchangeUrl1) {
-        CachedMarketDataService.exchangeUrl1 = exchangeUrl1;
-    }
+    private String exchangeUrl1;
 
     @Value(("${exchange.url2}"))
-    public void setExchangeUrl2(String exchangeUrl2) {
-        CachedMarketDataService.exchangeUrl2 = exchangeUrl2;
+    private String exchangeUrl2;
+
+    @Value("${api.key}")
+    private String apiKey;
+
+    public CachedMarketDataService(RestTemplateBuilder restTemplateBuilder) {
+        this.restTemplate = restTemplateBuilder.build();
+        List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        converter.setSupportedMediaTypes(Collections.singletonList(MediaType.ALL));
+        messageConverters.add(converter);
+        this.restTemplate.setMessageConverters(messageConverters);
     }
 
-
-//    static {
+    //     {
 //        cachedMarketDataProductsE1 = new ArrayList<>();
 //        cachedMarketDataProductsE2 = new ArrayList<>();
 //        restTemplate = new RestTemplate();
 //    }
 
-    @CachePut(cacheNames = "marketData")
-    public static void setMarketDataE1(List<MarketDataProduct> marketDataProducts) {
-        CachedMarketDataService.cachedMarketDataProductsE1 = marketDataProducts;
+    @CachePut(cacheNames = "marketData1")
+    public void setMarketDataE1(List<MarketDataProduct> marketDataProducts) {
+        this.cachedMarketDataProductsE1 = marketDataProducts;
     }
 
-    @CachePut(cacheNames = "marketData")
-    public static void setMarketDataE2(List<MarketDataProduct> marketDataProducts) {
-        CachedMarketDataService.cachedMarketDataProductsE2 = marketDataProducts;
+    @CachePut(cacheNames = "marketData2")
+    public void setMarketDataE2(List<MarketDataProduct> marketDataProducts) {
+        this.cachedMarketDataProductsE2 = marketDataProducts;
     }
 
     /**
-     *
      * @return cached list of most recent market data from exchange 1
      */
-    @Cacheable(cacheNames = "marketData")
-    public static List<MarketDataProduct> getMarketDataE1() {
-        if (CachedMarketDataService.cachedMarketDataProductsE1.isEmpty()) {
-            MarketData marketData = restTemplate.getForObject(exchangeUrl1 + apiKey + "/md", MarketData.class);
-            CachedMarketDataService.setMarketDataE1(marketData.getMarketDataProducts());
-            return marketData.getMarketDataProducts();
+    @Cacheable(cacheNames = "marketData1")
+    public List<MarketDataProduct> getMarketDataE1() {
+        if (this.cachedMarketDataProductsE1.isEmpty()) {
+            System.out.println("------------------------------------------- url " + exchangeUrl1 + "/md");
+            MarketDataProduct[] marketData = restTemplate.getForObject(exchangeUrl1 + "/md", MarketDataProduct[].class);
+            System.out.println("------------------------------------------- data1 " + exchangeUrl1 + marketData);
+            List<MarketDataProduct> marketProductsList = Arrays.asList(marketData);
+            System.out.println("------------------------------------------- dataList " + marketProductsList);
+            this.setMarketDataE1(marketProductsList);
+            return marketProductsList;
         }
-        return CachedMarketDataService.cachedMarketDataProductsE1;
+        return this.cachedMarketDataProductsE1;
     }
 
     /**
-     *
      * @return cached list of most recent market data from exchange 2
      */
-    @Cacheable(cacheNames = "marketData")
-    public static List<MarketDataProduct> getMarketDataE2() {
-        if (CachedMarketDataService.cachedMarketDataProductsE2.isEmpty()) {
-            MarketData marketData = restTemplate.getForObject(exchangeUrl2 + apiKey + "/md", MarketData.class);
-            CachedMarketDataService.setMarketDataE2(marketData.getMarketDataProducts());
-            return marketData.getMarketDataProducts();
+    @Cacheable(cacheNames = "marketData2")
+    public List<MarketDataProduct> getMarketDataE2() {
+        if (this.cachedMarketDataProductsE2.isEmpty()) {
+            System.out.println("------------------------------------------- url " + exchangeUrl2 + "/md");
+            MarketDataProduct[] marketData = restTemplate.getForObject(exchangeUrl2 + "/md", MarketDataProduct[].class);
+            System.out.println("------------------------------------------- data " + exchangeUrl2 + marketData);
+            List<MarketDataProduct> marketProductsList = Arrays.asList(marketData);
+            System.out.println("------------------------------------------- data " + marketProductsList);
+            this.setMarketDataE2(marketProductsList);
+            return marketProductsList;
         }
-        return CachedMarketDataService.cachedMarketDataProductsE2;
+        return this.cachedMarketDataProductsE2;
     }
 
 //    Todo: schedule a chron job to call this method every hour
+
     /**
      * clears current cached market data from exchange 1
      */
-    @CacheEvict(cacheNames = "marketData")
-    public static void clearMarketDataE1() {
+    @CacheEvict(cacheNames = "marketData1")
+    public void clearMarketDataE1() {
 
-        CachedMarketDataService.cachedMarketDataProductsE1.clear();
+        this.cachedMarketDataProductsE1.clear();
     }
 
     /**
      * clears current cached market data from exchange 2
      */
-    @CacheEvict(cacheNames = "marketData")
-    public static void clearMarketDataE2() {
+    @CacheEvict(cacheNames = "marketData2")
+    public void clearMarketDataE2() {
 
-        CachedMarketDataService.cachedMarketDataProductsE2.clear();
+        this.cachedMarketDataProductsE2.clear();
     }
 
 }
