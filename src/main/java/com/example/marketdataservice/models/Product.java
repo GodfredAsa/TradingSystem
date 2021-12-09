@@ -13,23 +13,23 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class Product {
     @JsonProperty("LAST_TRADED_PRICE")
-    private String lastTradedPrice;
+    private double lastTradedPrice;
 
     @JsonProperty("SELL_LIMIT")
-    private double sellLimit;
+    private int sellLimit;
 
     @JsonProperty("BID_PRICE")
     private double bidPrice;
 
     @JsonProperty("ASK_PRICE")
-    private int askPrice;
+    private double askPrice;
 
     @JsonProperty("BUY_LIMIT")
-    private String buyLimit;
+    private int buyLimit;
 
     @JsonProperty("TICKER")
     private String ticker;
 
     @JsonProperty("MAX_PRICE_SHIFT")
-    private int maxPriceShift;
+    private double maxPriceShift;
 }
