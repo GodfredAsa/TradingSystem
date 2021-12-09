@@ -9,10 +9,7 @@ import com.clientService.user.model.*;
 import com.clientService.user.repository.AccountRepository;
 import com.clientService.user.repository.AppUserRepository;
 
-
-import com.github.sonus21.rqueue.core.RqueueMessageEnqueuer;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -31,7 +28,6 @@ public class AppUserAuthService implements UserDetailsService {
     private final AccountRepository accountRepository;
     private final HttpResponseBody response;
     private final RestTemplate restTemplate;
-    private final RqueueMessageEnqueuer rqueueMessageEnqueuer;
 
 
     @Value("${report.url}")
@@ -46,15 +42,13 @@ public class AppUserAuthService implements UserDetailsService {
      * @param accountRepository   - account repository
      * @param restTemplate        - restTemplate
      * @param response - response body type
-     * @param rqueueMessageEnqueuer
      */
     AppUserAuthService(AppUserRepository appUserRepository, AccountRepository accountRepository,
-                       RestTemplate restTemplate, HttpResponseBody response, RqueueMessageEnqueuer rqueueMessageEnqueuer) {
+                       RestTemplate restTemplate, HttpResponseBody response) {
         this.appUserRepository = appUserRepository;
         this.accountRepository = accountRepository;
         this.restTemplate = restTemplate;
         this.response = response;
-        this.rqueueMessageEnqueuer = rqueueMessageEnqueuer;
     }
 
 
@@ -123,7 +117,6 @@ public class AppUserAuthService implements UserDetailsService {
 
             HttpEntity<String> request = SendLoggerRequest.sendLoggerRequest(log);
 //            restTemplate.postForObject(reportUrl + "userAuthentication", request, String.class);
-            rqueueMessageEnqueuer.enqueue("authentication-log-queue", new AuthenticationLog(user.getId(), AuthStatus.REGISTER, LocalDateTime.now(), user.getUserRole()));
 
             response.setMessage("User added successfully");
             return new ResponseEntity<>(response, HttpStatus.CREATED);

@@ -5,7 +5,6 @@ import com.clientService.user.service.AppUserAuthService;
 
 import com.clientService.user.service.AppUserService;
 import com.clientService.user.service.AppUserSignInService;
-import com.github.sonus21.rqueue.core.RqueueMessageEnqueuer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
