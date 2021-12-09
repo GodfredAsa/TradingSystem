@@ -16,7 +16,7 @@ jwt:
   secret: fghdkf689dfghd56dgbhs
 
 report:
-  url: http://172.305.5.1:8080/api/log/
+  url: http://172.30.5.51:8080/api/log/
 
 order:
   url: http://172.19.128.1:8080/api/order

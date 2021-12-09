@@ -3,12 +3,15 @@ package com.clientService.order.service;
 import com.clientService.order.model.MarketDataProduct;
 import com.clientService.order.model.OrderRequest;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+@Component
 public class OrderServiceHelper {
 
 
@@ -37,6 +40,11 @@ public class OrderServiceHelper {
         restTemplate = new RestTemplate();
     }
 
+    /**
+     *
+     * @param orderRequest Body of the users order
+     * @return A map containing a key(quantity of the best deal) and value (bid or ask price of the best deal)
+     */
     //Returns the exchange and quantity to buy from first before the other
     public static Map<Long, String> getBestBidAndQuantity(OrderRequest orderRequest) {
 
@@ -128,14 +136,11 @@ public class OrderServiceHelper {
                         put(bestOfExc2.get().getBuyLimit(), exchangeUrl2);
                     }};
                 }
-
             }
-
 
         }
         //If product is only on exchange1
         else if (bestOfExc1.isPresent()) {
-
 
             return new HashMap<Long, String>() {{
                 put(orderRequest.getSide().equals("BUY") ? bestOfExc1.get().getBuyLimit() : bestOfExc1.get().getSellLimit(), exchangeUrl1);

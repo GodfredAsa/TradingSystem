@@ -154,7 +154,7 @@ public class OrderModel {
     @NotBlank
     private int cumulativeQuantity;
 
-    public OrderModel(String id, int quantity, double price, String side, Product product, Portfolio orderPortfolio, AppUser userOrder, int cumulativeQuantity) {
+    public OrderModel(String id, int quantity, double price, String side, Product product, Portfolio orderPortfolio, AppUser userOrder,List<OrderExecution> orderExecutions,  int cumulativeQuantity) {
         this.id = id;
         this.quantity = quantity;
         this.price = price;
@@ -163,6 +163,7 @@ public class OrderModel {
         this.OrderPortfolio = orderPortfolio;
         this.userOrder = userOrder;
         this.status = OrderStatus.PENDING;
+        this.executions = orderExecutions;
         this.cumulativeQuantity = cumulativeQuantity;
     }
 }

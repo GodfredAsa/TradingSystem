@@ -16,6 +16,7 @@ import com.clientService.user.repository.PortfolioRepository;
 import com.clientService.user.service.AppUserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Service
 public class OrderPlacingService {
 
     private final AppUserService appUserService;
@@ -31,6 +33,9 @@ public class OrderPlacingService {
     private final RestTemplate restTemplate;
     private final OrderRepository orderRepository;
     private final PortfolioRepository portfolioRepository;
+
+    @Value("${api.key}")
+    private String apiKey;
 
     @Value("${exchange.url1}")
     private String exchangeUrl1;
@@ -79,16 +84,25 @@ public class OrderPlacingService {
             put("side", orderRequest.getSide());
         }};
 
-//        Check the two exchanges for the best deal, if quantity is >= then buy all else buy the rest from other exchange
+//        Get the exchange with the best deal
         int currentOrderQuantity = orderRequest.getQuantity();
         Map<Long, String> bestDeal = OrderServiceHelper.getBestBidAndQuantity(orderRequest);
 
-        if (bestDeal.keySet().stream().findFirst().get() < currentOrderQuantity) {
+//        Place all orders on the exchange with the best deal if they
+//        hold an enough quantity of the product the user
+//        is making a buy or sell order for, otherwise place
+//        the remaining order on the other exchange
+        long bestDealQuantity = bestDeal.keySet().stream().findFirst().get();
+        if (bestDealQuantity < currentOrderQuantity) {
+            int remainder = (int) (orderRequest.getQuantity() - bestDealQuantity);
+            orderRequest.setQuantity((int) bestDealQuantity);
 
 //            Todo: Indication for partial purchase and split exchange purchases
-            String newOrderId1 = restTemplate.postForObject(bestDeal.values().stream().findFirst().get(), orderRequestBody, String.class);
-            String getOtherUrl = bestDeal.values().stream().findFirst().get().equals(exchangeUrl1) ? exchangeUrl2 : exchangeUrl1;
-            String newOrderId2 = restTemplate.postForObject(getOtherUrl, orderRequestBody, String.class);
+            String newOrderId1 = restTemplate.postForObject(bestDeal.values().stream().findFirst().get() + apiKey + "/order", orderRequestBody, String.class);
+            String otherUrl = bestDeal.values().stream().findFirst().get().equals(exchangeUrl1) ? exchangeUrl2 : exchangeUrl1;
+
+            orderRequest.setQuantity(remainder);
+            String newOrderId2 = restTemplate.postForObject(otherUrl + apiKey + "/order", orderRequestBody, String.class);
 
             OrderModel order1 = new OrderModel(
                     newOrderId1,
@@ -98,27 +112,18 @@ public class OrderPlacingService {
                     orderProduct,
                     orderPortfolio,
                     user,
+                    new ArrayList<OrderExecution>(),
                     0
             );
 
-            OrderModel order1 = new OrderModel(
-                    newOrderId1,
-                    currentOrderQuantity,
-                    orderRequest.getPrice(),
-                    orderRequest.getSide(),
-                    orderProduct,
-                    OrderStatus.PENDING,
-                    user,
-                    new ArrayList<OrderExecution>(),
-                    0);
 
             OrderModel order2 = new OrderModel(
                     newOrderId2,
                     currentOrderQuantity,
                     orderRequest.getPrice(),
                     orderRequest.getSide(),
-                    OrderStatus.PENDING,
                     orderProduct,
+                    orderPortfolio,
                     user,
                     new ArrayList<OrderExecution>(),
                     0);
@@ -135,8 +140,8 @@ public class OrderPlacingService {
                     currentOrderQuantity,
                     orderRequest.getPrice(),
                     orderRequest.getSide(),
-                    OrderStatus.PENDING,
                     orderProduct,
+                    orderPortfolio,
                     user,
                     new ArrayList<OrderExecution>(),
                     0);
