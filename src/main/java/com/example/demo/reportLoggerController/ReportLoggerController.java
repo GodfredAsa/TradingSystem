@@ -17,18 +17,18 @@ public class ReportLoggerController {
     ReportLoggerService reportLoggerService;
 
     @PostMapping("/log/userAuthentication")
-    public String logUserAuthentication(@RequestBody AuthenticationLog authenticationLog){
+    public String logUserAuthentication(@RequestBody AuthenticationLog authenticationLog) {
         this.reportLoggerService.logUserAuthentication(authenticationLog);
         return "hello";
     }
 
     @GetMapping("/report/authLog/{userID}")
-    public AuthenticationLog findByUserID(Long userID){
+    public AuthenticationLog findByUserID(Long userID) {
         return reportLoggerService.findByUserID(userID);
     }
 
     @GetMapping("/report/authLog/{id}")
-    public AuthenticationLog findUserById(Long id){
+    public AuthenticationLog findUserById(Long id) {
         return reportLoggerService.findUserById(id);
     }
 
@@ -38,21 +38,22 @@ public class ReportLoggerController {
     }
 
     @GetMapping("/report/orderLog/{timestamp}")
-    public OrderLog getReportByTimeStamp(LocalDateTime timestamp){
+    public OrderLog getReportByTimeStamp(LocalDateTime timestamp) {
         return reportLoggerService.getReportByTimestamp(timestamp);
     }
+
     @GetMapping("/report/orderLog/{userID}")
-    public OrderLog getReportByUserID(Long userID){
+    public OrderLog getReportByUserID(Long userID) {
         return reportLoggerService.getReportByUserID(userID);
     }
 
     @GetMapping("/report/marketDataLog/{id}")
-    public MarketDataLog getMarketDataById(Long id){
+    public MarketDataLog getMarketDataById(Long id) {
         return reportLoggerService.getMarketDataById(id);
     }
 
     @GetMapping("/report/marketDataLog/{timestamp}")
-    public MarketDataLog getMarketDataByTimestamp(LocalDateTime timestamp){
+    public MarketDataLog getMarketDataByTimestamp(LocalDateTime timestamp) {
         return reportLoggerService.getMarketDataByTimestamp(timestamp);
     }
 
