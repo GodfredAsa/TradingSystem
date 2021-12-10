@@ -30,8 +30,8 @@ marketData:
   both: http://*****/
 
 exchange:
-  url1: https://exchange.matraining.com/
-  url2: https://exchange1.matraining.com/
+  url1: http://exchange.matraining.com/
+  url2: http://exchange2.matraining.com/
 
 redis:
   exchange1channel: exchange1
