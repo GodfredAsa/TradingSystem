@@ -1,6 +1,5 @@
 package com.clientService.order.service;
 
-import com.clientService.enums.OrderStatus;
 import com.clientService.enums.PortfolioStatus;
 import com.clientService.exceptions.InvalidOrderRequestException;
 import com.clientService.exceptions.NotEnoughFundsException;
@@ -62,6 +61,11 @@ public class OrderPlacingService {
     private String exchangeUrl2;
 
 
+    /**
+     * @param orderRequest Details of the order to be placed
+     * @param appPrincipal Auth details of the client placing the order
+     * @return List of one order id or two in the case of a split order
+     */
     public ArrayList<String> makeOrder(OrderRequest orderRequest, UserDetails appPrincipal) {
 
         //provides product if validated successfully by product service,
@@ -136,10 +140,9 @@ public class OrderPlacingService {
                     user,
                     new ArrayList<OrderExecution>(),
                     0);
-            LoggerConfig.LOGGER.info("---------------------------------- order id1 "
-                    + order1.getId()
-                    + "order id2 "
-                    + order2.getId());
+            LoggerConfig.LOGGER.info("=================================== Split order ===================================\n");
+            LoggerConfig.LOGGER.info("=================================== First order with id " + order1.getId() + " placed ===================================\n");
+            LoggerConfig.LOGGER.info("=================================== Second order with id " + order1.getId() + " placed ===================================\n");
 
             orderRepository.save(order1);
             orderRepository.save(order2);
@@ -160,8 +163,7 @@ public class OrderPlacingService {
                     new ArrayList<OrderExecution>(),
                     0);
 
-            LoggerConfig.LOGGER.info("---------------------------------- order id "
-                    + order.getId());
+            LoggerConfig.LOGGER.info("=================================== Order with id " + order.getId() + " placed ===================================\n");
 
             orderRepository.save(order);
             return new ArrayList<String>(List.of(order.getId()));
@@ -170,6 +172,11 @@ public class OrderPlacingService {
 
     }
 
+    /**
+     * @param orderRequest Details of clients order
+     * @param user         Details of client placing the order
+     * @return A boolean indicating whether the client is eligible to place the trade
+     */
     public boolean canMakeOrder(OrderRequest orderRequest, AppUser user) {
 
         if (orderRequest.getSide().equals("BUY")) {
@@ -182,8 +189,7 @@ public class OrderPlacingService {
             return userCurrentAccountBalance >= totalOrderCost;
         } else {
 
-            // Get the available quantity of products from each exchange by checking their order books
-            // List<OrderModel> usersActiveBuyOrdersOfProd = orderRepository.getAllUsersBuyOrdersOfAProduct(orderRequest.getProduct(), user.getId(), "BUY");
+            // Get the client's available quantity of products
             List<OrderModel> usersActiveBuyOrdersOfProd = user
                     .getPortfolios()
                     .stream()
@@ -199,13 +205,13 @@ public class OrderPlacingService {
                 throw new InvalidOrderRequestException("User does not own the specified product");
             }
 
-            int availableQuantOfProd = usersActiveBuyOrdersOfProd
+            int availableQuantityOfProd = usersActiveBuyOrdersOfProd
                     .stream()
                     .map(ord -> ord.getQuantity() - ord.getCumulativeQuantity())
-                    .mapToInt((cumQuant -> Integer.valueOf(cumQuant)))
+                    .mapToInt((cumulativeQuantity -> Integer.valueOf(cumulativeQuantity)))
                     .sum();
 
-            return orderRequest.getQuantity() >= availableQuantOfProd;
+            return orderRequest.getQuantity() >= availableQuantityOfProd;
         }
 
     }

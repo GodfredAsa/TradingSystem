@@ -1,20 +1,19 @@
 package com.clientService.order.service;
 
 import com.clientService.exceptions.InvalidOrderRequestException;
-import com.clientService.exceptions.NotFoundException;
-import com.clientService.order.model.*;
+import com.clientService.order.model.FullOrderBook;
+import com.clientService.order.model.OrderBook;
+import com.clientService.order.model.OrderModel;
 import com.clientService.order.repository.OrderRepository;
-import com.clientService.user.service.AppUserService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.*;
+import java.util.ArrayList;
 
 @Service
 @NoArgsConstructor
@@ -22,13 +21,7 @@ import java.util.*;
 public class OrderService {
 
     @Autowired
-    private ProductService productService;
-
-    @Autowired
     private OrderRepository orderRepository;
-
-    @Autowired
-    private AppUserService appUserService;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -47,7 +40,6 @@ public class OrderService {
 
 
     /**
-     *
      * @param orderId The id of the order to be retrieved
      * @return The order with the provided id, if it exists
      */
@@ -92,49 +84,25 @@ public class OrderService {
 
     }
 
-//    public String saveOrder(
-//            String newOrderId,
-//            int currentOrderQuantity,
-//            double price,
-//            String side,
-//            OrderStatus orderStatus,
-//            String orderProduct,
-//            AppUser user,
-//            List<OrderExecution> list
-//    ) {
-//
-//
-//            Order order = new Order(
-//                    newOrderId,
-//                    currentOrderQuantity,
-//                    orderRequest.getPrice(),
-//                    orderRequest.getSide(),
-//                    OrderStatus.PENDING,
-//                    orderProduct,
-//                    user.get(),
-//                    new ArrayList<OrderExecution>());
-//            LoggerConfig.LOGGER.info("order placed successfully");
-//            return response;
-//
-////         else {
-////            LoggerConfig.LOGGER.error("There was an issue placing your order");
-////            return "There was an issue placing your order, please try again later";
-//
-//
-//        return "";
-//
-//    }
+    /**
+     * @return A list containing a single order id or two order ids in the case of a split order
+     */
+    public ArrayList<FullOrderBook> getOrderBook(int exchange) {
 
-    public ArrayList<FullOrderBook> getOrderBook() {
-
-        OrderBook orderBook = restTemplate.getForObject(bothMarketData + "/orderbook", OrderBook.class);
+        OrderBook orderBook = restTemplate.getForObject(exchange == 1 ? exchangeUrl1 : exchangeUrl2 + "/orderbook", OrderBook.class);
         ArrayList<FullOrderBook> fullFullOrderBooks = orderBook.getFullOrderBooks();
         return fullFullOrderBooks;
     }
 
-    public ArrayList<FullOrderBook> getOrderBookOf(String product, String option) {
+    /**
+     * @param product  The ticker for a product
+     * @param filterby Which metric to filter by
+     * @return
+     * @Param exchange The exchange to make this query against
+     */
+    public ArrayList<FullOrderBook> getOrderBookOf(int exchange, String product, String filterby) {
 
-        OrderBook orderBook = restTemplate.getForObject(bothMarketData + "/orderbook/" + product + "/" + option, OrderBook.class);
+        OrderBook orderBook = restTemplate.getForObject(exchange == 1 ? exchangeUrl1 : exchangeUrl2 + "/orderbook/" + product + "/" + filterby, OrderBook.class);
         ArrayList<FullOrderBook> fullFullOrderBooks = orderBook.getFullOrderBooks();
         return fullFullOrderBooks;
     }

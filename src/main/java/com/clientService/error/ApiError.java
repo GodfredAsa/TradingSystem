@@ -7,32 +7,9 @@ import org.springframework.http.HttpStatus;
 
 import java.util.*;
 
-//@Setter
-//@Getter
-//@JsonInclude(JsonInclude.Include.NON_NULL)
-//public class ApiError {
-//
-//    int status;
-//    String message;
-//    long timestamp;
-//    String path;
-//    Map<String, String> validationErrors;
-//
-//    /**
-//     * model to hold a single error instance
-//     *
-//     * @param status
-//     * @param message
-//     * @param path
-//     */
-//    public ApiError(int status, String message, String path) {
-//        this.status = status;
-//        this.message = message;
-//        this.path = path;
-//        this.timestamp = new Date().getTime();
-//    }
-//}
-
+/**
+ *  A model for errors for our custom error handler
+ */
 @Getter
 @Setter
 public class ApiError {
