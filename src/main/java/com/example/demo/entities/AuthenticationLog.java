@@ -1,7 +1,7 @@
 package com.example.demo.entities;
 
 import com.example.demo.enums.AuthStatus;
-import com.example.demo.enums.Role;
+import com.example.demo.enums.UserRole;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -32,7 +32,7 @@ public class AuthenticationLog {
 
     @Column(name = "role",nullable = false,columnDefinition = "varchar(10)")
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private UserRole role;
 
     @Column(name = "date",nullable = false)
     private LocalDateTime localDateTime;
