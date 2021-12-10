@@ -11,15 +11,14 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Alert from '@mui/material/Alert';
-import Stack from '@mui/material/Stack';
-import axios from 'axios';
-
+import { useNavigate } from 'react-router-dom';
 const theme = createTheme();
 
 export default function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [openAlert, setOpenAlert] = useState(false);
+  const navigate = useNavigate();
 
   const handleEmail = (event) => {
     setEmail(event.target.value)
@@ -39,15 +38,19 @@ export default function SignIn() {
       body: JSON.stringify({ email, password })
     }
 
-    fetch('http://localhost:8080/api/client/auth/signin', requestOptions)
+    fetch('http://localhost:8085/api/client/auth/signin', requestOptions)
       .then(response => {
-        if(response.status == 403){
+        if(response.status == 403 || response.status == 404){
           setOpenAlert(true)
         }else{
+          navigate("/dashboard");
           return response.json()
         }
       })
-      .then(data => console.log(data))
+      .then(data =>{
+         console.log(data)
+      }
+         )
       .catch(e => console.log(e))
 
   };
