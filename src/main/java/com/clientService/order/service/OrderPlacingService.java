@@ -76,7 +76,7 @@ public class OrderPlacingService {
 
 
         //Get the email of the user making the request
-        AppUser user = appUserService.getAppUserByEmail(appPrincipal.getUsername() /*((UserDetails) authentication.getDetails()).getUsername()*/);
+        AppUser user = appUserService.getAppUserByEmail(appPrincipal.getUsername());
         if (user == null || !appPrincipal.isAccountNonExpired()) {
             throw new NotFoundException("Client not found, the client making this order does not exist in the system");
         }
