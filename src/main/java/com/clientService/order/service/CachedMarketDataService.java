@@ -42,11 +42,6 @@ public class CachedMarketDataService {
         this.restTemplate.setMessageConverters(messageConverters);
     }
 
-    //     {
-//        cachedMarketDataProductsE1 = new ArrayList<>();
-//        cachedMarketDataProductsE2 = new ArrayList<>();
-//        restTemplate = new RestTemplate();
-//    }
 
     @CachePut(cacheNames = "marketData1")
     public void setMarketDataE1(List<MarketDataProduct> marketDataProducts) {
@@ -64,11 +59,8 @@ public class CachedMarketDataService {
     @Cacheable(cacheNames = "marketData1")
     public List<MarketDataProduct> getMarketDataE1() {
         if (this.cachedMarketDataProductsE1.isEmpty()) {
-            System.out.println("------------------------------------------- url " + exchangeUrl1 + "/md");
             MarketDataProduct[] marketData = restTemplate.getForObject(exchangeUrl1 + "/md", MarketDataProduct[].class);
-            System.out.println("------------------------------------------- data1 " + exchangeUrl1 + marketData);
             List<MarketDataProduct> marketProductsList = Arrays.asList(marketData);
-            System.out.println("------------------------------------------- dataList " + marketProductsList);
             this.setMarketDataE1(marketProductsList);
             return marketProductsList;
         }
@@ -81,11 +73,8 @@ public class CachedMarketDataService {
     @Cacheable(cacheNames = "marketData2")
     public List<MarketDataProduct> getMarketDataE2() {
         if (this.cachedMarketDataProductsE2.isEmpty()) {
-            System.out.println("------------------------------------------- url " + exchangeUrl2 + "/md");
             MarketDataProduct[] marketData = restTemplate.getForObject(exchangeUrl2 + "/md", MarketDataProduct[].class);
-            System.out.println("------------------------------------------- data " + exchangeUrl2 + marketData);
             List<MarketDataProduct> marketProductsList = Arrays.asList(marketData);
-            System.out.println("------------------------------------------- data " + marketProductsList);
             this.setMarketDataE2(marketProductsList);
             return marketProductsList;
         }
@@ -100,6 +89,8 @@ public class CachedMarketDataService {
     @CacheEvict(cacheNames = "marketData1")
     public void clearMarketDataE1() {
 
+        if(this.cachedMarketDataProductsE1.isEmpty())
+            return;
         this.cachedMarketDataProductsE1.clear();
     }
 
@@ -108,7 +99,8 @@ public class CachedMarketDataService {
      */
     @CacheEvict(cacheNames = "marketData2")
     public void clearMarketDataE2() {
-
+        if (this.cachedMarketDataProductsE2.isEmpty())
+            return;
         this.cachedMarketDataProductsE2.clear();
     }
 

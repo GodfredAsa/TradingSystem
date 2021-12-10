@@ -1,6 +1,7 @@
 package com.clientService.order.service;
 
 import com.clientService.exceptions.InvalidOrderRequestException;
+import com.clientService.exceptions.NotFoundException;
 import com.clientService.order.model.*;
 import com.clientService.order.repository.OrderRepository;
 import com.clientService.user.service.AppUserService;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
@@ -43,23 +45,36 @@ public class OrderService {
     @Value(("${marketData.both}"))
     private String bothMarketData;
 
-    //Gets logged-in user for the current session
-//    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-
+    /**
+     *
+     * @param orderId The id of the order to be retrieved
+     * @return The order with the provided id, if it exists
+     */
     public OrderModel checkOrderStatus(String orderId) {
 
-        OrderModel responseFromExchange1 = restTemplate.getForObject(exchangeUrl1 + apiKey + "/order/" + orderId, OrderModel.class);
-        OrderModel responseFromExchange2 = restTemplate.getForObject(exchangeUrl2 + apiKey + "/order/" + orderId, OrderModel.class);
-//        OrderModel response = marketDataRepository.findById(orderId);
+        OrderModel responseFromExchange1;
+        OrderModel responseFromExchange2;
+
+
+        try {
+            responseFromExchange1 = restTemplate.getForObject(exchangeUrl1 + apiKey + "/order/" + orderId, OrderModel.class);
+
+        } catch (HttpServerErrorException e1) {
+            responseFromExchange1 = null;
+        }
+
+        try {
+            responseFromExchange2 = restTemplate.getForObject(exchangeUrl2 + apiKey + "/order/" + orderId, OrderModel.class);
+
+        } catch (HttpServerErrorException e2) {
+            responseFromExchange2 = null;
+        }
 
 //        find out whether the order has been completed by the
 //        response status code (was suggested by PM) if so, then
-//        return a local instance of the completed order
-//        if (responseFromExchange1.getStatus().equals(HttpStatus.NOT_FOUND) && responseFromExchange1.getStatus().equals(HttpStatus.NOT_FOUND) && orderRepository.findById(orderId).isPresent()) {
-
-        if (responseFromExchange1.getStatus().equals(HttpStatus.NOT_FOUND) && responseFromExchange2.getStatus().equals(HttpStatus.NOT_FOUND) && orderRepository.findById(orderId).isPresent()) {
+//        return a local db instance of the completed order
+        if (responseFromExchange1 == null && responseFromExchange2 == null && orderRepository.findById(orderId).isPresent()) {
 
 //            Todo: We know the order is completed, we can do some custom logic here
             return orderRepository.findById(orderId).get();
@@ -68,7 +83,7 @@ public class OrderService {
         //Entire method can be refactored to use only this check
 
         //check whether it was an actual invalid request
-        else if (responseFromExchange1.getStatus().equals(HttpStatus.NOT_FOUND) && responseFromExchange2.getStatus().equals(HttpStatus.NOT_FOUND) && orderRepository.findById(orderId).isEmpty()) {
+        else if (responseFromExchange1 == null && responseFromExchange2 == null && orderRepository.findById(orderId).isEmpty()) {
 
             throw new InvalidOrderRequestException("Order with the provided order Id does not exist");
         } else {

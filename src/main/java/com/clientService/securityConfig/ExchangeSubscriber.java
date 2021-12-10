@@ -4,11 +4,13 @@ package com.clientService.securityConfig;
 import com.clientService.order.model.MarketDataProduct;
 import com.clientService.order.service.CachedMarketDataService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 
@@ -20,11 +22,7 @@ import java.util.List;
 public class ExchangeSubscriber implements MessageListener {
     Logger logger = LoggerFactory.getLogger(ExchangeSubscriber.class);
 
-    CachedMarketDataService cachedMarketDataService;
-
-    public ExchangeSubscriber(CachedMarketDataService cachedMarketDataService) {
-        this.cachedMarketDataService = cachedMarketDataService;
-    }
+    CachedMarketDataService cachedMarketDataService = new CachedMarketDataService(new RestTemplateBuilder());
 
     @SneakyThrows
     @Override

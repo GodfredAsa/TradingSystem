@@ -5,6 +5,7 @@ import com.clientService.enums.PortfolioStatus;
 import com.clientService.exceptions.InvalidOrderRequestException;
 import com.clientService.exceptions.NotEnoughFundsException;
 import com.clientService.exceptions.NotFoundException;
+import com.clientService.loggerPack.LoggerConfig;
 import com.clientService.order.model.OrderModel;
 import com.clientService.order.model.OrderRequest;
 import com.clientService.order.model.Product;
@@ -104,12 +105,14 @@ public class OrderPlacingService {
             orderRequest.setQuantity((int) bestDealQuantity);
 
 //            Todo: Indication for partial purchase and split exchange purchases
-            String newOrderId1 = restTemplate.postForObject(bestDeal.values().stream().findFirst().get() + apiKey + "/order", orderRequestBody, String.class);
+            String orderId1 = restTemplate.postForObject(bestDeal.values().stream().findFirst().get() + apiKey + "/order", orderRequestBody, String.class);
             String otherUrl = bestDeal.values().stream().findFirst().get().equals(exchangeUrl1) ? exchangeUrl2 : exchangeUrl1;
 
             orderRequest.setQuantity(remainder);
-            String newOrderId2 = restTemplate.postForObject(otherUrl + apiKey + "/order", orderRequestBody, String.class);
+            String orderId2 = restTemplate.postForObject(otherUrl + apiKey + "/order", orderRequestBody, String.class);
 
+            String newOrderId1 = orderId1.substring(1, orderId1.length() - 1);
+            String newOrderId2 = orderId2.substring(1, orderId2.length() - 1);
             OrderModel order1 = new OrderModel(
                     newOrderId1,
                     orderRequest.getQuantity(),
@@ -133,14 +136,19 @@ public class OrderPlacingService {
                     user,
                     new ArrayList<OrderExecution>(),
                     0);
+            LoggerConfig.LOGGER.info("---------------------------------- order id1 "
+                    + order1.getId()
+                    + "order id2 "
+                    + order2.getId());
 
             orderRepository.save(order1);
             orderRepository.save(order2);
 
-            return new ArrayList<>(List.of(newOrderId1, newOrderId2));
+            return new ArrayList<String>(List.of(order1.getId(), order2.getId()));
         } else {
 
-            String newOrderId = restTemplate.postForObject(bestDeal.values().stream().findFirst().get(), orderRequestBody, String.class);
+            String orderId = restTemplate.postForObject(bestDeal.values().stream().findFirst().get() + apiKey + "/order", orderRequestBody, String.class);
+            String newOrderId = orderId.substring(1, orderId.length() - 1);
             OrderModel order = new OrderModel(
                     newOrderId,
                     currentOrderQuantity,
@@ -152,8 +160,11 @@ public class OrderPlacingService {
                     new ArrayList<OrderExecution>(),
                     0);
 
+            LoggerConfig.LOGGER.info("---------------------------------- order id "
+                    + order.getId());
+
             orderRepository.save(order);
-            return new ArrayList<>(List.of(newOrderId));
+            return new ArrayList<String>(List.of(order.getId()));
 
         }
 
