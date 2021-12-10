@@ -17,9 +17,18 @@ public class ReportLoggerController {
     ReportLoggerService reportLoggerService;
 
     @PostMapping("/log/userAuthentication")
-    public String logUserAuthentication(@RequestBody AuthenticationLog authenticationLog) {
+    public void logUserAuthentication(@RequestBody AuthenticationLog authenticationLog) {
         this.reportLoggerService.logUserAuthentication(authenticationLog);
-        return "hello";
+    }
+
+    @PostMapping
+    public void marketDataReport(@RequestBody MarketDataLog marketDataLog) {
+        this.reportLoggerService.marketDataReport(marketDataLog);
+    }
+
+    @PostMapping("/log/orders")
+    public void orders(@RequestBody OrderLog orderLog) {
+        this.reportLoggerService.orders(orderLog);
     }
 
     @GetMapping("/report/authLog/{userID}")
@@ -45,16 +54,6 @@ public class ReportLoggerController {
     @GetMapping("/report/orderLog/{userID}")
     public OrderLog getReportByUserID(Long userID) {
         return reportLoggerService.getReportByUserID(userID);
-    }
-
-    @GetMapping("/report/marketDataLog/{id}")
-    public MarketDataLog getMarketDataById(Long id) {
-        return reportLoggerService.getMarketDataById(id);
-    }
-
-    @GetMapping("/report/marketDataLog/{timestamp}")
-    public MarketDataLog getMarketDataByTimestamp(LocalDateTime timestamp) {
-        return reportLoggerService.getMarketDataByTimestamp(timestamp);
     }
 
 

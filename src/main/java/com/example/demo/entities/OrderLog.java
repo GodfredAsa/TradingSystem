@@ -40,7 +40,7 @@ public class OrderLog {
     private Status status;
     @Column(name = "type",nullable = false)
     private String type;
-    @Column(name = "cumulative quantity",nullable = false)
+    @Column(name = "cumulativeQuantity",nullable = false)
     private Long cumulativeQuantity;
 
 

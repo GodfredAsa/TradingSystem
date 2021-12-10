@@ -37,14 +37,15 @@ public class ReportLoggerService {
     public OrderLog getReportByUserID(Long userID){
         return orderLogRepository.getReportByUserID(userID);
     }
-    public MarketDataLog getMarketDataById(Long id){
-        return marketDataLogRepository.getMarketDataById(id);
-    }
-    public MarketDataLog getMarketDataByTimestamp(LocalDateTime timestamp){
-        return marketDataLogRepository.getMarketDataByTimestamp(timestamp);
-    }
 
     public void logUserAuthentication(AuthenticationLog authenticationLog) {
         authenticationLogRepository.save(authenticationLog);
     }
+    public void marketDataReport(MarketDataLog marketDataLog){
+        marketDataLogRepository.save(marketDataLog);
+    }
+    public void orders (OrderLog orderLog){
+        orderLogRepository.save(orderLog);
+    }
+
 }
