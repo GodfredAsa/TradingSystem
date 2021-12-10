@@ -1,6 +1,6 @@
 package com.example.demo.reportLoggerController;
 
-import com.example.demo.entities.AuthenticationLog;
+
 import com.example.demo.entities.QueueAuthenticationLog;
 import com.example.demo.entities.QueueOrderLog;
 import org.slf4j.Logger;

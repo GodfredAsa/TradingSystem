@@ -19,24 +19,23 @@ import java.util.Objects;
 public class AuthenticationLog {
     @Id
     @Column(name = "id")
-    @SequenceGenerator(name= "authIDSequence",allocationSize = 1)
+    @SequenceGenerator(name = "authIDSequence", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = " userID",nullable = false)
+    @Column(name = " userID", nullable = false)
     private Long userID;
 
-    @Column(name = "authStatus",nullable = false,columnDefinition = "varchar(10)")
+    @Column(name = "authStatus", nullable = false, columnDefinition = "varchar(10)")
     @Enumerated(EnumType.STRING)
     private AuthStatus authStatus;
 
-    @Column(name = "role",nullable = false,columnDefinition = "varchar(10)")
+    @Column(name = "role", nullable = false, columnDefinition = "varchar(10)")
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-    @Column(name = "date",nullable = false)
+    @Column(name = "date", nullable = false)
     private LocalDateTime localDateTime;
-
 
 
     @Override

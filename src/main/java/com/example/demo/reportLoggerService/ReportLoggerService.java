@@ -21,30 +21,43 @@ public class ReportLoggerService {
     @Autowired
     private MarketDataLogRepository marketDataLogRepository;
 
-
-    public AuthenticationLog findByUserID(Long userID){
+    //Method for querying authentication log by userID
+    public AuthenticationLog findByUserID(Long userID) {
         return authenticationLogRepository.findByUserID(userID);
     }
-    public AuthenticationLog findUserById(Long id){
+
+    //Method for querying authentication log by id
+    public AuthenticationLog findUserById(Long id) {
         return authenticationLogRepository.findUserById(id);
     }
+
+    //Method for getting order log by id
     public OrderLog getReportById(Long id) {
         return orderLogRepository.getReportById(id);
     }
-    public OrderLog getReportByTimestamp(LocalDateTime timestamp){
+
+    //Method for getting order log by timestamp
+    public OrderLog getReportByTimestamp(LocalDateTime timestamp) {
         return orderLogRepository.getReportByTimestamp(timestamp);
     }
-    public OrderLog getReportByUserID(Long userID){
+
+    //Method for getting order log by userID
+    public OrderLog getReportByUserID(Long userID) {
         return orderLogRepository.getReportByUserID(userID);
     }
 
+    //Method for saving authentication log onto the database
     public void logUserAuthentication(AuthenticationLog authenticationLog) {
         authenticationLogRepository.save(authenticationLog);
     }
-    public void marketDataReport(MarketDataLog marketDataLog){
+
+    //Method for saving market data log onto the database //TODO: Review
+    public void marketDataReport(MarketDataLog marketDataLog) {
         marketDataLogRepository.save(marketDataLog);
     }
-    public void orders (OrderLog orderLog){
+
+    //Method for saving orders on the database
+    public void orders(OrderLog orderLog) {
         orderLogRepository.save(orderLog);
     }
 

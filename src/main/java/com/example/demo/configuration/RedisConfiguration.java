@@ -26,7 +26,9 @@ public class RedisConfiguration {
     }
 
     @Bean
-    public ChannelTopic channelTopic2() {return new ChannelTopic(exchange2Channel);}
+    public ChannelTopic channelTopic2() {
+        return new ChannelTopic(exchange2Channel);
+    }
 
     @Bean
     public MessageListenerAdapter messageListenerAdapter() {
@@ -37,7 +39,7 @@ public class RedisConfiguration {
     public RedisMessageListenerContainer redisMessageListenerContainer(RedisConnectionFactory redisConnectionFactory) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(redisConnectionFactory);
-        container.setMessageListeners(Map.of(messageListenerAdapter(), Arrays.asList(channelTopic(),channelTopic2())));
+        container.setMessageListeners(Map.of(messageListenerAdapter(), Arrays.asList(channelTopic(), channelTopic2())));
         return container;
     }
 }

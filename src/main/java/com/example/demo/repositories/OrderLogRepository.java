@@ -8,8 +8,10 @@ import java.time.LocalDateTime;
 
 @Repository
 public interface OrderLogRepository extends JpaRepository<OrderLog, Long> {
-
+    //Methods for  querying the database for order log
     public OrderLog getReportByTimestamp(LocalDateTime timestamp);
+
     public OrderLog getReportById(Long id);
+
     public OrderLog getReportByUserID(Long userID);
 }
