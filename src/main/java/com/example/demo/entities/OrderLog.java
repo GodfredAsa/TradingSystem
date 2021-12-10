@@ -21,26 +21,26 @@ public class OrderLog {
     @SequenceGenerator(name = "OrderLog", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @Column(name = "userID",nullable = false)
+    @Column(name = "userID", nullable = false)
     private Long userID;
-    @Column(name = "exchangeOrderID",nullable = false)
+    @Column(name = "exchangeOrderID", nullable = false)
     private String exchangeOrderID;
-    @Column(name = "productID",nullable = false)
+    @Column(name = "productID", nullable = false)
     private int productID;
-    @Column(name = "quantity",nullable = false)
+    @Column(name = "quantity", nullable = false)
     private int quantity;
-    @Column(name = "price",nullable = false)
+    @Column(name = "price", nullable = false)
     private Double price;
-    @Column(name = "side",nullable = false)
+    @Column(name = "side", nullable = false)
     @Enumerated(EnumType.STRING)
     private TradeSide side;
-    @Column(name = "timestamp",nullable = false)
+    @Column(name = "timestamp", nullable = false)
     private LocalDateTime timestamp;
-    @Column(name = "status",nullable = false)
+    @Column(name = "status", nullable = false)
     private Status status;
-    @Column(name = "type",nullable = false)
+    @Column(name = "type", nullable = false)
     private String type;
-    @Column(name = "cumulativeQuantity",nullable = false)
+    @Column(name = "cumulativeQuantity", nullable = false)
     private Long cumulativeQuantity;
 
 

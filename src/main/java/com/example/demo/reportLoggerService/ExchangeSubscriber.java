@@ -14,19 +14,19 @@ import java.util.Arrays;
 
 
 public class ExchangeSubscriber implements MessageListener {
-    Logger logger =  LoggerFactory.getLogger(ExchangeSubscriber.class);
+    Logger logger = LoggerFactory.getLogger(ExchangeSubscriber.class);
 
     @SneakyThrows
     @Override
     public void onMessage(Message message, byte[] pattern) {
-        if (new String(message.getChannel(), StandardCharsets.UTF_8).equals("exchange1")){
+        if (new String(message.getChannel(), StandardCharsets.UTF_8).equals("exchange1")) {
             ObjectMapper objectMapper = new ObjectMapper();
             String body = new String(message.getBody());
 
             Product[] msg = objectMapper.readValue(body, Product[].class);
             logger.info("Consumed Message1 {}", Arrays.asList(msg));
 
-        } else if(new String(message.getChannel(), StandardCharsets.UTF_8).equals("exchange2")) {
+        } else if (new String(message.getChannel(), StandardCharsets.UTF_8).equals("exchange2")) {
             ObjectMapper objectMapper = new ObjectMapper();
             String body = new String(message.getBody());
 
