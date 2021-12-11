@@ -1,19 +1,24 @@
 package com.clientService.order.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
+@ToString
+@Entity
 public class MarketDataProduct {
     @JsonProperty("LAST_TRADED_PRICE")
     private double lastTradedPrice;
 
     @JsonProperty("SELL_LIMIT")
-    private int sellLimit;
+    private long sellLimit;
 
     @JsonProperty("BID_PRICE")
     private double bidPrice;
@@ -22,8 +27,9 @@ public class MarketDataProduct {
     private double askPrice;
 
     @JsonProperty("BUY_LIMIT")
-    private int buyLimit;
+    private long buyLimit;
 
+    @Id
     @JsonProperty("TICKER")
     private String ticker;
 

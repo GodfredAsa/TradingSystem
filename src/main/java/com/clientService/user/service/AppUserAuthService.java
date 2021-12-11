@@ -128,7 +128,7 @@ public class AppUserAuthService implements UserDetailsService {
             log.put("localDateTime", LocalDateTime.now());
 
             HttpEntity<String> request = SendLoggerRequest.sendLoggerRequest(log);
-            jmsTemplate.convertAndSend("authentication_log_queue", new AuthenticationLog(user.getId(), AuthStatus.REGISTER, LocalDateTime.now(), user.getUserRole()));
+            jmsTemplate.convertAndSend("authentication_log_queue", new AuthenticationLog(user.getId(), AuthStatus.REGISTER, LocalDateTime.now(), user.getUserRole()).toString());
 //            QueuePublisher queuePublisher = new QueuePublisher();
 //            queuePublisher.publishToQueue("authentication_log_queue", new AuthenticationLog(user.getId(), AuthStatus.REGISTER, LocalDateTime.now(), user.getUserRole()));
 //            restTemplate.postForObject(reportUrl + "userAuthentication", request, String.class);
