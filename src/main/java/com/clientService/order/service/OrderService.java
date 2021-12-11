@@ -1,27 +1,28 @@
 package com.clientService.order.service;
 
 import com.clientService.exceptions.InvalidOrderRequestException;
-import com.clientService.order.model.*;
+import com.clientService.order.model.FullOrderBook;
+import com.clientService.order.model.OrderBook;
+import com.clientService.order.model.OrderModel;
 import com.clientService.order.repository.OrderRepository;
-import com.clientService.user.repository.MarketDataRepository;
-import com.clientService.user.service.AppUserService;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.*;
+import java.util.ArrayList;
 
 @Service
 public class OrderService {
 
-    private final ProductService productService;
-    private final OrderRepository orderRepository;
-    private final AppUserService appUserService;
-    private final MarketDataRepository marketDataRepository;
+    @Autowired
+    private OrderRepository orderRepository;
 
-
-    private final RestTemplate restTemplate;
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Value("${api.key}")
     private String apiKey;
@@ -35,37 +36,36 @@ public class OrderService {
     @Value(("${marketData.both}"))
     private String bothMarketData;
 
-    //Gets logged-in user for the current session
-//    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-    public OrderService(RestTemplate restTemplate,
-                        ProductService productService,
-                        OrderRepository orderRepository,
-                        AppUserService appUserService,
-                        MarketDataRepository marketDataRepository
-    ) {
-        this.restTemplate = restTemplate;
-        this.productService = productService;
-        this.orderRepository = orderRepository;
-        this.appUserService = appUserService;
-        this.marketDataRepository = marketDataRepository;
-
-    }
 
 
+    /**
+     * @param orderId The id of the order to be retrieved
+     * @return The order with the provided id, if it exists
+     */
     public OrderModel checkOrderStatus(String orderId) {
 
-        OrderModel responseFromExchange1 = restTemplate.getForObject(exchangeUrl1 + apiKey + "/order/" + orderId, OrderModel.class);
-        OrderModel responseFromExchange2 = restTemplate.getForObject(exchangeUrl2 + apiKey + "/order/" + orderId, OrderModel.class);
-//        OrderModel response = marketDataRepository.findById(orderId);
+        OrderModel responseFromExchange1;
+        OrderModel responseFromExchange2;
+
+
+        try {
+            responseFromExchange1 = restTemplate.getForObject(exchangeUrl1 + apiKey + "/order/" + orderId, OrderModel.class);
+
+        } catch (HttpServerErrorException e1) {
+            responseFromExchange1 = null;
+        }
+
+        try {
+            responseFromExchange2 = restTemplate.getForObject(exchangeUrl2 + apiKey + "/order/" + orderId, OrderModel.class);
+
+        } catch (HttpServerErrorException e2) {
+            responseFromExchange2 = null;
+        }
 
 //        find out whether the order has been completed by the
 //        response status code (was suggested by PM) if so, then
-//        return a local instance of the completed order
-//        if (responseFromExchange1.getStatus().equals(HttpStatus.NOT_FOUND) && responseFromExchange1.getStatus().equals(HttpStatus.NOT_FOUND) && orderRepository.findById(orderId).isPresent()) {
-
-        if (responseFromExchange1.getStatus().equals(HttpStatus.NOT_FOUND) && responseFromExchange2.getStatus().equals(HttpStatus.NOT_FOUND) && orderRepository.findById(orderId).isPresent()) {
+//        return a local db instance of the completed order
+        if (responseFromExchange1 == null && responseFromExchange2 == null && orderRepository.findById(orderId).isPresent()) {
 
 //            Todo: We know the order is completed, we can do some custom logic here
             return orderRepository.findById(orderId).get();
@@ -74,7 +74,7 @@ public class OrderService {
         //Entire method can be refactored to use only this check
 
         //check whether it was an actual invalid request
-        else if (responseFromExchange1.getStatus().equals(HttpStatus.NOT_FOUND) && responseFromExchange2.getStatus().equals(HttpStatus.NOT_FOUND) && orderRepository.findById(orderId).isEmpty()) {
+        else if (responseFromExchange1 == null && responseFromExchange2 == null && orderRepository.findById(orderId).isEmpty()) {
 
             throw new InvalidOrderRequestException("Order with the provided order Id does not exist");
         } else {
@@ -83,49 +83,25 @@ public class OrderService {
 
     }
 
-//    public String saveOrder(
-//            String newOrderId,
-//            int currentOrderQuantity,
-//            double price,
-//            String side,
-//            OrderStatus orderStatus,
-//            String orderProduct,
-//            AppUser user,
-//            List<OrderExecution> list
-//    ) {
-//
-//
-//            Order order = new Order(
-//                    newOrderId,
-//                    currentOrderQuantity,
-//                    orderRequest.getPrice(),
-//                    orderRequest.getSide(),
-//                    OrderStatus.PENDING,
-//                    orderProduct,
-//                    user.get(),
-//                    new ArrayList<OrderExecution>());
-//            LoggerConfig.LOGGER.info("order placed successfully");
-//            return response;
-//
-////         else {
-////            LoggerConfig.LOGGER.error("There was an issue placing your order");
-////            return "There was an issue placing your order, please try again later";
-//
-//
-//        return "";
-//
-//    }
+    /**
+     * @return A list containing a single order id or two order ids in the case of a split order
+     */
+    public ArrayList<FullOrderBook> getOrderBook(int exchange) {
 
-    public ArrayList<FullOrderBook> getOrderBook() {
-
-        OrderBook orderBook = restTemplate.getForObject(bothMarketData + "/orderbook", OrderBook.class);
+        OrderBook orderBook = restTemplate.getForObject(exchange == 1 ? exchangeUrl1 : exchangeUrl2 + "/orderbook", OrderBook.class);
         ArrayList<FullOrderBook> fullFullOrderBooks = orderBook.getFullOrderBooks();
         return fullFullOrderBooks;
     }
 
-    public ArrayList<FullOrderBook> getOrderBookOf(String product, String option) {
+    /**
+     * @param product  The ticker for a product
+     * @param filterby Which metric to filter by
+     * @return
+     * @Param exchange The exchange to make this query against
+     */
+    public ArrayList<FullOrderBook> getOrderBookOf(int exchange, String product, String filterby) {
 
-        OrderBook orderBook = restTemplate.getForObject(bothMarketData + "/orderbook/" + product + "/" + option, OrderBook.class);
+        OrderBook orderBook = restTemplate.getForObject(exchange == 1 ? exchangeUrl1 : exchangeUrl2 + "/orderbook/" + product + "/" + filterby, OrderBook.class);
         ArrayList<FullOrderBook> fullFullOrderBooks = orderBook.getFullOrderBooks();
         return fullFullOrderBooks;
     }

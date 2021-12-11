@@ -15,14 +15,12 @@ import java.util.Optional;
 public class OrderServiceHelper {
 
 
-    private static String exchangeUrl1;
-    private static String exchangeUrl2;
-    private static String apiKey;
+    @Autowired
+    private RestTemplate restTemplate;
 
-    @Value("${api.key}")
-    public static void setApiKey(String apiKey) {
-        OrderServiceHelper.apiKey = apiKey;
-    }
+    @Value(("${api.key}"))
+    private String apiKey;
+
 
     @Value("${exchange.url1}")
     public void setExchangeUrl1(String exchangeUrl1) {
@@ -36,10 +34,7 @@ public class OrderServiceHelper {
 
     private static final RestTemplate restTemplate;
 
-    static {
-        restTemplate = new RestTemplate();
-    }
-
+<
     /**
      *
      * @param orderRequest Body of the users order
@@ -47,17 +42,6 @@ public class OrderServiceHelper {
      */
     //Returns the exchange and quantity to buy from first before the other
     public static Map<Long, String> getBestBidAndQuantity(OrderRequest orderRequest) {
-
-//        MarketProductList marketProductList1 = restTemplate
-//                .getForObject(exchangeUrl1 + apiKey + "/md", MarketProductList.class);
-//        List<MarketProduct> exchange1Products = marketProductList1
-//                .getMarketProducts();
-//
-//        MarketProductList marketProductList2 = restTemplate
-//                .getForObject(exchangeUrl2 + apiKey + "/md", MarketProductList.class);
-//        List<MarketProduct> exchange2Products = marketProductList2
-//                .getMarketProducts();
-
 
         Optional<MarketDataProduct> bestOfExc1;
         Optional<MarketDataProduct> bestOfExc2;

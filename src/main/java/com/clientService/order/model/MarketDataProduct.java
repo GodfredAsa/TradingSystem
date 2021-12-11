@@ -2,18 +2,17 @@ package com.clientService.order.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
+import java.io.Serializable;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
+@EqualsAndHashCode
 @Getter
 @Setter
-@ToString
-@Entity
-public class MarketDataProduct {
+public class MarketDataProduct implements Serializable {
     @JsonProperty("LAST_TRADED_PRICE")
     private double lastTradedPrice;
 

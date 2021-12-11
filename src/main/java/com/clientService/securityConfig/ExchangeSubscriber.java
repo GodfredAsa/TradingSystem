@@ -15,8 +15,14 @@ import java.util.Arrays;
 import java.util.List;
 
 
+@NoArgsConstructor
 public class ExchangeSubscriber implements MessageListener {
-    Logger logger =  LoggerFactory.getLogger(ExchangeSubscriber.class);
+    Logger logger = LoggerFactory.getLogger(ExchangeSubscriber.class);
+
+    /**
+     * @param message Data from redis server containing market data from exchange 1 or 2
+     * @param pattern
+     */
 
     @SneakyThrows
     @Override
