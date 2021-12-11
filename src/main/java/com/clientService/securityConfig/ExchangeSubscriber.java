@@ -42,4 +42,3 @@ public class ExchangeSubscriber implements MessageListener {
             logger.info("Consumed Message2 {}", msgList);
         }
     }
-}
