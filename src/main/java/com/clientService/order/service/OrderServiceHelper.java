@@ -2,10 +2,8 @@ package com.clientService.order.service;
 
 import com.clientService.order.model.MarketDataProduct;
 import com.clientService.order.model.OrderRequest;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -13,10 +11,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@Service
-@AllArgsConstructor
-@NoArgsConstructor
+@Component
 public class OrderServiceHelper {
+
 
     @Autowired
     private RestTemplate restTemplate;
@@ -24,18 +21,27 @@ public class OrderServiceHelper {
     @Value(("${api.key}"))
     private String apiKey;
 
+
     @Value("${exchange.url1}")
-    private String exchangeUrl1;
+    public void setExchangeUrl1(String exchangeUrl1) {
+        OrderServiceHelper.exchangeUrl1 = exchangeUrl1;
+    }
 
     @Value(("${exchange.url2}"))
-    private String exchangeUrl2;
+    public void setExchangeUrl2(String exchangeUrl2) {
+        OrderServiceHelper.exchangeUrl2 = exchangeUrl2;
+    }
 
+    private static final RestTemplate restTemplate;
+
+<
     /**
+     *
      * @param orderRequest Body of the users order
      * @return A map containing a key(quantity of the best deal) and value (bid or ask price of the best deal)
      */
     //Returns the exchange and quantity to buy from first before the other
-    public Map<Integer, String> getBestBidAndQuantity(OrderRequest orderRequest) {
+    public static Map<Long, String> getBestBidAndQuantity(OrderRequest orderRequest) {
 
         Optional<MarketDataProduct> bestOfExc1;
         Optional<MarketDataProduct> bestOfExc2;
@@ -81,7 +87,7 @@ public class OrderServiceHelper {
                 //If exchange1 selling price is lower
                 if (firstOrSecond < 0) {
 
-                    return new HashMap<Integer, String>() {{
+                    return new HashMap<Long, String>() {{
                         put(bestOfExc1.get().getBuyLimit(), exchangeUrl1);
                     }};
 
@@ -89,7 +95,7 @@ public class OrderServiceHelper {
                 //If exchange2 selling price is lower
                 else {
 
-                    return new HashMap<Integer, String>() {{
+                    return new HashMap<Long, String>() {{
                         put(bestOfExc2.get().getBuyLimit(), exchangeUrl2);
                     }};
                 }
@@ -102,7 +108,7 @@ public class OrderServiceHelper {
                 //If exchange1 buy price is higher
                 if (firstOrSecond > 0) {
 
-                    return new HashMap<Integer, String>() {{
+                    return new HashMap<Long, String>() {{
                         put(bestOfExc1.get().getBuyLimit(), exchangeUrl1);
                     }};
 
@@ -110,7 +116,7 @@ public class OrderServiceHelper {
                 //If exchange2 buy price is higher
                 else {
 
-                    return new HashMap<Integer, String>() {{
+                    return new HashMap<Long, String>() {{
                         put(bestOfExc2.get().getBuyLimit(), exchangeUrl2);
                     }};
                 }
@@ -120,7 +126,7 @@ public class OrderServiceHelper {
         //If product is only on exchange1
         else if (bestOfExc1.isPresent()) {
 
-            return new HashMap<Integer, String>() {{
+            return new HashMap<Long, String>() {{
                 put(orderRequest.getSide().equals("BUY") ? bestOfExc1.get().getBuyLimit() : bestOfExc1.get().getSellLimit(), exchangeUrl1);
             }};
 
@@ -128,7 +134,7 @@ public class OrderServiceHelper {
         //If product is only on exchange2
         else if (bestOfExc2.isPresent()) {
 
-            return new HashMap<Integer, String>() {{
+            return new HashMap<Long, String>() {{
                 put(orderRequest.getSide().equals("BUY") ? bestOfExc2.get().getBuyLimit() : bestOfExc2.get().getSellLimit(), exchangeUrl2);
             }};
 
@@ -137,8 +143,8 @@ public class OrderServiceHelper {
         else {
 
             //just split then in two equal halves
-            return new HashMap<Integer, String>() {{
-                put((orderRequest.getQuantity() / 2), exchangeUrl1);
+            return new HashMap<Long, String>() {{
+                put((long) (orderRequest.getQuantity() / 2), exchangeUrl1);
             }};
         }
     }

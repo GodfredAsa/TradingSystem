@@ -4,7 +4,6 @@ package com.clientService.securityConfig;
 import com.clientService.order.model.MarketDataProduct;
 import com.clientService.order.service.CachedMarketDataService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
+
 @NoArgsConstructor
 public class ExchangeSubscriber implements MessageListener {
     Logger logger = LoggerFactory.getLogger(ExchangeSubscriber.class);
@@ -23,10 +23,11 @@ public class ExchangeSubscriber implements MessageListener {
      * @param message Data from redis server containing market data from exchange 1 or 2
      * @param pattern
      */
+
     @SneakyThrows
     @Override
     public void onMessage(Message message, byte[] pattern) {
-        if (new String(message.getChannel(), StandardCharsets.UTF_8).equals("exchange1")) {
+        if (new String(message.getChannel(), StandardCharsets.UTF_8).equals("exchange1")){
             ObjectMapper objectMapper = new ObjectMapper();
             String body = new String(message.getBody());
 
@@ -36,7 +37,7 @@ public class ExchangeSubscriber implements MessageListener {
             CachedMarketDataService.setMarketDataE1(msgList);
             logger.info("Consumed Message1 {}", msgList);
 
-        } else if (new String(message.getChannel(), StandardCharsets.UTF_8).equals("exchange2")) {
+        } else if(new String(message.getChannel(), StandardCharsets.UTF_8).equals("exchange2")) {
             ObjectMapper objectMapper = new ObjectMapper();
             String body = new String(message.getBody());
 
@@ -47,4 +48,3 @@ public class ExchangeSubscriber implements MessageListener {
             logger.info("Consumed Message2 {}", msgList);
         }
     }
-}
