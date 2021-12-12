@@ -46,7 +46,7 @@ marketData:
 
 exchange:
   url1: https://exchange.matraining.com/
-  url2: https://exchange2.matraining.com/
+  url2: https://exchange1.matraining.com/
 
 redis:
   exchange1channel: exchange1

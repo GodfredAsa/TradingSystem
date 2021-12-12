@@ -1,22 +1,24 @@
 package com.clientService.order.service;
 
-import com.clientService.order.model.MarketData;
 import com.clientService.order.model.MarketDataProduct;
-import com.clientService.order.model.OrderModel;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-
+@Service
 public class CachedMarketDataService {
-
     private static List<MarketDataProduct> cachedMarketDataProductsE1;
     private static List<MarketDataProduct> cachedMarketDataProductsE2;
 
@@ -25,7 +27,6 @@ public class CachedMarketDataService {
 
     private static String exchangeUrl1;
     private static String exchangeUrl2;
-
 
     @Value("${exchange.url1}")
     public void setExchangeUrl1(String exchangeUrl1) {
@@ -52,11 +53,10 @@ public class CachedMarketDataService {
     }
 
 
-    @CachePut(cacheNames = "marketData1"
+    @CachePut(cacheNames = "marketData1")
     public static void setMarketDataE1(List<MarketDataProduct> marketDataProducts) {
         CachedMarketDataService.cachedMarketDataProductsE1 = marketDataProducts;
     }
-
 
     @CachePut(cacheNames = "marketData2")
     public static void setMarketDataE2(List<MarketDataProduct> marketDataProducts) {
@@ -64,10 +64,8 @@ public class CachedMarketDataService {
     }
 
     /**
-     *
      * @return cached list of most recent market data from exchange 1
      */
-
     @Cacheable(cacheNames = "marketData1")
     public static List<MarketDataProduct> getMarketDataE1() {
         if (CachedMarketDataService.cachedMarketDataProductsE1.isEmpty()) {
@@ -80,10 +78,8 @@ public class CachedMarketDataService {
     }
 
     /**
-     *
      * @return cached list of most recent market data from exchange 2
      */
-
     @Cacheable(cacheNames = "marketData2")
     public static List<MarketDataProduct> getMarketDataE2() {
         if (CachedMarketDataService.cachedMarketDataProductsE2.isEmpty()) {
@@ -91,34 +87,30 @@ public class CachedMarketDataService {
             List<MarketDataProduct> marketProductsList = Arrays.asList(marketData);
             CachedMarketDataService.setMarketDataE2(marketProductsList);
             return marketProductsList;
-
         }
         return CachedMarketDataService.cachedMarketDataProductsE2;
     }
 
 //    Todo: schedule a chron job to call this method every hour
+
     /**
      * clears current cached market data from exchange 1
      */
-
     @CacheEvict(cacheNames = "marketData1")
     public static void clearMarketDataE1() {
 
         if (CachedMarketDataService.cachedMarketDataProductsE1.isEmpty())
             return;
-
         CachedMarketDataService.cachedMarketDataProductsE1.clear();
     }
 
     /**
      * clears current cached market data from exchange 2
      */
-
     @CacheEvict(cacheNames = "marketData2")
     public static void clearMarketDataE2() {
         if (CachedMarketDataService.cachedMarketDataProductsE2.isEmpty())
             return;
-
         CachedMarketDataService.cachedMarketDataProductsE2.clear();
     }
 
