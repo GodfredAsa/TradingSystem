@@ -19,6 +19,7 @@ import java.util.List;
 
 @Service
 public class CachedMarketDataService {
+
     private static List<MarketDataProduct> cachedMarketDataProductsE1;
     private static List<MarketDataProduct> cachedMarketDataProductsE2;
 
@@ -37,6 +38,7 @@ public class CachedMarketDataService {
     public static void setExchangeUrl2(String exchangeUrl2) {
         CachedMarketDataService.exchangeUrl2 = exchangeUrl2;
     }
+
 
     static {
         restTemplateBuilder = new RestTemplateBuilder();
