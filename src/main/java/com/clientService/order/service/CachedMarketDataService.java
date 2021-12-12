@@ -37,6 +37,7 @@ public class CachedMarketDataService {
         CachedMarketDataService.exchangeUrl2 = exchangeUrl2;
     }
 
+
     static {
         restTemplateBuilder = new RestTemplateBuilder();
         restTemplate = restTemplateBuilder.build();
