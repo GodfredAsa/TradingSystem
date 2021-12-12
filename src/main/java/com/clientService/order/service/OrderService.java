@@ -16,6 +16,8 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 
 @Service
+@NoArgsConstructor
+@AllArgsConstructor
 public class OrderService {
 
     @Autowired
@@ -35,7 +37,6 @@ public class OrderService {
 
     @Value(("${marketData.both}"))
     private String bothMarketData;
-
 
 
     /**

@@ -2,8 +2,8 @@ package com.clientService.order.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
-import java.io.Serializable;
 
+import java.io.Serializable;
 
 @Data
 @AllArgsConstructor
@@ -17,7 +17,7 @@ public class MarketDataProduct implements Serializable {
     private double lastTradedPrice;
 
     @JsonProperty("SELL_LIMIT")
-    private long sellLimit;
+    private int sellLimit;
 
     @JsonProperty("BID_PRICE")
     private double bidPrice;
@@ -26,9 +26,8 @@ public class MarketDataProduct implements Serializable {
     private double askPrice;
 
     @JsonProperty("BUY_LIMIT")
-    private long buyLimit;
+    private int buyLimit;
 
-    @Id
     @JsonProperty("TICKER")
     private String ticker;
 
