@@ -48,5 +48,3 @@ public class ExchangeSubscriber implements MessageListener {
         }
     }
 }
-}
-}
