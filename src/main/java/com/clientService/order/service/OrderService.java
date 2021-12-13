@@ -4,16 +4,25 @@ import com.clientService.exceptions.InvalidOrderRequestException;
 import com.clientService.order.model.FullOrderBook;
 import com.clientService.order.model.OrderBook;
 import com.clientService.order.model.OrderModel;
+import com.clientService.order.model.OrderResponse;
 import com.clientService.order.repository.OrderRepository;
+import com.clientService.user.model.Account;
+import com.clientService.user.model.AppUser;
+import com.clientService.user.repository.AppUserRepository;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @NoArgsConstructor
@@ -34,9 +43,6 @@ public class OrderService {
 
     @Value(("${exchange.url2}"))
     private String exchangeUrl2;
-
-    @Value(("${marketData.both}"))
-    private String bothMarketData;
 
 
     /**

@@ -3,10 +3,7 @@ package com.clientService.order.controller;
 import com.clientService.order.model.FullOrderBook;
 import com.clientService.order.model.OrderModel;
 import com.clientService.order.model.OrderRequest;
-import com.clientService.order.service.OrderPlacingService;
-import com.clientService.order.service.OrderService;
-import com.clientService.order.service.OrderServiceHelper;
-import com.clientService.order.service.ProductService;
+import com.clientService.order.service.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,12 +21,18 @@ public class OrderController {
     private final ProductService productService;
     private final OrderServiceHelper orderServiceHelper;
     private final OrderPlacingService orderPlacingService;
+    private final CancelOrderService cancelOrderService;
 
-    public OrderController(OrderService orderService, ProductService productService, OrderServiceHelper orderServiceHelper, OrderPlacingService orderPlacingService) {
+    public OrderController(OrderService orderService,
+                           ProductService productService,
+                           OrderServiceHelper orderServiceHelper,
+                           OrderPlacingService orderPlacingService,
+                           CancelOrderService cancelOrderService) {
         this.orderService = orderService;
         this.productService = productService;
         this.orderServiceHelper = orderServiceHelper;
         this.orderPlacingService = orderPlacingService;
+        this.cancelOrderService = cancelOrderService;
     }
 
     /**
@@ -49,8 +52,8 @@ public class OrderController {
      * @return Json containing current details of the order belonging to the provided id
      */
     @GetMapping("getstatus/{orderid}")
-    public ResponseEntity<OrderModel> checkOrderStatus(@PathVariable String orderid) {
-        return new ResponseEntity<>(this.orderService.checkOrderStatus(orderid), HttpStatus.OK);
+    public ResponseEntity<OrderModel> checkOrderStatus(@PathVariable String orderId) {
+        return new ResponseEntity<>(this.orderService.checkOrderStatus(orderId), HttpStatus.OK);
     }
 
     /**
@@ -66,7 +69,7 @@ public class OrderController {
 
     /**
      * @param product  Product ticker
-     * @param filterBy Metric to filter by
+     * @param filterby Metric to filter by
      * @return List of orders and their executions filtered by provided filter
      */
     @GetMapping("orderbook/{exchange}/{product}/{filterby}")
@@ -75,6 +78,15 @@ public class OrderController {
         ArrayList<FullOrderBook> fullOrderBook = orderService.getOrderBookOf(exchange, product, filterby);
 
         return new ResponseEntity<ArrayList<FullOrderBook>>(fullOrderBook, HttpStatus.OK);
+    }
+
+    @DeleteMapping("cancel/{portfolioId}/{orderId}")
+    public ResponseEntity<Boolean> cancelOrder(@PathVariable Long portfolioId, @PathVariable String orderId, @AuthenticationPrincipal UserDetails appPrincipal) {
+
+        boolean isOrderCancelled = cancelOrderService.cancelOrder(portfolioId, orderId, appPrincipal);
+
+        return new ResponseEntity<Boolean>(isOrderCancelled, HttpStatus.OK);
+
     }
 
 
