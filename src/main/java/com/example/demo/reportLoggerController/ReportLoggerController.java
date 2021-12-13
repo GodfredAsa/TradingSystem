@@ -16,7 +16,7 @@ public class ReportLoggerController {
     @Autowired
     ReportLoggerService reportLoggerService;
 
-    //Endpoint for authentication log
+    /**Endpoint for authentication log*/
     @PostMapping("/log/userAuthentication")
     public void logUserAuthentication(@RequestBody AuthenticationLog authenticationLog) {
         this.reportLoggerService.logUserAuthentication(authenticationLog);
@@ -28,13 +28,13 @@ public class ReportLoggerController {
         this.reportLoggerService.marketDataReport(marketDataLog);
     }
 
-    //Endpoint for order log
+    /**Endpoint for order log*/
     @PostMapping("/log/orders")
     public void orders(@RequestBody OrderLog orderLog) {
         this.reportLoggerService.orders(orderLog);
     }
 
-    // Endpoint for getting authentication log by userID
+    /** Endpoint for getting authentication log by userID*/
     @GetMapping("/report/authLog/{userID}")
     public AuthenticationLog findByUserID(@PathVariable Long userID) {
         return reportLoggerService.findByUserID(userID);

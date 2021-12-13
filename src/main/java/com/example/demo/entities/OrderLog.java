@@ -2,6 +2,7 @@ package com.example.demo.entities;
 
 import com.example.demo.enums.Status;
 import com.example.demo.enums.TradeSide;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -17,29 +18,31 @@ import java.util.Objects;
 @Table(name = "OrderLog")
 public class OrderLog {
     @Id
-    @Column(name = "id")
-    @SequenceGenerator(name = "OrderLog", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @Column(name = "orderID",nullable = false)
+    private String id;
     @Column(name = "userID", nullable = false)
-    private Long userID;
-    @Column(name = "productID", nullable = false)
-    private int productID;
+    private long userID;
+    @Column(name = "productIDd", nullable = false)
+    private String  productID;
     @Column(name = "quantity", nullable = false)
     private int quantity;
     @Column(name = "price", nullable = false)
-    private Double price;
+    private double price;
     @Column(name = "side", nullable = false)
     @Enumerated(EnumType.STRING)
     private TradeSide side;
     @Column(name = "timestamp", nullable = false)
-    private LocalDateTime timestamp;
+    private String timestamp;
     @Column(name = "status", nullable = false)
     private Status status;
-    @Column(name = "type", nullable = false)
-    private String type;
     @Column(name = "cumulativeQuantity", nullable = false)
-    private Long cumulativeQuantity;
+    private int cumulativeQuantity;
+    @Column(name = "isSplitOrder",nullable =false)
+    private boolean isSplitOrder;
+    @Column(name= "bestPrice",nullable = false)
+    private double bestPrice;
+    @Column(name = "bestQuantity", nullable = false)
+    private int bestQuantity;
 
 
     @Override
