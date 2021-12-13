@@ -54,7 +54,7 @@ public class ReportLoggerController {
 
     // Endpoint for getting order log by timestamp
     @GetMapping("/report/orderLog/{timestamp}")
-    public OrderLog getReportByTimeStamp(@PathVariable LocalDateTime timestamp) {
+    public OrderLog getReportByTimeStamp(@PathVariable String timestamp) {
         return reportLoggerService.getReportByTimestamp(timestamp);
     }
 

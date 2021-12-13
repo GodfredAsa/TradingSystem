@@ -37,7 +37,7 @@ public class ReportLoggerService {
     }
 
     //Method for getting order log by timestamp
-    public OrderLog getReportByTimestamp(LocalDateTime timestamp) {
+    public OrderLog getReportByTimestamp(String timestamp) {
         return orderLogRepository.getReportByTimestamp(timestamp);
     }
 
