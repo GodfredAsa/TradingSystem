@@ -30,23 +30,26 @@ spring:
 jwt:
   secret: fghdkf689dfghd56dgbhs
 
+#Todo: Modify for hosted instance
+#Todo: For dev env. Create second properties file
+#https://trade-reporting-service.herokuapp.com/
 report:
   url: http://172.30.5.51:8080/api/log/
 
+#Todo: Modify for hosted instance
 order:
   url: http://172.19.128.1:8080/api/order
 
 api:
   key: abb2f34c-286e-4260-b438-a7755a421423
 
-marketData:
-  url1: http://*****/
-  url2: http://*****/
-  both: http://*****/
-
 exchange:
   url1: https://exchange.matraining.com/
   url2: https://exchange2.matraining.com/
+
+#For hosted market data endpoint
+#https://trading-system-market-data.herokuapp.com/
+
 
 redis:
   exchange1channel: exchange1

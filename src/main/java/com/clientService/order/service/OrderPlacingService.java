@@ -141,8 +141,8 @@ public class OrderPlacingService {
                     new ArrayList<OrderExecution>(),
                     0);
             LoggerConfig.LOGGER.info("=================================== Split order ===================================\n");
-            LoggerConfig.LOGGER.info("=================================== First order with id " + order1.getId() + " placed ===================================\n");
-            LoggerConfig.LOGGER.info("=================================== Second order with id " + order1.getId() + " placed ===================================\n");
+            LoggerConfig.LOGGER.info("=================================== First order with id: " + order1.getId() + " placed ===================================\n");
+            LoggerConfig.LOGGER.info("=================================== Second order with id: " + order1.getId() + " placed ===================================\n");
 
             orderRepository.save(order1);
             orderRepository.save(order2);
@@ -163,7 +163,7 @@ public class OrderPlacingService {
                     new ArrayList<OrderExecution>(),
                     0);
 
-            LoggerConfig.LOGGER.info("=================================== Order with id " + order.getId() + " placed ===================================\n");
+            LoggerConfig.LOGGER.info("=================================== Order with id: " + order.getId() + " placed ===================================\n");
 
             orderRepository.save(order);
             return new ArrayList<String>(List.of(order.getId()));
