@@ -50,6 +50,7 @@ exchange:
 #For hosted market data endpoint
 #https://trading-system-market-data.herokuapp.com/
 
+
 redis:
   exchange1channel: exchange1
   exchange2channel: exchange2
