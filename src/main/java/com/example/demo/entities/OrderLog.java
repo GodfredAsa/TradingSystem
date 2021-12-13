@@ -2,6 +2,10 @@ package com.example.demo.entities;
 
 import com.example.demo.enums.Status;
 import com.example.demo.enums.TradeSide;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -15,6 +19,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Entity
 @Table(name = "OrderLog")
+@JsonSerialize
 public class OrderLog {
     @Id
     @Column(name = "id")
@@ -33,6 +38,8 @@ public class OrderLog {
     @Enumerated(EnumType.STRING)
     private TradeSide side;
     @Column(name = "timestamp", nullable = false)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime timestamp;
     @Column(name = "status", nullable = false)
     private Status status;

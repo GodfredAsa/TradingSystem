@@ -4,6 +4,7 @@ import com.example.demo.entities.AuthenticationLog;
 import com.example.demo.entities.MarketDataLog;
 import com.example.demo.entities.OrderLog;
 import com.example.demo.reportLoggerService.ReportLoggerService;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,6 +36,7 @@ public class ReportLoggerController {
     }
 
     // Endpoint for getting authentication log by userID
+    @ApiOperation("Get report by user id")
     @GetMapping("/report/authLog/{userID}")
     public AuthenticationLog findByUserID(@PathVariable Long userID) {
         return reportLoggerService.findByUserID(userID);
