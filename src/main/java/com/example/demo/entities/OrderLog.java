@@ -2,7 +2,12 @@ package com.example.demo.entities;
 
 import com.example.demo.enums.Status;
 import com.example.demo.enums.TradeSide;
-import com.fasterxml.jackson.annotation.JsonProperty;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -16,14 +21,15 @@ import java.util.Objects;
 @NoArgsConstructor
 @Entity
 @Table(name = "OrderLog")
+@JsonSerialize
 public class OrderLog {
     @Id
-    @Column(name = "orderID",nullable = false)
+    @Column(name = "orderID", nullable = false)
     private String id;
     @Column(name = "userID", nullable = false)
     private long userID;
     @Column(name = "productIDd", nullable = false)
-    private String  productID;
+    private String productID;
     @Column(name = "quantity", nullable = false)
     private int quantity;
     @Column(name = "price", nullable = false)
@@ -32,14 +38,16 @@ public class OrderLog {
     @Enumerated(EnumType.STRING)
     private TradeSide side;
     @Column(name = "timestamp", nullable = false)
-    private String timestamp;
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    private LocalDateTime timestamp;
     @Column(name = "status", nullable = false)
     private Status status;
     @Column(name = "cumulativeQuantity", nullable = false)
     private int cumulativeQuantity;
-    @Column(name = "isSplitOrder",nullable =false)
+    @Column(name = "isSplitOrder", nullable = false)
     private boolean isSplitOrder;
-    @Column(name= "bestPrice",nullable = false)
+    @Column(name = "bestPrice", nullable = false)
     private double bestPrice;
     @Column(name = "bestQuantity", nullable = false)
     private int bestQuantity;

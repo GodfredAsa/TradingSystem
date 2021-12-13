@@ -2,6 +2,10 @@ package com.example.demo.entities;
 
 import com.example.demo.enums.AuthStatus;
 import com.example.demo.enums.UserRole;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -24,7 +28,7 @@ public class AuthenticationLog {
     private Long id;
 
     @Column(name = " userID", nullable = false)
-    private Long userID;
+    private long userID;
 
     @Column(name = "authStatus", nullable = false, columnDefinition = "varchar(10)")
     @Enumerated(EnumType.STRING)
@@ -35,6 +39,8 @@ public class AuthenticationLog {
     private UserRole role;
 
     @Column(name = "date", nullable = false)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime localDateTime;
 
 
