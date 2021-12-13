@@ -23,8 +23,6 @@ public class OrderLog {
     private Long id;
     @Column(name = "userID", nullable = false)
     private Long userID;
-    @Column(name = "exchangeOrderID", nullable = false)
-    private String exchangeOrderID;
     @Column(name = "productID", nullable = false)
     private int productID;
     @Column(name = "quantity", nullable = false)

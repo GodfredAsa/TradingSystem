@@ -36,31 +36,31 @@ public class ReportLoggerController {
 
     // Endpoint for getting authentication log by userID
     @GetMapping("/report/authLog/{userID}")
-    public AuthenticationLog findByUserID(Long userID) {
+    public AuthenticationLog findByUserID(@PathVariable Long userID) {
         return reportLoggerService.findByUserID(userID);
     }
 
     // Endpoint for getting authentication log by userID
     @GetMapping("/report/authLog/{id}")
-    public AuthenticationLog findUserById(Long id) {
+    public AuthenticationLog findUserById(@PathVariable Long id) {
         return reportLoggerService.findUserById(id);
     }
 
     // Endpoint for getting order log by id
     @GetMapping("/report/orderLog/{id}")
-    public OrderLog getReportById(Long id) {
+    public OrderLog getReportById(@PathVariable Long id) {
         return reportLoggerService.getReportById(id);
     }
 
     // Endpoint for getting order log by timestamp
     @GetMapping("/report/orderLog/{timestamp}")
-    public OrderLog getReportByTimeStamp(LocalDateTime timestamp) {
+    public OrderLog getReportByTimeStamp(@PathVariable LocalDateTime timestamp) {
         return reportLoggerService.getReportByTimestamp(timestamp);
     }
 
     //Endpoint for getting order log by userID
     @GetMapping("/report/orderLog/{userID}")
-    public OrderLog getReportByUserID(Long userID) {
+    public OrderLog getReportByUserID(@PathVariable Long userID) {
         return reportLoggerService.getReportByUserID(userID);
     }
 
