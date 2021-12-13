@@ -1,5 +1,6 @@
 package com.clientService.securityConfig;
 
+import com.clientService.loggerPack.LoggerConfig;
 import com.clientService.user.service.AppUserAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -41,6 +42,7 @@ public class JWTFilter extends OncePerRequestFilter {
                     = appClientService.loadUserByUsername(userEmail);
 
             if(jwtUtility.validateToken(token,userDetails)) {
+                LoggerConfig.LOGGER.info(token);
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
                         = new UsernamePasswordAuthenticationToken(userDetails,
                         null, userDetails.getAuthorities());

@@ -24,8 +24,12 @@ public class Product {
     @Column(name = "name", columnDefinition = "varchar(50)")
     private String name;
 
+    @Column(name= "description", columnDefinition = "varchar(100)")
+    private String description;
+
     @OneToMany(mappedBy = "product")
     @ToString.Exclude
+    @JsonIgnore
     private List<OrderModel> orders;
 
     @ManyToMany(cascade = CascadeType.ALL)
@@ -36,9 +40,10 @@ public class Product {
     @ToString.Exclude
     private List<Portfolio> portfolios;
 
-    public Product(String ticker, String name) {
+    public Product(String ticker, String name, String description) {
         this.ticker = ticker;
         this.name = name;
+        this.description = description;
     }
 
 

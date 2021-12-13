@@ -26,14 +26,14 @@ public class UserServiceApplication {
     CommandLineRunner run(ProductRepository productRepository){
         return args -> {
             productRepository.saveAll(List.of(
-                    new Product("IBM", "IBM"),
-                    new Product("AAPL", "APPLE"),
-                    new Product("GOOGL", "GOOGLE"),
-                    new Product("MSFT", "MICROSOFT"),
-                    new Product("NFLX", "NETFLIX"),
-                    new Product("ORCL", "ORACLE"),
-                    new Product("TSLA", "TESLA"),
-                    new Product("AMZN", "AMAZON")));
+                    new Product("IBM", "IBM", "IBM, Corp"),
+                    new Product("AAPL", "APPLE", "Apple, Inc"),
+                    new Product("GOOGL", "GOOGLE", "Google LLC"),
+                    new Product("MSFT", "MICROSOFT", "Microsoft Corporation"),
+                    new Product("NFLX", "NETFLIX", "NetFlix, Inc"),
+                    new Product("ORCL", "ORACLE", "Oracle Corporation"),
+                    new Product("TSLA", "TESLA", "Tesla Motors, Inc"),
+                    new Product("AMZN", "AMAZON", "Amazon, Inc")));
         };
     }
 

@@ -1,29 +1,32 @@
 package com.clientService.user.controller;
 
+import com.clientService.loggerPack.LoggerConfig;
 import com.clientService.user.model.*;
 import com.clientService.user.service.AppUserAuthService;
 
 import com.clientService.user.service.AppUserService;
 import com.clientService.user.service.AppUserSignInService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.clientService.user.service.MarketService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/api/client/")
 public class UserController {
     private final AppUserAuthService appUserAuthService;
     private final AppUserService appUserService;
     private final AppUserSignInService appUserSignInService;
+    private final MarketService marketService;
 
     UserController(AppUserAuthService appUserAuthService, AppUserService appUserService,
-                   AppUserSignInService appUserSignInService){
+                   AppUserSignInService appUserSignInService, MarketService marketService){
         this.appUserAuthService = appUserAuthService;
         this.appUserService = appUserService;
         this.appUserSignInService = appUserSignInService;
+        this.marketService = marketService;
     }
 
     /**
@@ -65,6 +68,16 @@ public class UserController {
         return ResponseEntity.ok("Logout, " + appPrincipal.getUsername());
     }
 
+    @GetMapping("getmarketdata")
+    public ResponseEntity<?> getMargetData(){
+        return this.marketService.getMarketData();
+    }
+
+
+    @PostMapping("getallproducts")
+    public ResponseEntity<?> getAllProducts(){
+        return this.marketService.getAllProducts();
+    }
 
 //    /**
 //     * @param order - User order model type

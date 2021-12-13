@@ -95,7 +95,7 @@ public class OrderModel {
 
     @Min(0)
     @Column(nullable = false)
-    private int quantity;
+        private int quantity;
 
 
     @Column(
@@ -107,6 +107,7 @@ public class OrderModel {
 
 
     @Column(
+
             nullable = false,
             updatable = false
     )

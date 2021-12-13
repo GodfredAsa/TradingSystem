@@ -60,5 +60,3 @@ exchange:
 redis:
   exchange1channel: exchange1
   exchange2channel: exchange2
-
->>>>>>> 18e569297ce4f0e6ad890e7489dc2e319acd2232
