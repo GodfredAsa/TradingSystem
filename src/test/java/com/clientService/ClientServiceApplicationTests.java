@@ -6,6 +6,7 @@ import com.clientService.user.repository.AccountRepository;
 import com.clientService.user.repository.AppUserRepository;
 import com.clientService.user.repository.PortfolioRepository;
 import com.clientService.user.service.AppUserAuthService;
+import com.clientService.user.service.AppUserDetails;
 import com.clientService.user.service.AppUserSignInService;
 import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,11 +55,11 @@ class ClientServiceApplicationTests {
 	@Autowired
 	JwtRequest jwtRequest;
 
-	@Autowired
-	JWTUtility jwtUtility;
+//	@Autowired
+//	JWTUtility jwtUtility;
 
-	@Autowired
-	AuthenticationManager authenticationManager;
+//	@Autowired
+//	AuthenticationManager authenticationManager;
 
 	@MockBean
 	JmsTemplate jmsTemplate;
@@ -78,20 +81,20 @@ class ClientServiceApplicationTests {
 		Mockito.doNothing().when(jmsTemplate)
 				.convertAndSend(anyString(),(Object) any());
 
-		Mockito.when(authenticationManager.authenticate(any())).thenReturn(any());
+//		Mockito.when(authenticationManager.authenticate(any())).thenReturn(any());
 
-		Mockito.when(appUserAuthService.loadUserByUsername(anyString()))
-				.thenReturn(any());
+//		Mockito.when(appUserAuthService.loadUserByUsername(anyString()))
+//				.thenReturn((UserDetails) new AppUser());
 
-		Mockito.when(jwtUtility.generateToken(any())).thenReturn("abde.xyz.abc");
+//		Mockito.when(jwtUtility.generateToken(any())).thenReturn("abde.xyz.abc");
 
-		Mockito.when(appUserRepository.getAppUserByEmail(anyString())).thenReturn(new AppUser());
+//		Mockito.when(appUserRepository.getAppUserByEmail(anyString())).thenReturn(new AppUser());
 
 		user = new UserSignUp("rich","qua",
 				"1234", "rich@gmail.com");
 
-		jwtRequest.setEmail("rixh@gmail.com");
-		jwtRequest.setPassword("123");
+//		jwtRequest.setEmail("rixh@gmail.com");
+//		jwtRequest.setPassword("123");
 
 		response.setMessage("User added successfully");
 	}

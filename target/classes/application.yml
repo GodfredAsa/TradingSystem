@@ -11,11 +11,13 @@
 #    password: postgres
 # asbdakjsbdjaasdn
 
-spring:
-  datasource:
-    url: jdbc:postgresql://db.bjeqghpesboidxkvpqjw.supabase.co:5432/postgres
-    username: postgres
-    password: ftpiptf0group06
+#spring:
+#  datasource:
+#    url: jdbc:postgresql://db.bjeqghpesboidxkvpqjw.supabase.co:5432/postgres
+#    username: postgres
+#    password: ftpiptf0group06
+
+
 
   redis:
     host: 167.99.202.174
@@ -24,9 +26,6 @@ spring:
   jpa:
     properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate.ddl-auto: 'update'
-
-server:
-   port: 8085
 
 jwt:
   secret: fghdkf689dfghd56dgbhs
