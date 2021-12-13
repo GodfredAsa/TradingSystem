@@ -40,7 +40,7 @@ public class OrderController {
      * @param appPrincipal Auth details of the client placing the order
      * @return List containing one order id or two order ids in the case of a split order
      */
-    @PostMapping("makeOrder")
+    @PostMapping("makeorder")
     public ResponseEntity<ArrayList<String>> makeOrder(@Valid @RequestBody OrderRequest orderRequest, @AuthenticationPrincipal UserDetails appPrincipal) {
         ArrayList<String> orderIds = orderPlacingService.makeOrder(orderRequest, appPrincipal);
 
@@ -80,6 +80,13 @@ public class OrderController {
         return new ResponseEntity<ArrayList<FullOrderBook>>(fullOrderBook, HttpStatus.OK);
     }
 
+    /**
+     *
+     * @param portfolioId portfolio id for which portfolio the order belongs to
+     * @param orderId The id for the order requested to be cancelled
+     * @param appPrincipal The current user of the active session
+     * @return A boolean indicating whether the order could or could not be cancelled
+     */
     @DeleteMapping("cancel/{portfolioId}/{orderId}")
     public ResponseEntity<Boolean> cancelOrder(@PathVariable Long portfolioId, @PathVariable String orderId, @AuthenticationPrincipal UserDetails appPrincipal) {
 
@@ -88,6 +95,5 @@ public class OrderController {
         return new ResponseEntity<Boolean>(isOrderCancelled, HttpStatus.OK);
 
     }
-
 
 }
