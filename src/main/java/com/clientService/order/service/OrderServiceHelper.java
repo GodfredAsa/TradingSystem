@@ -18,37 +18,8 @@ import java.util.Optional;
 @NoArgsConstructor
 public class OrderServiceHelper {
 
-
-//    private static String exchangeUrl1;
-//    private static String exchangeUrl2;
-//    private static String apiKey;
-//
-//    @Value("${api.key}")
-//    public static void setApiKey(String apiKey) {
-//        OrderServiceHelper.apiKey = apiKey;
-//    }
-//
-//    @Value("${exchange.url1}")
-//    public void setExchangeUrl1(String exchangeUrl1) {
-//        OrderServiceHelper.exchangeUrl1 = exchangeUrl1;
-//    }
-//
-//    @Value(("${exchange.url2}"))
-//    public void setExchangeUrl2(String exchangeUrl2) {
-//        OrderServiceHelper.exchangeUrl2 = exchangeUrl2;
-//    }
-//
-//    private static final RestTemplate restTemplate;
-//
-//    static {
-//        restTemplate = new RestTemplate();
-//    }
-
     @Autowired
     private RestTemplate restTemplate;
-
-    @Autowired
-    private CachedMarketDataService cachedMarketDataService;
 
     @Value(("${api.key}"))
     private String apiKey;
@@ -59,7 +30,6 @@ public class OrderServiceHelper {
     @Value(("${exchange.url2}"))
     private String exchangeUrl2;
 
-
     /**
      * @param orderRequest Body of the users order
      * @return A map containing a key(quantity of the best deal) and value (bid or ask price of the best deal)
@@ -67,41 +37,30 @@ public class OrderServiceHelper {
     //Returns the exchange and quantity to buy from first before the other
     public Map<Integer, String> getBestBidAndQuantity(OrderRequest orderRequest) {
 
-//        MarketProductList marketProductList1 = restTemplate
-//                .getForObject(exchangeUrl1 + apiKey + "/md", MarketProductList.class);
-//        List<MarketProduct> exchange1Products = marketProductList1
-//                .getMarketProducts();
-//
-//        MarketProductList marketProductList2 = restTemplate
-//                .getForObject(exchangeUrl2 + apiKey + "/md", MarketProductList.class);
-//        List<MarketProduct> exchange2Products = marketProductList2
-//                .getMarketProducts();
-
-
         Optional<MarketDataProduct> bestOfExc1;
         Optional<MarketDataProduct> bestOfExc2;
 
         //Setting Best trades per order side
         if (orderRequest.getSide().equals("BUY")) {
 
-            bestOfExc1 = /*exchange1Products*/ cachedMarketDataService.getMarketDataE1()
+            bestOfExc1 = /*exchange1Products*/ CachedMarketDataService.getMarketDataE1()
                     .stream()
                     .filter(prod -> prod.getTicker().equals(orderRequest.getProduct()))
                     .reduce((a, b) -> a.getAskPrice() < b.getAskPrice() ? a : b);
 
-            bestOfExc2 = cachedMarketDataService.getMarketDataE2()
+            bestOfExc2 = CachedMarketDataService.getMarketDataE2()
                     .stream()
                     .filter(prod -> prod.getTicker().equals(orderRequest.getProduct()))
                     .reduce((a, b) -> a.getAskPrice() < b.getAskPrice() ? a : b);
 
         } else {
 
-            bestOfExc1 = /*exchange1Products*/ cachedMarketDataService.getMarketDataE1()
+            bestOfExc1 = /*exchange1Products*/ CachedMarketDataService.getMarketDataE1()
                     .stream()
                     .filter(prod -> prod.getTicker().equals(orderRequest.getProduct()))
                     .reduce((a, b) -> a.getBidPrice() > b.getBidPrice() ? a : b);
 
-            bestOfExc2 = cachedMarketDataService.getMarketDataE2()
+            bestOfExc2 = CachedMarketDataService.getMarketDataE2()
                     .stream()
                     .filter(prod -> prod.getTicker().equals(orderRequest.getProduct()))
                     .reduce((a, b) -> a.getBidPrice() > b.getBidPrice() ? a : b);

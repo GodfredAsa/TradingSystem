@@ -1,10 +1,10 @@
 package com.clientService.order.service;
 
-import com.clientService.enums.OrderStatus;
 import com.clientService.enums.PortfolioStatus;
 import com.clientService.exceptions.InvalidOrderRequestException;
 import com.clientService.exceptions.NotEnoughFundsException;
 import com.clientService.exceptions.NotFoundException;
+import com.clientService.loggerPack.LoggerConfig;
 import com.clientService.order.model.OrderModel;
 import com.clientService.order.model.OrderRequest;
 import com.clientService.order.model.Product;
@@ -61,6 +61,11 @@ public class OrderPlacingService {
     private String exchangeUrl2;
 
 
+    /**
+     * @param orderRequest Details of the order to be placed
+     * @param appPrincipal Auth details of the client placing the order
+     * @return List of one order id or two in the case of a split order
+     */
     public ArrayList<String> makeOrder(OrderRequest orderRequest, UserDetails appPrincipal) {
 
         //provides product if validated successfully by product service,
@@ -71,7 +76,7 @@ public class OrderPlacingService {
 
 
         //Get the email of the user making the request
-        AppUser user = appUserService.getAppUserByEmail(appPrincipal.getUsername() /*((UserDetails) authentication.getDetails()).getUsername()*/);
+        AppUser user = appUserService.getAppUserByEmail(appPrincipal.getUsername());
         if (user == null || !appPrincipal.isAccountNonExpired()) {
             throw new NotFoundException("Client not found, the client making this order does not exist in the system");
         }
@@ -104,12 +109,14 @@ public class OrderPlacingService {
             orderRequest.setQuantity((int) bestDealQuantity);
 
 //            Todo: Indication for partial purchase and split exchange purchases
-            String newOrderId1 = restTemplate.postForObject(bestDeal.values().stream().findFirst().get() + apiKey + "/order", orderRequestBody, String.class);
+            String orderId1 = restTemplate.postForObject(bestDeal.values().stream().findFirst().get() + apiKey + "/order", orderRequestBody, String.class);
             String otherUrl = bestDeal.values().stream().findFirst().get().equals(exchangeUrl1) ? exchangeUrl2 : exchangeUrl1;
 
             orderRequest.setQuantity(remainder);
-            String newOrderId2 = restTemplate.postForObject(otherUrl + apiKey + "/order", orderRequestBody, String.class);
+            String orderId2 = restTemplate.postForObject(otherUrl + apiKey + "/order", orderRequestBody, String.class);
 
+            String newOrderId1 = orderId1.substring(1, orderId1.length() - 1);
+            String newOrderId2 = orderId2.substring(1, orderId2.length() - 1);
             OrderModel order1 = new OrderModel(
                     newOrderId1,
                     orderRequest.getQuantity(),
@@ -133,14 +140,18 @@ public class OrderPlacingService {
                     user,
                     new ArrayList<OrderExecution>(),
                     0);
+            LoggerConfig.LOGGER.info("=================================== Split order ===================================\n");
+            LoggerConfig.LOGGER.info("=================================== First order with id " + order1.getId() + " placed ===================================\n");
+            LoggerConfig.LOGGER.info("=================================== Second order with id " + order1.getId() + " placed ===================================\n");
 
             orderRepository.save(order1);
             orderRepository.save(order2);
 
-            return new ArrayList<>(List.of(newOrderId1, newOrderId2));
+            return new ArrayList<String>(List.of(order1.getId(), order2.getId()));
         } else {
 
-            String newOrderId = restTemplate.postForObject(bestDeal.values().stream().findFirst().get(), orderRequestBody, String.class);
+            String orderId = restTemplate.postForObject(bestDeal.values().stream().findFirst().get() + apiKey + "/order", orderRequestBody, String.class);
+            String newOrderId = orderId.substring(1, orderId.length() - 1);
             OrderModel order = new OrderModel(
                     newOrderId,
                     currentOrderQuantity,
@@ -152,13 +163,20 @@ public class OrderPlacingService {
                     new ArrayList<OrderExecution>(),
                     0);
 
+            LoggerConfig.LOGGER.info("=================================== Order with id " + order.getId() + " placed ===================================\n");
+
             orderRepository.save(order);
-            return new ArrayList<>(List.of(newOrderId));
+            return new ArrayList<String>(List.of(order.getId()));
 
         }
 
     }
 
+    /**
+     * @param orderRequest Details of clients order
+     * @param user         Details of client placing the order
+     * @return A boolean indicating whether the client is eligible to place the trade
+     */
     public boolean canMakeOrder(OrderRequest orderRequest, AppUser user) {
 
         if (orderRequest.getSide().equals("BUY")) {
@@ -171,8 +189,7 @@ public class OrderPlacingService {
             return userCurrentAccountBalance >= totalOrderCost;
         } else {
 
-            // Get the available quantity of products from each exchange by checking their order books
-            // List<OrderModel> usersActiveBuyOrdersOfProd = orderRepository.getAllUsersBuyOrdersOfAProduct(orderRequest.getProduct(), user.getId(), "BUY");
+            // Get the client's available quantity of products
             List<OrderModel> usersActiveBuyOrdersOfProd = user
                     .getPortfolios()
                     .stream()
@@ -188,13 +205,13 @@ public class OrderPlacingService {
                 throw new InvalidOrderRequestException("User does not own the specified product");
             }
 
-            int availableQuantOfProd = usersActiveBuyOrdersOfProd
+            int availableQuantityOfProd = usersActiveBuyOrdersOfProd
                     .stream()
                     .map(ord -> ord.getQuantity() - ord.getCumulativeQuantity())
-                    .mapToInt((cumQuant -> Integer.valueOf(cumQuant)))
+                    .mapToInt((cumulativeQuantity -> Integer.valueOf(cumulativeQuantity)))
                     .sum();
 
-            return orderRequest.getQuantity() >= availableQuantOfProd;
+            return orderRequest.getQuantity() >= availableQuantityOfProd;
         }
 
     }

@@ -74,7 +74,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Positive;
 import java.util.List;
 
 @NoArgsConstructor
@@ -151,7 +153,15 @@ public class OrderModel {
     @Min(0)
     private int cumulativeQuantity;
 
-    public OrderModel(String id, int quantity, double price, String side, Product product, Portfolio orderPortfolio, AppUser userOrder, List<OrderExecution> orderExecutions, int cumulativeQuantity) {
+    public OrderModel(String id,
+                      int quantity,
+                      double price,
+                      String side,
+                      Product product,
+                      Portfolio orderPortfolio,
+                      AppUser userOrder,
+                      List<OrderExecution> orderExecutions,
+                      int cumulativeQuantity) {
         this.id = id;
         this.quantity = quantity;
         this.price = price;

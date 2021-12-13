@@ -1,3 +1,16 @@
+#spring:
+#  datasource:
+#    url: jdbc:postgresql://ec2-44-198-146-224.compute-1.amazonaws.com:5432/dcjcfcq3bp2inu
+#    username: uzvcspgtnwwmgz
+#    password: e3c4446cf0bdb35d7ac17ad86f63c5a5e912502a905d84a083b73a26b0fe8c44
+
+#spring:
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/tradingsystem
+#    username: postgres
+#    password: postgres
+# asbdakjsbdjaasdn
+
 spring:
   datasource:
     url: jdbc:postgresql://db.bjeqghpesboidxkvpqjw.supabase.co:5432/postgres
@@ -14,7 +27,7 @@ spring:
 
 server:
    port: 8085
-+
+
 jwt:
   secret: fghdkf689dfghd56dgbhs
 

@@ -1,14 +1,18 @@
 package com.clientService.order.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.io.Serializable;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MarketDataProduct {
+@ToString
+@EqualsAndHashCode
+@Getter
+@Setter
+public class MarketDataProduct implements Serializable {
     @JsonProperty("LAST_TRADED_PRICE")
     private double lastTradedPrice;
 

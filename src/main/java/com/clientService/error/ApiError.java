@@ -3,32 +3,32 @@ package com.clientService.error;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.http.HttpStatus;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-@Setter
+/**
+ *  A model for errors for our custom error handler
+ */
 @Getter
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@Setter
 public class ApiError {
 
-    int status;
-    String message;
-    long timestamp;
-    String path;
-    Map<String, String> validationErrors;
+    private HttpStatus status;
+    private String message;
+    private List<String> errors;
 
-    /**
-     *  model to hold a single error instance
-     * @param status
-     * @param message
-     * @param path
-     */
-    public ApiError(int status, String message, String path) {
+    public ApiError(HttpStatus status, String message, List<String> errors) {
+        super();
         this.status = status;
         this.message = message;
-        this.path = path;
-        this.timestamp = new Date().getTime();
+        this.errors = errors;
+    }
+
+    public ApiError(HttpStatus status, String message, String error) {
+        super();
+        this.status = status;
+        this.message = message;
+        errors = Arrays.asList(error);
     }
 }
