@@ -1,5 +1,6 @@
 package com.clientService.order.service;
 
+import com.clientService.loggerPack.LoggerConfig;
 import com.clientService.order.model.MarketDataProduct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -40,6 +41,7 @@ public class CachedMarketDataService {
 
 
     static {
+
         restTemplateBuilder = new RestTemplateBuilder();
         restTemplate = restTemplateBuilder.build();
         List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
@@ -99,9 +101,7 @@ public class CachedMarketDataService {
     @CacheEvict(cacheNames = "marketData1")
     public static void clearMarketDataE1() {
 
-        if (CachedMarketDataService.cachedMarketDataProductsE1.isEmpty())
-            return;
-        CachedMarketDataService.cachedMarketDataProductsE1.clear();
+        CachedMarketDataService.cachedMarketDataProductsE1 = new ArrayList<>();
     }
 
     /**
@@ -109,9 +109,8 @@ public class CachedMarketDataService {
      */
     @CacheEvict(cacheNames = "marketData2")
     public static void clearMarketDataE2() {
-        if (CachedMarketDataService.cachedMarketDataProductsE2.isEmpty())
-            return;
-        CachedMarketDataService.cachedMarketDataProductsE2.clear();
+
+        CachedMarketDataService.cachedMarketDataProductsE2 = new ArrayList<>();
     }
 
 }
