@@ -12,8 +12,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin("*")
 @RestController
+@CrossOrigin("*")
 @RequestMapping("/api/client/")
 public class UserController {
     private final AppUserAuthService appUserAuthService;
@@ -68,13 +68,18 @@ public class UserController {
         return ResponseEntity.ok("Logout, " + appPrincipal.getUsername());
     }
 
-    @GetMapping("getmarketdata")
-    public ResponseEntity<?> getMargetData(){
-        return this.marketService.getMarketData();
+    @GetMapping("getexchange1data")
+    public ResponseEntity<?> getMargetData1(){
+        return this.marketService.getExchange1Data();
+    }
+
+    @GetMapping("getexchange2data")
+    public ResponseEntity<?> getMargetData2(){
+        return this.marketService.getExchange2Data();
     }
 
 
-    @PostMapping("getallproducts")
+    @GetMapping("getallproducts")
     public ResponseEntity<?> getAllProducts(){
         return this.marketService.getAllProducts();
     }

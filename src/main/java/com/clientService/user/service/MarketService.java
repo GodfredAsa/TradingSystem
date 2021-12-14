@@ -19,14 +19,19 @@ public class MarketService {
         this.productRepository = productRepository;
     }
 
-    public ResponseEntity<?> getMarketData(){
+    public ResponseEntity<?> getExchange1Data(){
         List<MarketDataProduct> marketData1= CachedMarketDataService.getMarketDataE1();
-        List<MarketDataProduct> marketData2 = CachedMarketDataService.getMarketDataE2();
-        return new ResponseEntity<>("hj", HttpStatus.OK);
+
+        return new ResponseEntity<>(marketData1, HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> getExchange2Data(){
+        List<MarketDataProduct> marketData2= CachedMarketDataService.getMarketDataE2();
+
+        return new ResponseEntity<>(marketData2, HttpStatus.OK);
     }
 
     public ResponseEntity<?> getAllProducts(){
-        LoggerConfig.LOGGER.info("getAllProducts method hit");
         List<Product> productList = this.productRepository.findAll();
         if(productList.isEmpty()){
             return new ResponseEntity<>("No products in database", HttpStatus.NOT_FOUND);

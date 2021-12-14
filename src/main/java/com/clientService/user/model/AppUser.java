@@ -61,7 +61,7 @@ public class AppUser {
 
     @OneToOne(mappedBy = "userAccount")
     @ToString.Exclude
-    @JsonIgnore
+//    @JsonIgnore
     private Account account;
 
     @OneToMany(mappedBy = "userOrder")
