@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
  For persistence and for proper sequence of orders.
  **/
 public class QueueOrderLog implements Serializable {
+    private String id;
     private Long userID;
     private String exchangeOrderID;
     private int productID;

@@ -29,8 +29,12 @@ import java.util.Objects;
  **/
 public class OrderLog {
     @Id
-    @Column(name = "orderID", nullable = false)
-    private String id;
+    @Column(name = "id", nullable = false)
+    @SequenceGenerator(name = "OrderIDSequence", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
+    @Column(name ="orderID",nullable = false)
+    private String orderID;
     @Column(name = "userID", nullable = false)
     private long userID;
     @Column(name = "productID", nullable = false)
@@ -59,16 +63,5 @@ public class OrderLog {
     private int bestQuantity;
 
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        OrderLog orderLog = (OrderLog) o;
-        return id != null && Objects.equals(id, orderLog.id);
-    }
 
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }
