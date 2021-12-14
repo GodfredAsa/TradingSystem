@@ -12,6 +12,7 @@ import com.clientService.user.model.Account;
 import com.clientService.user.model.AppUser;
 import com.clientService.user.model.Portfolio;
 import com.clientService.user.model.PortfolioProductData;
+import com.clientService.user.repository.PortfolioProductDataRepository;
 import com.clientService.user.repository.PortfolioRepository;
 import com.clientService.user.service.AppUserService;
 import lombok.AllArgsConstructor;
@@ -40,6 +41,9 @@ public class OrderPlacingService {
 
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private PortfolioProductDataRepository portfolioProductDataRepository;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -302,6 +306,7 @@ public class OrderPlacingService {
 
                 PortfolioProductData newPpd = new PortfolioProductData(orderProduct, portfolio, orderRequest.getQuantity());
                 portfolio.getPortfolioProductData().add(newPpd);
+                portfolioProductDataRepository.save(newPpd);
 
             }
         } else {
