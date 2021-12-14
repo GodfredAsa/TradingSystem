@@ -26,7 +26,9 @@ export class RegisterComponent implements OnInit {
     this.http.post("http://localhost:8080/api/client/auth/signup/regulator", this.form.getRawValue())
     .subscribe(
         {
-          next: res => {console.log(res);
+          next: res => {
+            alert("Registration Successful!")
+            this.form.reset
             this.router.navigate(["/login"])
           }
         }

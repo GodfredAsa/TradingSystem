@@ -1,3 +1,5 @@
+<app-navigation [isLogIn]=true ></app-navigation>
+
 <main class="form-signin">
     <form [formGroup]="form" (submit)="registerRegulator()" ngNativeValidate>
       <h3>Regulator Portal</h3>
@@ -8,14 +10,17 @@
         <input formControlName="firstName" required type="text" class="form-control" id="floatingInput" placeholder="Lastname">
         <label for="floatingInput">First Name</label>
       </div>
+      <br>
       <div class="form-floating">
         <input formControlName="lastName" required type="text" class="form-control" id="floatingInput" placeholder="Lastname">
         <label for="floatingInput">Lastname</label>
       </div>
+      <br>
       <div class="form-floating">
         <input formControlName="email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
         <label for="floatingInput">Email address</label>
       </div>
+      <br>
       <div class="form-floating">
         <input formControlName="password" title="Field must contain eight or more characters" type="password" required pattern=".{8,}" class="form-control" id="floatingPassword" placeholder="Password">
         <label for="floatingPassword">Password</label>
