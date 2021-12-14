@@ -33,7 +33,7 @@ public class OrderLog {
     private String id;
     @Column(name = "userID", nullable = false)
     private long userID;
-    @Column(name = "productIDd", nullable = false)
+    @Column(name = "productID", nullable = false)
     private String productID;
     @Column(name = "quantity", nullable = false)
     private int quantity;
