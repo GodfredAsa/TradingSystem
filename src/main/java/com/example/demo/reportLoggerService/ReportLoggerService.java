@@ -3,6 +3,7 @@ package com.example.demo.reportLoggerService;
 import com.example.demo.entities.AuthenticationLog;
 import com.example.demo.entities.MarketDataLog;
 import com.example.demo.entities.OrderLog;
+import com.example.demo.enums.Status;
 import com.example.demo.repositories.AuthenticationLogRepository;
 import com.example.demo.repositories.MarketDataLogRepository;
 import com.example.demo.repositories.OrderLogRepository;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class ReportLoggerService {
@@ -35,26 +37,6 @@ public class ReportLoggerService {
         return authenticationLogRepository.findUserById(id);
     }
 
-    /**
-     * Method for getting order log by id
-     */
-    public OrderLog getReportById(Long id) {
-        return orderLogRepository.getReportById(id);
-    }
-
-    /**
-     * Method for getting order log by timestamp
-     */
-    public OrderLog getReportByTimestamp(String timestamp) {
-        return orderLogRepository.getReportByTimestamp(timestamp);
-    }
-
-    /**
-     * Method for getting order log by userID
-     */
-    public OrderLog getReportByUserID(Long userID) {
-        return orderLogRepository.getReportByUserID(userID);
-    }
 
     /**
      * Method for saving authentication log onto the database
@@ -78,4 +60,36 @@ public class ReportLoggerService {
         orderLogRepository.save(orderLog);
     }
 
-}
+    public void statusUpdate(String orderID, Status status) {
+        OrderLog orderLog = orderLogRepository.findByOrderID(orderID);
+        orderLog.setStatus(status);
+        orderLogRepository.save(orderLog);
+
+    }
+
+    public OrderLog findByTimestamp(LocalDateTime timestamp) {
+        return orderLogRepository.findByTimestamp(timestamp);
+    }
+
+    /**
+     * Method for getting order log by id
+     */
+    public OrderLog getById(Long id) {
+        return orderLogRepository.findById(id).orElseThrow(() -> new RuntimeException("item not found"));
+    }
+
+
+    /**
+     * Method for getting order log by userID
+     */
+    public List<OrderLog> getByUserID(Long userID) {
+        return orderLogRepository.getByUserID(userID);
+    }
+
+    public OrderLog findByID(Long id) {
+        return orderLogRepository.findById(id).orElseThrow(()-> new RuntimeException("item not found"));
+    }
+    }
+
+
+

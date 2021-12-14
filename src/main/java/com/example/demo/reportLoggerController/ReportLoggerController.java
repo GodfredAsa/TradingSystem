@@ -9,6 +9,9 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/api")
@@ -45,7 +48,7 @@ public class ReportLoggerController {
      * Endpoint for getting authentication log by userID
      **/
 
-    @GetMapping("/report/authLog/{userID}")
+    @GetMapping("/authLog/{userID}")
     @ApiOperation("Get authentication report by user id")
     public AuthenticationLog findByUserID(@PathVariable Long userID) {
         return reportLoggerService.findByUserID(userID);
@@ -54,7 +57,7 @@ public class ReportLoggerController {
     /**
      * Endpoint for getting authentication log by userID
      **/
-    @GetMapping("/report/authLog/{id}")
+    @GetMapping("/authLog/{id}")
     @ApiOperation("Get authentication report by userID")
     public AuthenticationLog findUserById(@PathVariable Long id) {
         return reportLoggerService.findUserById(id);
@@ -63,30 +66,28 @@ public class ReportLoggerController {
     /**
      * Endpoint for getting order log by order id
      **/
-    @GetMapping("/report/orderLog/{id}")
+    @GetMapping("/orderLog/{id}")
     @ApiOperation("Get order report by orderID")
-    public OrderLog getReportById(@PathVariable Long id) {
-        return reportLoggerService.getReportById(id);
+    public OrderLog findByID(@PathVariable Long id) {
+        return reportLoggerService.findByID(id);
     }
 
     /**
      * Endpoint for getting order log by timestamp
      **/
-    @GetMapping("/report/orderLog/{timestamp}")
+    @GetMapping("/orderLog/{timestamp}")
     @ApiOperation("Get order report by timestamp")
-    public OrderLog getReportByTimeStamp(@PathVariable String timestamp) {
-        return reportLoggerService.getReportByTimestamp(timestamp);
+    public OrderLog findByTimeStamp(@PathVariable LocalDateTime timestamp) {
+        return reportLoggerService.findByTimestamp(timestamp);
     }
 
     /**
      * Endpoint for getting order log by userID
      **/
-    @GetMapping("/report/orderLog/{userID}")
+    @GetMapping("/orderLog/{userID}")
     @ApiOperation("Get order log report by user id")
-    public OrderLog getReportByUserID(@PathVariable Long userID) {
-        return reportLoggerService.getReportByUserID(userID);
+    public List<OrderLog> getByUserID(@PathVariable Long userID) {
+        return reportLoggerService.getByUserID(userID);
     }
-
-
 }
 
