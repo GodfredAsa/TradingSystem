@@ -14,6 +14,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Data
 @JsonSerialize
+
+/**
+ Queue Authentication Log entity to receive data for queue.
+ For persistence and for proper sequence of authentication activities.
+ **/
 public class QueueAuthenticationLog implements Serializable {
     private long userID;
     private AuthStatus authStatus;

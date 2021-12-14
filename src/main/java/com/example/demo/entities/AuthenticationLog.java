@@ -20,6 +20,11 @@ import java.util.Objects;
 @NoArgsConstructor
 @Entity
 @Table(name = "AuthenticationLog")
+
+/**
+ Authentication Log entity to receive data from the Client service
+ and store the data onto the database.
+ **/
 public class AuthenticationLog {
     @Id
     @Column(name = "id")

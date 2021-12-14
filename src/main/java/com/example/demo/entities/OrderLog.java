@@ -22,6 +22,11 @@ import java.util.Objects;
 @Entity
 @Table(name = "OrderLog")
 @JsonSerialize
+
+/**
+ Order Log entity to receive data from the order service
+ and store the data onto the database.
+ **/
 public class OrderLog {
     @Id
     @Column(name = "orderID", nullable = false)

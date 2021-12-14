@@ -7,6 +7,10 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
+/**
+ Queue Order Log entity to receive data for queue.
+ For persistence and for proper sequence of orders.
+ **/
 public class QueueOrderLog implements Serializable {
     private Long userID;
     private String exchangeOrderID;

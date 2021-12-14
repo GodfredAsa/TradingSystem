@@ -8,6 +8,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+
+/**
+ Product entity to receive data from the market data service.
+ **/
 public class Product {
     @JsonProperty("LAST_TRADED_PRICE")
     private String lastTradedPrice;

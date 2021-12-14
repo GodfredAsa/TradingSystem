@@ -21,42 +21,59 @@ public class ReportLoggerService {
     @Autowired
     private MarketDataLogRepository marketDataLogRepository;
 
-    //Method for querying authentication log by userID
+    /**
+     * Method for querying authentication log by userID
+     */
     public AuthenticationLog findByUserID(Long userID) {
         return authenticationLogRepository.findByUserID(userID);
     }
 
-    //Method for querying authentication log by id
+    /**
+     * Method for querying authentication log by id
+     */
     public AuthenticationLog findUserById(Long id) {
         return authenticationLogRepository.findUserById(id);
     }
 
-    //Method for getting order log by id
+    /**
+     * Method for getting order log by id
+     */
     public OrderLog getReportById(Long id) {
         return orderLogRepository.getReportById(id);
     }
 
-    //Method for getting order log by timestamp
+    /**
+     * Method for getting order log by timestamp
+     */
     public OrderLog getReportByTimestamp(String timestamp) {
         return orderLogRepository.getReportByTimestamp(timestamp);
     }
 
-    //Method for getting order log by userID
+    /**
+     * Method for getting order log by userID
+     */
     public OrderLog getReportByUserID(Long userID) {
         return orderLogRepository.getReportByUserID(userID);
     }
 
-    //Method for saving authentication log onto the database
+    /**
+     * Method for saving authentication log onto the database
+     */
     public void logUserAuthentication(AuthenticationLog authenticationLog) {
         authenticationLogRepository.save(authenticationLog);
     }
 
-    //Method for saving market data log onto the database //TODO: Review
+    /**
+     * Method for saving market data log onto the database
+     */ //TODO: Review
     public void marketDataReport(MarketDataLog marketDataLog) {
         marketDataLogRepository.save(marketDataLog);
     }
 
-    //Method for saving orders on the database
+    /**
+     * Method for saving orders on the database
+     */
+
     public void orders(OrderLog orderLog) {
         orderLogRepository.save(orderLog);
     }
