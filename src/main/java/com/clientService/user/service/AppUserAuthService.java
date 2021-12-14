@@ -11,6 +11,7 @@ import com.clientService.user.repository.AccountRepository;
 import com.clientService.user.repository.AppUserRepository;
 
 import com.clientService.user.repository.PortfolioRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +34,7 @@ public class AppUserAuthService implements UserDetailsService {
     private final HttpResponseBody response;
     private final RestTemplate restTemplate;
     private final PortfolioRepository portfolioRepository;
+
 
     @Autowired
     private JmsTemplate jmsTemplate;
@@ -128,11 +130,11 @@ public class AppUserAuthService implements UserDetailsService {
             log.put("localDateTime", LocalDateTime.now());
 
             HttpEntity<String> request = SendLoggerRequest.sendLoggerRequest(log);
-            jmsTemplate.convertAndSend("authentication_log_queue", new AuthenticationLog(user.getId(), AuthStatus.REGISTER, LocalDateTime.now(), user.getUserRole()).toString());
-//            QueuePublisher queuePublisher = new QueuePublisher();
-//            queuePublisher.publishToQueue("authentication_log_queue", new AuthenticationLog(user.getId(), AuthStatus.REGISTER, LocalDateTime.now(), user.getUserRole()));
-//            restTemplate.postForObject(reportUrl + "userAuthentication", request, String.class);
+            ObjectMapper objectMapper = new ObjectMapper();
 
+            String authenticationLog = objectMapper.writeValueAsString((new AuthenticationLog(user.getId(), AuthStatus.REGISTER, LocalDateTime.now(), user.getUserRole())));
+
+            jmsTemplate.convertAndSend("authentication_log_queue", authenticationLog);
 
             response.setMessage("User added successfully");
             return new ResponseEntity<>(response, HttpStatus.CREATED);

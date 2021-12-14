@@ -1,11 +1,14 @@
 package com.clientService.order.service;
 
+import com.clientService.loggerPack.LoggerConfig;
 import com.clientService.order.model.OrderModel;
 import com.clientService.order.model.OrderResponse;
 import com.clientService.order.repository.OrderRepository;
 import com.clientService.user.model.Account;
 import com.clientService.user.model.AppUser;
+import com.clientService.user.model.PortfolioProductData;
 import com.clientService.user.repository.AppUserRepository;
+import com.clientService.user.repository.PortfolioRepository;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +30,9 @@ public class CancelOrderService {
 
     @Autowired
     private OrderRepository orderRepository;
+
+    @Autowired
+    private PortfolioRepository portfolioRepository;
 
     @Autowired
     private AppUserRepository appUserRepository;
@@ -89,7 +95,15 @@ public class CancelOrderService {
             OrderResponse cancelledOrder = responseFromExchange1.getStatusCode().equals(HttpStatus.OK) ? responseFromExchange1.getBody() : responseFromExchange2.getBody();
             AppUser user = appUserRepository.getAppUserByEmail(currentUser.getUsername());
 
-            closeOrder(user, cancelledOrder);
+            try {
+
+                closeOrder(user, cancelledOrder, portfolioId);
+
+            } catch (Exception e) {
+
+                LoggerConfig.LOGGER.info("=================================== Error closing order gracefully: " + e.getMessage() + " ===================================\n");
+            }
+
 
             List<OrderModel> portfolioOrders = user
                     .getPortfolios()
@@ -106,7 +120,9 @@ public class CancelOrderService {
                             .stream()
                             .filter(order -> order
                                     .getId()
-                                    .equals(orderId)));
+                                    .equals(orderId))
+                            .findFirst()
+                            .get());
 
             orderRepository.deleteById(orderId);
 
@@ -123,7 +139,7 @@ public class CancelOrderService {
      * @param user  User to be refunded on successful order cancellation
      * @param order The current state of the order requested to be cancelled
      */
-    private void closeOrder(AppUser user, OrderResponse order) {
+    private void closeOrder(AppUser user, OrderResponse order, long portfolioId) {
 
         if (order.getSide().equals("BUY")) {
 
@@ -140,7 +156,24 @@ public class CancelOrderService {
             Account userAccount = user.getAccount();
             userAccount.setBalance(userAccount.getBalance() + totalSales);
 
-        }
+            PortfolioProductData portfolioProductData = portfolioRepository
+                    .findById(portfolioId)
+                    .get()
+                    .getPortfolioProductData()
+                    .stream()
+                    .filter(ppd -> ppd
+                            .getProduct()
+                            .getTicker()
+                            .equals(order.getProduct()) &&
+                            ppd
+                                    .getPortfolio()
+                                    .getId()
+                                    .equals(portfolioId))
+                    .findFirst()
+                    .get();
 
+            portfolioProductData.setQuantity(portfolioProductData.getQuantity() - order.getCumulativeQuantity());
+
+        }
     }
 }

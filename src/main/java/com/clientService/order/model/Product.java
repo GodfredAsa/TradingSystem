@@ -1,13 +1,16 @@
 package com.clientService.order.model;
 
 import com.clientService.user.model.Portfolio;
+import com.clientService.user.model.PortfolioProductData;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -40,12 +43,19 @@ public class Product {
     @ToString.Exclude
     private List<Portfolio> portfolios;
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<PortfolioProductData> portfolioProductData = new HashSet<>();
+
+    public Product(String ticker, String name) {
+        this.ticker = ticker;
+        this.name = name;
+    }
+
     public Product(String ticker, String name, String description) {
         this.ticker = ticker;
         this.name = name;
         this.description = description;
     }
-
 
 
     @Override
@@ -55,6 +65,7 @@ public class Product {
         Product product = (Product) o;
         return ticker != null && Objects.equals(ticker, product.ticker);
     }
+
 
     @Override
     public int hashCode() {

@@ -17,7 +17,12 @@ spring:
     username: postgres
     password: asbdakjsbdjaasdn
 
-
+  activemq:
+    broker-url: tcp://167.99.202.174:61616
+    user: admin
+    password: admin
+    packages:
+      trust-all=true: true
 
   redis:
     host: 167.99.202.174
@@ -34,7 +39,8 @@ jwt:
 #Todo: For dev env. Create second properties file
 #https://trade-reporting-service.herokuapp.com/
 report:
-  url: http://172.30.5.51:8080/api/log/
+  url: https://trade-reporting-service.herokuapp.com/api/log/
+#  url: http://172.30.5.51:8080/api/log/
 
 #Todo: Modify for hosted instance
 order:
