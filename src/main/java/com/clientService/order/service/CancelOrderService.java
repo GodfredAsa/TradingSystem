@@ -40,9 +40,6 @@ public class CancelOrderService {
     @Autowired
     private RestTemplate restTemplate;
 
-//    @Value("${api.key}")
-//    private String apiKey;
-
     @Value("${exchange.url1}")
     private String exchangeUrl1;
 
