@@ -47,6 +47,7 @@ public class OrderLog {
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime timestamp;
     @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
     private Status status;
     @Column(name = "cumulativeQuantity", nullable = false)
     private int cumulativeQuantity;

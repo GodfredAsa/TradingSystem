@@ -24,14 +24,14 @@ public class ExchangeSubscriber implements MessageListener {
             String body = new String(message.getBody());
 
             Product[] msg = objectMapper.readValue(body, Product[].class);
-            logger.info("Consumed Message1 {}", Arrays.asList(msg));
+          //  logger.info("Consumed Message1 {}", Arrays.asList(msg));
 
         } else if (new String(message.getChannel(), StandardCharsets.UTF_8).equals("exchange2")) {
             ObjectMapper objectMapper = new ObjectMapper();
             String body = new String(message.getBody());
 
             Product[] msg = objectMapper.readValue(body, Product[].class);
-            logger.info("Consumed Message2 {}", Arrays.asList(msg));
+            //logger.info("Consumed Message2 {}", Arrays.asList(msg));
 
         }
     }
