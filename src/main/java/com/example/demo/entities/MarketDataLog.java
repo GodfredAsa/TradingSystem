@@ -4,7 +4,6 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
@@ -12,30 +11,38 @@ import java.util.Objects;
 @Setter
 @ToString
 @AllArgsConstructor
-@Table(name = "MarketDataLog")
 @NoArgsConstructor
+@Table(name = "MarketDataReport")
+
+/**
+ Market Data Log entity to receive data from the market data service
+ **/
 public class MarketDataLog {
     @Id
-    @SequenceGenerator(name = "MarketDataIDSequence",allocationSize = 1)
+    @SequenceGenerator(name = "MarketDataIDSequence", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
-    private Long id;
-    @Column(name = "exchangeID",nullable = false)
-    private Long exchangeID;
+
+    @Column(name = "lastTradedPrice", nullable = false)
+    private String lastTradedPrice;
+    @Column(name = "sellLimit", nullable = false)
+    private double sellLimit;
+    @Column(name = "bidPrice", nullable = false)
+    private double bidPrice;
+    @Column(name = "askPrice", nullable = false)
+    private int askPrice;
+    @Column(name = "buyLimit", nullable = false)
+    private String buyLimit;
     @Column(name = "ticker", nullable = false)
     private String ticker;
-    @Column(name = "price", nullable = false)
-    private Double price;
-    @Column(name = " timestamp",nullable = false )
-    private LocalDateTime timestamp;
-
+    @Column(name = "maxPriceShift", nullable = false)
+    private int maxPriceShift;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         MarketDataLog that = (MarketDataLog) o;
-        return id != null && Objects.equals(id, that.id);
+        return lastTradedPrice != null && Objects.equals(lastTradedPrice, that.lastTradedPrice);
     }
 
     @Override

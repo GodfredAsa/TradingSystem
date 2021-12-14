@@ -1,4 +1,6 @@
 package com.example.demo.enums;
 
-public enum TradeSide { BUY, SELL
+//Trade Side either BUY or SELL
+public enum TradeSide {
+    BUY, SELL
 }

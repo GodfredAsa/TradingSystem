@@ -5,11 +5,17 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Repository
 public interface OrderLogRepository extends JpaRepository<OrderLog, Long> {
+    /**
+     * Methods for  querying the database for order log
+     **/
 
-    public OrderLog getReportByTimestamp(LocalDateTime timestamp);
-    public OrderLog getReportById(Long id);
-    public OrderLog getReportByUserID(Long userID);
+    public OrderLog findByTimestamp(LocalDateTime timeStamp);
+
+    public OrderLog findByOrderID(String orderId);
+
+    public List<OrderLog> getByUserID(long userID);
 }

@@ -1,7 +1,11 @@
 package com.example.demo.entities;
 
 import com.example.demo.enums.AuthStatus;
-import com.example.demo.enums.Role;
+import com.example.demo.enums.UserRole;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -16,27 +20,33 @@ import java.util.Objects;
 @NoArgsConstructor
 @Entity
 @Table(name = "AuthenticationLog")
+
+/**
+ Authentication Log entity to receive data from the Client service
+ and store the data onto the database.
+ **/
 public class AuthenticationLog {
     @Id
     @Column(name = "id")
-    @SequenceGenerator(name= "authIDSequence",allocationSize = 1)
+    @SequenceGenerator(name = "authIDSequence", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = " userID",nullable = false)
-    private Long userID;
+    @Column(name = " userID", nullable = false)
+    private long userID;
 
-    @Column(name = "authStatus",nullable = false,columnDefinition = "varchar(10)")
+    @Column(name = "authStatus", nullable = false, columnDefinition = "varchar(10)")
     @Enumerated(EnumType.STRING)
     private AuthStatus authStatus;
 
-    @Column(name = "role",nullable = false,columnDefinition = "varchar(10)")
+    @Column(name = "role", nullable = false, columnDefinition = "varchar(10)")
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private UserRole role;
 
-    @Column(name = "date",nullable = false)
+    @Column(name = "date", nullable = false)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime localDateTime;
-
 
 
     @Override

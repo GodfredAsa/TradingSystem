@@ -4,8 +4,7 @@ import com.example.demo.reportLoggerService.ExchangeSubscriber;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
@@ -15,12 +14,6 @@ import java.util.Map;
 
 @Configuration
 public class RedisConfiguration {
-    @Value("${redis.hostname}")
-    private String redisHostname;
-
-    @Value("${redis.port}")
-    private int redisPort;
-
     @Value("${redis.exchange1channel}")
     private String exchange1Channel;
 
@@ -28,20 +21,14 @@ public class RedisConfiguration {
     private String exchange2Channel;
 
     @Bean
-    public JedisConnectionFactory jedisConnectionFactory() {
-        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
-        redisStandaloneConfiguration.setHostName(redisHostname);
-        redisStandaloneConfiguration.setPort(redisPort);
-        return new JedisConnectionFactory(redisStandaloneConfiguration);
-    }
-
-    @Bean
     public ChannelTopic channelTopic() {
         return new ChannelTopic(exchange1Channel);
     }
 
     @Bean
-    public ChannelTopic channelTopic2() {return new ChannelTopic(exchange2Channel);}
+    public ChannelTopic channelTopic2() {
+        return new ChannelTopic(exchange2Channel);
+    }
 
     @Bean
     public MessageListenerAdapter messageListenerAdapter() {
@@ -49,10 +36,10 @@ public class RedisConfiguration {
     }
 
     @Bean
-    public RedisMessageListenerContainer redisMessageListenerContainer() {
+    public RedisMessageListenerContainer redisMessageListenerContainer(RedisConnectionFactory redisConnectionFactory) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
-        container.setConnectionFactory(jedisConnectionFactory());;
-        container.setMessageListeners(Map.of(messageListenerAdapter(), Arrays.asList(channelTopic(),channelTopic2())));
+        container.setConnectionFactory(redisConnectionFactory);
+        container.setMessageListeners(Map.of(messageListenerAdapter(), Arrays.asList(channelTopic(), channelTopic2())));
         return container;
     }
 }
