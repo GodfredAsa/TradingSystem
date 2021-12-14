@@ -35,7 +35,7 @@ public class CachedMarketDataService {
     }
 
     @Value(("${exchange.url2}"))
-    public static void setExchangeUrl2(String exchangeUrl2) {
+    public void setExchangeUrl2(String exchangeUrl2) {
         CachedMarketDataService.exchangeUrl2 = exchangeUrl2;
     }
 

@@ -1,5 +1,6 @@
 package com.clientService.order.service;
 
+import com.clientService.loggerPack.LoggerConfig;
 import com.clientService.order.model.MarketDataProduct;
 import com.clientService.order.model.OrderRequest;
 import lombok.AllArgsConstructor;
@@ -35,7 +36,8 @@ public class OrderServiceHelper {
      * @return A map containing a key(quantity of the best deal) and value (bid or ask price of the best deal)
      */
     //Returns the exchange and quantity to buy from first before the other
-    public Map<Integer, String> getBestBidAndQuantity(OrderRequest orderRequest) {
+    public Map<MarketDataProduct, String> getBestBidAndQuantity(OrderRequest orderRequest) {
+        LoggerConfig.LOGGER.info("=================================== Best price data Method ===================================\n ");
 
         Optional<MarketDataProduct> bestOfExc1;
         Optional<MarketDataProduct> bestOfExc2;
@@ -81,16 +83,16 @@ public class OrderServiceHelper {
                 //If exchange1 selling price is lower
                 if (firstOrSecond < 0) {
 
-                    return new HashMap<Integer, String>() {{
-                        put(bestOfExc1.get().getBuyLimit(), exchangeUrl1);
+                    return new HashMap<MarketDataProduct, String>() {{
+                        put(bestOfExc1.get(), exchangeUrl1);
                     }};
 
                 }
                 //If exchange2 selling price is lower
                 else {
 
-                    return new HashMap<Integer, String>() {{
-                        put(bestOfExc2.get().getBuyLimit(), exchangeUrl2);
+                    return new HashMap<MarketDataProduct, String>() {{
+                        put(bestOfExc2.get(), exchangeUrl2);
                     }};
                 }
 
@@ -102,16 +104,16 @@ public class OrderServiceHelper {
                 //If exchange1 buy price is higher
                 if (firstOrSecond > 0) {
 
-                    return new HashMap<Integer, String>() {{
-                        put(bestOfExc1.get().getBuyLimit(), exchangeUrl1);
+                    return new HashMap<MarketDataProduct, String>() {{
+                        put(bestOfExc1.get(), exchangeUrl1);
                     }};
 
                 }
                 //If exchange2 buy price is higher
                 else {
 
-                    return new HashMap<Integer, String>() {{
-                        put(bestOfExc2.get().getBuyLimit(), exchangeUrl2);
+                    return new HashMap<MarketDataProduct, String>() {{
+                        put(bestOfExc2.get(), exchangeUrl2);
                     }};
                 }
             }
@@ -120,25 +122,31 @@ public class OrderServiceHelper {
         //If product is only on exchange1
         else if (bestOfExc1.isPresent()) {
 
-            return new HashMap<Integer, String>() {{
-                put(orderRequest.getSide().equals("BUY") ? bestOfExc1.get().getBuyLimit() : bestOfExc1.get().getSellLimit(), exchangeUrl1);
+
+            return new HashMap<MarketDataProduct, String>() {{
+                put(orderRequest.getSide().equals("BUY") ? bestOfExc1.get() : bestOfExc1.get(), exchangeUrl1);
             }};
 
         }
         //If product is only on exchange2
         else if (bestOfExc2.isPresent()) {
 
-            return new HashMap<Integer, String>() {{
-                put(orderRequest.getSide().equals("BUY") ? bestOfExc2.get().getBuyLimit() : bestOfExc2.get().getSellLimit(), exchangeUrl2);
+            return new HashMap<MarketDataProduct, String>() {{
+                put(orderRequest.getSide().equals("BUY") ? bestOfExc2.get() : bestOfExc2.get(), exchangeUrl2);
             }};
 
         }
         //If product is not yet on any exchange
         else {
-
-            //just split then in two equal halves
-            return new HashMap<Integer, String>() {{
-                put((orderRequest.getQuantity() / 2), exchangeUrl1);
+            //just split then in two equal halves after a null product is received
+            return new HashMap<MarketDataProduct, String>() {{
+                put(new MarketDataProduct(0,
+                        orderRequest.getQuantity() / 2,
+                        0,
+                        0,
+                        orderRequest.getQuantity() / 2,
+                        orderRequest.getSide(),
+                        0), exchangeUrl1);
             }};
         }
     }
