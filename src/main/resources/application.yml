@@ -17,7 +17,12 @@ spring:
     username: postgres
     password: asbdakjsbdjaasdn
 
-
+  activemq:
+    broker-url: tcp://167.99.202.174:61616
+    user: admin
+    password: admin
+    packages:
+      trust-all=true: true
 
   redis:
     host: 167.99.202.174
