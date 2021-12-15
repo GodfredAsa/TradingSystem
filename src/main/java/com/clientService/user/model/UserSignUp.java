@@ -3,8 +3,10 @@ package com.clientService.user.model;
 import com.clientService.enums.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Data
 public class UserSignUp {
 
@@ -16,5 +18,4 @@ public class UserSignUp {
     private String lastName;
     private String password;
     private String email;
-    private UserRole userRole;
 }

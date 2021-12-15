@@ -13,9 +13,9 @@
 
 spring:
   datasource:
-    url: jdbc:postgresql://db.uuzqfofffrvrmpvawncn.supabase.co:5432/postgres
+    url: jdbc:postgresql://db.bjeqghpesboidxkvpqjw.supabase.co:5432/postgres
     username: postgres
-    password: asbdakjsbdjaasdn
+    password: ftpiptf0group06
 
   activemq:
     broker-url: tcp://167.99.202.174:61616
