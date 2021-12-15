@@ -1,0 +1,62 @@
+#spring:
+#  datasource:
+#    url: jdbc:postgresql://ec2-44-198-146-224.compute-1.amazonaws.com:5432/dcjcfcq3bp2inu
+#    username: uzvcspgtnwwmgz
+#    password: e3c4446cf0bdb35d7ac17ad86f63c5a5e912502a905d84a083b73a26b0fe8c44
+
+#spring:
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/tradingsystem
+#    username: postgres
+#    password: postgres
+# asbdakjsbdjaasdn
+
+spring:
+  datasource:
+    url: jdbc:postgresql://db.uuzqfofffrvrmpvawncn.supabase.co:5432/postgres
+    username: postgres
+    password: asbdakjsbdjaasdn
+
+  activemq:
+    broker-url: tcp://167.99.202.174:61616
+    user: admin
+    password: admin
+    packages:
+      trust-all=true: true
+
+  redis:
+    host: 167.99.202.174
+    port: 6379
+
+  jpa:
+    properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate.ddl-auto: 'create-drop'
+
+jwt:
+  secret: fghdkf689dfghd56dgbhs
+
+#Todo: Modify for hosted instance
+#Todo: For dev env. Create second properties file
+#https://trade-reporting-service.herokuapp.com/
+report:
+  url: https://trade-reporting-service.herokuapp.com/api/log/
+#  url: http://172.30.5.51:8080/api/log/
+
+#Todo: Modify for hosted instance
+order:
+  url: http://172.19.128.1:8080/api/order
+
+api:
+  key: abb2f34c-286e-4260-b438-a7755a421423
+
+exchange:
+  url1: https://exchange.matraining.com/
+  url2: https://exchange2.matraining.com/
+
+#For hosted market data endpoint
+#https://trading-system-market-data.herokuapp.com/
+
+redis:
+  exchange1channel: exchange1
+  exchange2channel: exchange2
+
