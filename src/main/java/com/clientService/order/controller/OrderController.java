@@ -52,8 +52,8 @@ public class OrderController {
      * @return Json containing current details of the order belonging to the provided id
      */
     @GetMapping("getstatus/{orderid}")
-    public ResponseEntity<OrderModel> checkOrderStatus(@PathVariable String orderId) {
-        return new ResponseEntity<>(this.orderService.checkOrderStatus(orderId), HttpStatus.OK);
+    public ResponseEntity<OrderModel> checkOrderStatus(@PathVariable String orderid) {
+        return new ResponseEntity<>(this.orderService.checkOrderStatus(orderid), HttpStatus.OK);
     }
 
     /**

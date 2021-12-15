@@ -148,10 +148,10 @@ public class CancelOrderService {
         //payout the total price for the quantity of the order executed
         else if (order.getSide().equals("SELL")) {
 
-            double totalSales = order.getPrice() * order.getCumulativeQuantity();
+            double unsoldProductsCost = order.getPrice() * (order.getQuantity() - order.getCumulativeQuantity());
 
             Account userAccount = user.getAccount();
-            userAccount.setBalance(userAccount.getBalance() + totalSales);
+            userAccount.setBalance(userAccount.getBalance() - unsoldProductsCost);
 
             PortfolioProductData portfolioProductData = portfolioRepository
                     .findById(portfolioId)

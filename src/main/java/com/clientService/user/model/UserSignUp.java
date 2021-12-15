@@ -1,11 +1,11 @@
 package com.clientService.user.model;
 
 import com.clientService.enums.UserRole;
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
 @Data
+@NoArgsConstructor
 public class UserSignUp {
 
     /**
@@ -17,4 +17,12 @@ public class UserSignUp {
     private String password;
     private String email;
     private UserRole userRole;
+
+    public UserSignUp(String firstName, String lastName, String password, String email, UserRole userRole) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+        this.email = email;
+        this.userRole = userRole;
+    }
 }
