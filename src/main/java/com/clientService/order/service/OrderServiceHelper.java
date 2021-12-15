@@ -37,7 +37,6 @@ public class OrderServiceHelper {
      */
     //Returns the exchange and quantity to buy from first before the other
     public Map<MarketDataProduct, String> getBestBidAndQuantity(OrderRequest orderRequest) {
-        LoggerConfig.LOGGER.info("=================================== Best price data Method ===================================\n ");
 
         Optional<MarketDataProduct> bestOfExc1;
         Optional<MarketDataProduct> bestOfExc2;

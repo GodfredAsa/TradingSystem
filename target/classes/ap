@@ -3,7 +3,7 @@ spring.datasource.url=jdbc:postgresql://db.uuzqfofffrvrmpvawncn.supabase.co:5432
 spring.datasource.username=postgres
 spring.datasource.password=asbdakjsbdjaasdn
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
-spring.jpa.hibernate.ddl-auto=update
+spring.jpa.hibernate.ddl-auto=drop
 # asbdakjsbdjaasdn
 
 #Redis Configuration

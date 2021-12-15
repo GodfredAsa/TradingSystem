@@ -2,19 +2,11 @@ package com.clientService.user.model;
 
 import com.clientService.enums.UserRole;
 import com.clientService.order.model.OrderModel;
-//import com.clientService.user.service.AppUserDetails;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.Hibernate;
-import org.hibernate.criterion.Order;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,7 +17,7 @@ import java.util.Objects;
 @Setter
 @Entity
 @Table(name = "appUser")
-public class AppUser implements Serializable {
+public class AppUser {
 
     /**
      * User Model with AllArgsConstructor and constructor without id

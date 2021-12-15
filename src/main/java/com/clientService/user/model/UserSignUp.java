@@ -5,9 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 @AllArgsConstructor
-@NoArgsConstructor
 @Data
+@NoArgsConstructor
 public class UserSignUp {
 
     /**
@@ -18,4 +19,12 @@ public class UserSignUp {
     private String lastName;
     private String password;
     private String email;
+
+
+    public UserSignUp(String firstName, String lastName, String password, String email) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+        this.email = email;
+    }
 }

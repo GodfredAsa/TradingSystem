@@ -305,7 +305,10 @@ public class OrderPlacingService {
 
             }
         } else {
+            //reimburse  the client
+            account.setBalance(account.getBalance() + (orderRequest.getPrice() * orderRequest.getQuantity()));
 
+            //Reset the product quantity for the given portfolio
             portfolioProductData = getPortfolioProduct(portfolio, orderRequest);
 
             portfolioProductData.setQuantity(portfolioProductData.getQuantity() - orderRequest.getQuantity());
