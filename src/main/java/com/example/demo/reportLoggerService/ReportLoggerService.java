@@ -69,7 +69,7 @@ public class ReportLoggerService {
     }
 
     /**
-     Method for getting order log by id
+     * Method for getting order log by id
      **/
     public OrderLog findByID(Long id) {
         return orderLogRepository.findById(id).orElseThrow(() -> new RuntimeException("item not found"));

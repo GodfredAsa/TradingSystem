@@ -61,7 +61,7 @@ public class ReportLoggerController {
 
 
     /**
-     Endpoint for updating status
+     * Endpoint for updating status
      **/
     @PostMapping("/log/statusUpdate")
     @ApiOperation("Endpoint for status update")

@@ -1,5 +1,6 @@
 package com.example.demo.entities;
 
+import com.example.demo.enums.Status;
 import com.example.demo.enums.TradeSide;
 import lombok.AllArgsConstructor;
 
@@ -12,14 +13,17 @@ import java.time.LocalDateTime;
  For persistence and for proper sequence of orders.
  **/
 public class QueueOrderLog implements Serializable {
-    private String id;
-    private Long userID;
-    private String exchangeOrderID;
-    private int productID;
+    private long id;
+    private String orderID;
+    private long userID;
+    private String productID;
     private int quantity;
-    private Double price;
+    private double price;
     private TradeSide side;
     private LocalDateTime timestamp;
-    private String type;
-    private Long cumulativeQuantity;
+    private Status status;
+    private long cumulativeQuantity;
+    private boolean isSplitOrder;
+    private double bestPrice;
+    private int bestQuantity;
 }
