@@ -1,6 +1,5 @@
 package com.clientService.order.service;
 
-import com.clientService.enums.PortfolioStatus;
 import com.clientService.exceptions.InvalidOrderRequestException;
 import com.clientService.exceptions.NotEnoughFundsException;
 import com.clientService.exceptions.NotFoundException;
@@ -25,11 +24,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -92,7 +87,7 @@ public class OrderPlacingService {
 
         //TODO Return response to client instead of throwing an exception
 
-        if (!canMakeOrder(orderRequest, user)) {
+        if (!canMakeOrder(orderRequest, user, orderPortfolio)) {
             throw new NotEnoughFundsException("User has insufficient funds to process this order");
         }
 
@@ -346,7 +341,7 @@ public class OrderPlacingService {
      * @param user         Details of client placing the order
      * @return A boolean indicating whether the client is eligible to place the trade
      */
-    public boolean canMakeOrder(OrderRequest orderRequest, AppUser user) {
+    public boolean canMakeOrder(OrderRequest orderRequest, AppUser user, Portfolio orderPortfolio) {
 
         if (orderRequest.getSide().equals("BUY")) {
 
@@ -356,38 +351,29 @@ public class OrderPlacingService {
                     .getBalance();
 
             return userCurrentAccountBalance >= totalOrderCost;
+
         } else {
 
-            // Get the client's available quantity of products
-            List<OrderModel> usersActiveBuyOrdersOfProd = user
-                    .getPortfolios()
+//              Get the client's available quantity of products
+            Optional<PortfolioProductData> currentPortfolioProduct = orderPortfolio
+                    .getPortfolioProductData()
                     .stream()
-                    .filter(portfolio -> portfolio
-                            .getStatus()
-                            .equals(PortfolioStatus.OPENED) && portfolio
-                            .getId()
-                            .equals(orderRequest.getPortfolioId()))
-                    .findFirst()
-                    .get()
-                    .getOrders()
-                    .stream()
-                    .filter(order -> order
-                            .getSide()
-                            .equals("BUY"))
-                    .collect(Collectors.toList());
+                    .filter(ppd -> ppd
+                            .getProduct()
+                            .getTicker()
+                            .equals(orderRequest.getProduct()))
+                    .findFirst();
 
-            if (usersActiveBuyOrdersOfProd.isEmpty()) {
+            if (currentPortfolioProduct.isEmpty()) {
 
                 throw new InvalidOrderRequestException("User does not own the specified product");
             }
+            int userCurrentProductQuantity = currentPortfolioProduct
+                    .get()
+                    .getQuantity();
 
-            int availableQuantityOfProd = usersActiveBuyOrdersOfProd
-                    .stream()
-                    .map(ord -> ord.getQuantity() - ord.getCumulativeQuantity())
-                    .mapToInt((cumulativeQuantity -> Integer.valueOf(cumulativeQuantity)))
-                    .sum();
+            return userCurrentProductQuantity >= orderRequest.getQuantity();
 
-            return orderRequest.getQuantity() >= availableQuantityOfProd;
         }
 
     }
