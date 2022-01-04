@@ -1,3 +1,3 @@
 # TradingSystem
 TLC4 Trading System, Group 6 project
-Something written here for demo
+A trading system to demonstrate our comprehention of the Java programming language as well as Java's SpringBoot framework.
